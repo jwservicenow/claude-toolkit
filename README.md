@@ -37,14 +37,6 @@ curl -o ~/.claude/commands/servicenow_rag.md \
   https://raw.githubusercontent.com/jwservicenow/claude-servicenow-tools/main/servicenow_rag.md
 ```
 
-If you run separate Claude CLI profiles (e.g. `claudep`, `claudew`), copy into each:
-
-```bash
-mkdir -p ~/.claude-personal/commands ~/.claude-work/commands
-cp ~/.claude/commands/servicenow_rag.md ~/.claude-personal/commands/
-cp ~/.claude/commands/servicenow_rag.md ~/.claude-work/commands/
-```
-
 ## Use
 
 ```
