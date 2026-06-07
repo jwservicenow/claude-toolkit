@@ -24,11 +24,11 @@ State what you found in one sentence before moving on. If nothing is relevant, s
 
 ### Step 2 — Ask Clarifying Questions
 
-Ask up to **4 questions**, one at a time. Stop as soon as you have enough to propose approaches — don't use all 4 for the sake of it.
+Ask up to **4 questions** in a single message. Stop as soon as you have enough to propose approaches — don't use all 4 for the sake of it.
 
 - Prefer multiple-choice questions over open-ended ones
 - Focus on: purpose, constraints, success criteria, scope
-- One question per message — wait for the answer before asking the next
+- Send all questions at once — do not drip them one at a time
 
 ### Step 3 — Propose 3–4 Approaches
 
@@ -113,7 +113,7 @@ Tell the user both filenames. That's the end — no handoff, no next steps.
 ## Rules
 
 - User-invoked only. Never activate automatically.
-- One question at a time. Wait for each answer.
+- Ask all clarifying questions in one message, not one at a time.
 - Max 4 clarifying questions. Stop earlier if you have what you need.
 - Always propose 3–4 approaches. Not fewer.
 - Always self-review before showing the plan.
