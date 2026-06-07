@@ -20,6 +20,9 @@ Slash commands, skills, scripts, and setup guides for Claude Code — a working 
 
 ## Why `/servicenow_rag`
 
+<details>
+<summary>How it works and what problem it solves</summary>
+
 **The problem:** ServiceNow — like many enterprise sites — restricts AI web crawlers from indexing its documentation through strict `robots.txt` directives, in addition to being a JavaScript-heavy, dynamic architecture that hinders automated scraping. Standard AI fetch tools land on empty SPA shells or get blocked outright, so Claude falls back to memory and fabricates content.
 
 **How the skill works:**
@@ -40,6 +43,8 @@ ServiceNow publishes a mirror of the same documentation as plain markdown on Git
 - **Verifiable citations.** Every claim has a URL that was actually retrieved at query time, not pattern-matched from training data.
 - **No more wrong table names.** `cmdb_ci_win_server` (real) instead of the hallucinated `cmdb_ci_windows_server`. RHEL 6+ (documented) instead of the invented RHEL 7/8/9.
 - **Zero infrastructure.** No vector DB, no embedding pipeline, no scheduled crawl. ServiceNow publishes the mirror; the skill just retrieves from it.
+
+</details>
 
 ## Install — /newplan skill
 
