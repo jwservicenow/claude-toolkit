@@ -14,6 +14,8 @@ Slash commands, skills, scripts, and setup guides for Claude Code — a working 
 **Scripts** (`scripts/`)
 - **`statusline-command.sh`** — custom Claude Code statusline showing working directory, model + context window size, and a live context-usage bar. Useful for spotting when you're approaching auto-compact.
 
+  ![Statusline preview](docs/statusline-preview.png)
+
 **Docs** (`docs/`)
 - **[`setup.md`](docs/setup.md)** — full setup guide for running Personal Pro + Enterprise Claude Code on the same Mac without crossing data streams. Aliases, separate configs, MCP setup, VS Code integration. ~15 minutes start to finish.
 - **[`servicenow-mirror-desktop-guide.html`](docs/servicenow-mirror-desktop-guide.html)** — setup guide for grounding Claude Desktop in the ServiceNow docs mirror via a local MCP connector. Includes copy-paste project instructions, smoke tests, and known-gap callouts. Use this if you're on Desktop rather than the CLI.
