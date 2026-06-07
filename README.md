@@ -14,6 +14,8 @@ Slash commands, skills, scripts, and setup guides for Claude Code — a working 
 **Scripts** (`scripts/`)
 - **`statusline-command.sh`** — custom Claude Code statusline showing working directory, model + context window size, and a live context-usage bar. Useful for spotting when you're approaching auto-compact.
 
+  ![Statusline preview](docs/statusline-preview.png)
+
 
 **Docs** (`docs/`)
 - **[`setup.md`](docs/setup.md)** — full setup guide for running Personal Pro + Enterprise Claude Code on the same Mac without crossing data streams. Aliases, separate configs, MCP setup, VS Code integration. ~15 minutes start to finish.
