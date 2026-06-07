@@ -1,12 +1,15 @@
 # claude-code-toolkit
 
-Slash commands, scripts, and setup guides for Claude Code — a working practitioner's toolkit. Includes one ServiceNow-specific skill and several general-purpose utilities.
+Slash commands, skills, scripts, and setup guides for Claude Code — a working practitioner's toolkit.
 
 ## What's included
 
 **Commands** (`commands/`)
 - **`/servicenow_rag`** — routes ServiceNow technical questions through the official GitHub markdown mirror (`ServiceNow/ServiceNowDocs`), supplements with Community for operational context, falls back through a trust hierarchy (KB → Community → third-party with explicit flags), and halts cleanly if nothing retrievable. No fabricated table names, no uncitable claims.
 - **`/newsession [optional runbook]`** — at session end, generates a ~500-token transition prompt you can paste into a fresh Claude Code session to resume work without replaying chat history. Optionally pass a runbook or planning file (bare filename or full path) so the next session is shaped by its content.
+
+**Skills** (`skills/`)
+- **`/newplan`** — turns an idea into an approved, written plan through structured dialogue. Explores project context, asks up to 4 clarifying questions, proposes 3–4 approaches with trade-offs, self-reviews the draft, then saves a plan doc + transition prompt to the working directory. Strictly user-invoked — never auto-triggers.
 
 **Scripts** (`scripts/`)
 - **`statusline-command.sh`** — custom Claude Code statusline showing working directory, model + context window size, and a live context-usage bar. Useful for spotting when you're approaching auto-compact.
@@ -36,6 +39,16 @@ ServiceNow publishes a mirror of the same documentation as plain markdown on Git
 - **Verifiable citations.** Every claim has a URL that was actually retrieved at query time, not pattern-matched from training data.
 - **No more wrong table names.** `cmdb_ci_win_server` (real) instead of the hallucinated `cmdb_ci_windows_server`. RHEL 6+ (documented) instead of the invented RHEL 7/8/9.
 - **Zero infrastructure.** No vector DB, no embedding pipeline, no scheduled crawl. ServiceNow publishes the mirror; the skill just retrieves from it.
+
+## Install — /newplan skill
+
+```bash
+mkdir -p ~/.claude/skills/newplan
+curl -o ~/.claude/skills/newplan/SKILL.md \
+  https://raw.githubusercontent.com/jwservicenow/claude-code-toolkit/main/skills/newplan/SKILL.md
+```
+
+Restart Claude Code. Then type `/newplan` followed by a short description of what you want to plan.
 
 ## Install — slash commands
 
@@ -76,6 +89,10 @@ Requires `jq` (`brew install jq` if you don't have it).
 /newsession
 /newsession homelab_inventory.md
 /newsession ~/path/to/some_runbook.md
+
+/newplan migrate postgres to a new server
+/newplan refactor auth middleware
+/newplan set up monitoring for the homelab
 ```
 
 ## Update later
@@ -94,7 +111,10 @@ If Claude fetches `llms.txt` before answering, the skill fired. If it answers im
 
 ## Constraints
 
-- **Claude Code only.** Slash commands and statusline scripts are Claude Code features. (`/servicenow_rag` additionally requires Claude Code's raw-GitHub fetch behavior, which Claude Desktop's fetch policy blocks.)
+- **Claude Code only.** Slash commands, skills, and statusline scripts are Claude Code features. (`/servicenow_rag` additionally requires Claude Code's raw-GitHub fetch behavior, which Claude Desktop's fetch policy blocks.)
+- **`/newplan` specifics:**
+  - Produces plans, not code. It never scaffolds or writes implementation.
+  - Saves two files to the working directory: a `<topic>-plan-YYYY-MM-DD.md` and a `<topic>-prompt-YYYY-MM-DD.md` transition prompt for handing off to a fresh session.
 - **`/servicenow_rag` specifics:**
   - Default branch is `australia` (current GA). For release-scoped work, mention the branch in your question (e.g., "on xanadu, what changed in...").
   - The mirror has known bugs — some files miss `canonical_url` frontmatter (the skill constructs the docsite URL manually); some internal `../reference/` links resolve to 404s (the skill ignores them and navigates via the bundle index instead).
