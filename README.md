@@ -14,7 +14,7 @@ Slash commands, skills, scripts, and setup guides for Claude Code — a working 
 **Scripts** (`scripts/`)
 - **`statusline-command.sh`** — custom Claude Code statusline showing working directory, model + context window size, and a live context-usage bar. Useful for spotting when you're approaching auto-compact.
 
-  ![Statusline preview](docs/statusline-preview.png)
+  <img src="docs/statusline-preview.png" width="500" alt="Statusline preview">
 
 
 **Docs** (`docs/`)
