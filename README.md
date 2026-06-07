@@ -9,8 +9,8 @@ Everything here works inside **Claude Code** (the command-line app). Some tools 
 | [/newsession](#newsession) | Compress a long chat into a short summary, paste it into a fresh session, and pick up right where you were |
 | [/newplan](#newplan) | Turn a goal into a structured written plan with trade-offs |
 | [/servicenow_rag](#servicenow_rag) | Answer ServiceNow questions from the official docs mirror — citable URLs, no guessing |
-| [Status bar](#status-bar) | Show model, context size, and usage at the bottom of Claude Code |
 | [Desktop guide](#similar-setup-for-claude-desktop) | ServiceNow docs setup for Claude Desktop users |
+| [Status bar](#status-bar) | Show model, context size, and usage at the bottom of Claude Code |
 
 ---
 
