@@ -10,7 +10,7 @@ Everything here works inside **Claude Code** (the command-line app). Some tools 
 | [/newplan](#newplan) | Turn a goal into a structured written plan with trade-offs |
 | [/servicenow_rag](#servicenow_rag) | Answer ServiceNow questions from the official docs mirror — citable URLs, no guessing |
 | [Status bar](#status-bar) | Show model, context size, and usage at the bottom of Claude Code |
-| [Desktop guide](#servicenow-docs-for-claude-desktop) | ServiceNow docs setup for Claude Desktop users |
+| [Desktop guide](#similar-setup-for-claude-desktop) | ServiceNow docs setup for Claude Desktop users |
 
 ---
 
@@ -60,7 +60,7 @@ Restart Claude Code. Then type `/newplan`.
 
 Claude normally can't read the ServiceNow documentation site — it's blocked from AI tools. This command routes your question through ServiceNow's official GitHub docs mirror instead, so every answer comes with a real, citable URL — not something Claude made up from memory.
 
-*Claude Code only. On Claude Desktop? Use the [Desktop setup guide](#servicenow-docs-for-claude-desktop) — different setup, same result.*
+*Claude Code only. On Claude Desktop? Use the [Desktop setup guide](#similar-setup-for-claude-desktop) — different setup, same result.*
 
 <details>
 <summary>How it works under the hood</summary>
@@ -91,6 +91,20 @@ Restart Claude Code. Then type `/servicenow_rag` followed by your question.
 /servicenow_rag what sys_property controls Discovery IP range exclusions?
 ```
 If Claude fetches from GitHub before answering, it's working. If it answers immediately with no fetch step, something went wrong during install.
+
+---
+
+### Similar setup for Claude Desktop
+
+This is a separate setup for people using Claude Desktop.
+
+```bash
+curl -o ~/Downloads/servicenow-mirror-desktop-guide.html \
+  https://raw.githubusercontent.com/jwservicenow/claude-code-toolkit/main/docs/servicenow-mirror-desktop-guide.html
+open ~/Downloads/servicenow-mirror-desktop-guide.html
+```
+
+Downloads a setup guide and opens it in your browser. Follow the steps inside — about 10 minutes total.
 
 ---
 
@@ -125,20 +139,6 @@ chmod +x ~/.claude/statusline-command.sh
 **Step 3** — Restart Claude Code.
 
 > **Running two Claude accounts?** If you followed the dual-account setup guide, add the `statusLine` block to `~/.claude-work/settings.json` and/or `~/.claude-personal/settings.json` instead of `~/.claude/settings.json`.
-
----
-
-### ServiceNow docs for Claude Desktop
-
-This is a separate setup for people using Claude Desktop instead of Claude Code.
-
-```bash
-curl -o ~/Downloads/servicenow-mirror-desktop-guide.html \
-  https://raw.githubusercontent.com/jwservicenow/claude-code-toolkit/main/docs/servicenow-mirror-desktop-guide.html
-open ~/Downloads/servicenow-mirror-desktop-guide.html
-```
-
-Downloads a setup guide and opens it in your browser. Follow the steps inside — about 10 minutes total.
 
 ---
 
