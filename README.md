@@ -132,6 +132,10 @@ If Claude fetches `llms.txt` before answering, the skill fired. If it answers im
   - Default branch is `australia` (current GA). For release-scoped work, mention the branch in your question (e.g., "on xanadu, what changed in...").
   - The mirror has known bugs — some files miss `canonical_url` frontmatter (the skill constructs the docsite URL manually); some internal `../reference/` links resolve to 404s (the skill ignores them and navigates via the bundle index instead).
 
+## Feedback & requests
+
+Have a question, found something broken, or want to request a new tool? [Open an issue](https://github.com/jwservicenow/claude-code-toolkit/issues) — it's the best way to reach me.
+
 ## License
 
 MIT — see [LICENSE](LICENSE).
