@@ -11,6 +11,7 @@ Everything here works inside **Claude Code** (the command-line app). Some tools 
 | [/servicenow_rag](#servicenow_rag) | Answer ServiceNow questions from the official docs mirror — citable URLs, no guessing |
 | [Desktop guide](#similar-setup-for-claude-desktop) | Ground Claude Desktop knowledge replies to ServiceNow docsite (via Project Instructions) |
 | [Status bar](#status-bar) | Show model, context size, and usage at the bottom of Claude Code |
+| [Native MCP install guide](native_mcp_install_guide.md) | Connect Claude Code to ServiceNow using the platform's built-in connector — no Python script, no plain-text credentials, 17 purpose-built tools |
 
 ---
 
@@ -139,6 +140,16 @@ chmod +x ~/.claude/statusline-command.sh
 **Step 3** — Restart Claude Code.
 
 > **Running two Claude accounts?** If you followed the dual-account setup guide, add the `statusLine` block to `~/.claude-work/settings.json` and/or `~/.claude-personal/settings.json` instead of `~/.claude/settings.json`.
+
+---
+
+### Native MCP install guide
+
+Connects Claude Code to your ServiceNow instance using the platform's own built-in connector instead of a local Python script. No passwords in plain-text files — credentials stay in your macOS Keychain. Gives you 17 purpose-built tools for CMDB, ITSM, and ITOM work.
+
+**Requires:** ServiceNow Australia release (Zurich Patch 9+) with Now Assist. If your instance doesn't meet that, use the DIY Table-API guide instead.
+
+[Open the guide](native_mcp_install_guide.md)
 
 ---
 
