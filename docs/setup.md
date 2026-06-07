@@ -13,7 +13,7 @@ Before starting, confirm you have:
 - Claude Pro subscription (personal) and/or work Claude Enterprise access
 - macOS with Homebrew installed — if not: `/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"`
 - Node.js 18+ — check with `node --version`, install with `brew install node` if needed
-- Claude Code installed: `brew install --cask claude-code`
+- Claude Code installed: `curl -fsSL https://claude.ai/install.sh | bash`
 - Find your claude binary path (you'll need this): `/usr/bin/which claude`
 
 ---
