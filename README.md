@@ -37,7 +37,7 @@ Restart Claude Code. Then type `/newsession`.
 
 ### `/newplan`
 
-Type `/newplan` followed by what you want to do. Claude asks a few clarifying questions, lays out your options with trade-offs, then writes a complete plan file into your project folder.
+Type `/newplan` followed by what you want to do. Claude asks a few clarifying questions, lays out your options with trade-offs, then presents the plan for review and approval. After giving the OK, writes a complete plan file into your project folder.
 
 ```
 /newplan migrate our CMDB to CSDM
