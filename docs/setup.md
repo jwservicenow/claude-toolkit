@@ -401,4 +401,4 @@ Without `-s user`, servers are added at project scope and only load from that sp
 
 ---
 
-*Anthropic Claude Code documentation: https://code.claude.com/docs/en/best-practices*
+*Anthropic Claude Code documentation: https://docs.anthropic.com/en/docs/claude-code/overview*

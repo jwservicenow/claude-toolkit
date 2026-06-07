@@ -38,3 +38,10 @@ Only what's needed for the next action — file paths, IPs, sys_ids, commands, U
 If a runbook was provided, add a footer line: "Read [path] first." If the runbook describes infrastructure or operational targets (hosts, customer instances, production systems), also add: "Change control: state the action and wait for acknowledgement before proceeding."
 
 Cap at 250 words inside the code block.
+
+After generating the transition prompt, save it to disk:
+- If $CLAUDE_CONFIG_DIR contains "claude-work", write to ~/ClaudeOS/work/.last-newsession.md
+- If $CLAUDE_CONFIG_DIR contains "claude-personal", write to ~/ClaudeOS/personal/.last-newsession.md
+- If neither matches, write to ~/ClaudeOS/.last-newsession.md as a fallback
+
+Write only the contents of the code block (no intro line, no fences) to the file. Use the Write tool. After saving, add one line below the code block: Saved to <path>

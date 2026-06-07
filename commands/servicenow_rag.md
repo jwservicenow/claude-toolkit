@@ -1,4 +1,4 @@
-**Claude Code CLI only.** This command uses Claude Code's built-in fetch tool to retrieve from the GitHub docs mirror. If you cannot make a direct HTTP fetch to raw.githubusercontent.com, stop immediately and tell the user: "This command requires Claude Code. For Claude Desktop, use the Desktop setup guide: docs/servicenow-mirror-desktop-guide.html in the toolkit repo."
+**Claude Code CLI only.** This command uses Claude Code's built-in fetch tool to retrieve from the GitHub docs mirror. If you cannot make a direct HTTP fetch to raw.githubusercontent.com, stop immediately and tell the user: "This command requires Claude Code. For Claude Desktop, use the Desktop setup guide at https://github.com/jwservicenow/claude-code-toolkit — see the Similar setup for Claude Desktop section."
 
 Answer this ServiceNow question by retrieving from the official docs mirror before responding:
 
