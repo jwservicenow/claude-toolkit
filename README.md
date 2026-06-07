@@ -6,9 +6,9 @@ Slash commands, skills, scripts, and setup guides for Claude Code — a working 
 
 **Commands** (`commands/`)
 - **`/servicenow_rag`** *(Claude Code CLI)* — routes ServiceNow technical questions through the official GitHub markdown mirror (`ServiceNow/ServiceNowDocs`), supplements with Community for operational context, falls back through a trust hierarchy (KB → Community → third-party with explicit flags), and halts cleanly if nothing retrievable. No fabricated table names, no uncitable claims. **On Claude Desktop?** Use the [Desktop setup guide](docs/servicenow-mirror-desktop-guide.html) instead — same mirror, wired through a local MCP connector.
-- **`/newsession [optional runbook]`** — at session end, generates a ~500-token transition prompt you can paste into a fresh Claude Code session to resume work without replaying chat history. Optionally pass a runbook or planning file (bare filename or full path) so the next session is shaped by its content.
 
 **Skills** (`skills/`)
+- **`/newsession [optional runbook]`** — token flush for long conversations. When context is filling up or a topic is wrapping up, compresses everything into a compact handoff prompt you paste into a fresh session. Resumes work instantly without replaying history. Optionally pass a runbook or planning file to shape the next session.
 - **`/newplan`** — turns an idea into an approved, written plan through structured dialogue. Explores project context, asks up to 4 clarifying questions, proposes 3–4 approaches with trade-offs, self-reviews the draft, then saves a plan doc + transition prompt to the working directory. Strictly user-invoked — never auto-triggers.
 
 **Scripts** (`scripts/`)
@@ -46,15 +46,17 @@ ServiceNow publishes a mirror of the same documentation as plain markdown on Git
 
 </details>
 
-## Install — /newplan skill
+## Install — skills
 
 ```bash
-mkdir -p ~/.claude/skills/newplan
+mkdir -p ~/.claude/skills/newsession ~/.claude/skills/newplan
+curl -o ~/.claude/skills/newsession/SKILL.md \
+  https://raw.githubusercontent.com/jwservicenow/claude-code-toolkit/main/skills/newsession/SKILL.md
 curl -o ~/.claude/skills/newplan/SKILL.md \
   https://raw.githubusercontent.com/jwservicenow/claude-code-toolkit/main/skills/newplan/SKILL.md
 ```
 
-Restart Claude Code. Then type `/newplan` followed by a short description of what you want to plan.
+Restart Claude Code. Type `/newsession` at any point to flush a long conversation into a fresh one. Type `/newplan` followed by a short description of what you want to plan.
 
 ## Install — slash commands (Claude Code CLI)
 
@@ -62,8 +64,6 @@ Restart Claude Code. Then type `/newplan` followed by a short description of wha
 mkdir -p ~/.claude/commands
 curl -o ~/.claude/commands/servicenow_rag.md \
   https://raw.githubusercontent.com/jwservicenow/claude-code-toolkit/main/commands/servicenow_rag.md
-curl -o ~/.claude/commands/newsession.md \
-  https://raw.githubusercontent.com/jwservicenow/claude-code-toolkit/main/commands/newsession.md
 ```
 
 ## Install — ServiceNow docs grounding (Claude Desktop)
@@ -104,8 +104,8 @@ Requires `jq` (`brew install jq` if you don't have it).
 /servicenow_rag system requirements for Service Mapping
 /servicenow_rag difference between cmdb_rel_ci and svc_ci_assoc
 
-/newsession
-/newsession homelab_inventory.md
+/newsession                            # flush this conversation into a fresh one
+/newsession homelab_inventory.md       # shape the next session around a runbook
 /newsession ~/path/to/some_runbook.md
 
 /newplan migrate postgres to a new server

@@ -1,3 +1,8 @@
+---
+name: newsession
+description: Token flush for long conversations — when context is filling up or a topic is wrapping up, invoke /newsession to compress everything into a compact handoff prompt you can paste into a fresh session. Resumes work instantly without replaying history. Optionally shaped by a runbook or planning file. Strictly user-invoked — never auto-triggers.
+---
+
 Look at what has actually happened in this conversation (not memory, not prior sessions — this conversation only). If $ARGUMENTS is provided and resolves to a readable file, read it as the runbook for the next session and let its content shape the transition prompt.
 
 Usage: /newsession [optional path to a runbook or planning file]
