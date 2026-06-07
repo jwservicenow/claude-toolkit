@@ -5,7 +5,7 @@ Slash commands, skills, scripts, and setup guides for Claude Code — a working 
 ## What's included
 
 **Commands** (`commands/`)
-- **`/servicenow_rag`** — routes ServiceNow technical questions through the official GitHub markdown mirror (`ServiceNow/ServiceNowDocs`), supplements with Community for operational context, falls back through a trust hierarchy (KB → Community → third-party with explicit flags), and halts cleanly if nothing retrievable. No fabricated table names, no uncitable claims.
+- **`/servicenow_rag`** *(Claude Code CLI)* — routes ServiceNow technical questions through the official GitHub markdown mirror (`ServiceNow/ServiceNowDocs`), supplements with Community for operational context, falls back through a trust hierarchy (KB → Community → third-party with explicit flags), and halts cleanly if nothing retrievable. No fabricated table names, no uncitable claims. **On Claude Desktop?** Use the [Desktop setup guide](docs/servicenow-mirror-desktop-guide.html) instead — same mirror, wired through a local MCP connector.
 - **`/newsession [optional runbook]`** — at session end, generates a ~500-token transition prompt you can paste into a fresh Claude Code session to resume work without replaying chat history. Optionally pass a runbook or planning file (bare filename or full path) so the next session is shaped by its content.
 
 **Skills** (`skills/`)
@@ -16,6 +16,7 @@ Slash commands, skills, scripts, and setup guides for Claude Code — a working 
 
 **Docs** (`docs/`)
 - **[`setup.md`](docs/setup.md)** — full setup guide for running Personal Pro + Enterprise Claude Code on the same Mac without crossing data streams. Aliases, separate configs, MCP setup, VS Code integration. ~15 minutes start to finish.
+- **[`servicenow-mirror-desktop-guide.html`](docs/servicenow-mirror-desktop-guide.html)** — setup guide for grounding Claude Desktop in the ServiceNow docs mirror via a local MCP connector. Includes copy-paste project instructions, smoke tests, and known-gap callouts. Use this if you're on Desktop rather than the CLI.
 
 ## Why `/servicenow_rag`
 
@@ -50,7 +51,7 @@ curl -o ~/.claude/skills/newplan/SKILL.md \
 
 Restart Claude Code. Then type `/newplan` followed by a short description of what you want to plan.
 
-## Install — slash commands
+## Install — slash commands (Claude Code CLI)
 
 ```bash
 mkdir -p ~/.claude/commands
@@ -59,6 +60,18 @@ curl -o ~/.claude/commands/servicenow_rag.md \
 curl -o ~/.claude/commands/newsession.md \
   https://raw.githubusercontent.com/jwservicenow/claude-code-toolkit/main/commands/newsession.md
 ```
+
+## Install — ServiceNow docs grounding (Claude Desktop)
+
+Download the setup guide and open it in your browser:
+
+```bash
+curl -o ~/Downloads/servicenow-mirror-desktop-guide.html \
+  https://raw.githubusercontent.com/jwservicenow/claude-code-toolkit/main/docs/servicenow-mirror-desktop-guide.html
+open ~/Downloads/servicenow-mirror-desktop-guide.html
+```
+
+The guide walks through the full 3-step setup (~10 minutes): installing a local MCP fetch connector, creating a Desktop Project, and pasting the two retrieval instruction blocks that ground every answer in the official mirror.
 
 ## Install — statusline
 
@@ -111,7 +124,7 @@ If Claude fetches `llms.txt` before answering, the skill fired. If it answers im
 
 ## Constraints
 
-- **Claude Code only.** Slash commands, skills, and statusline scripts are Claude Code features. (`/servicenow_rag` additionally requires Claude Code's raw-GitHub fetch behavior, which Claude Desktop's fetch policy blocks.)
+- **Claude Code only.** Slash commands, skills, and statusline scripts are Claude Code features. For ServiceNow docs grounding on Claude Desktop, use the [Desktop setup guide](docs/servicenow-mirror-desktop-guide.html) — it achieves the same result through a local MCP connector instead of the CLI's built-in fetch tool.
 - **`/newplan` specifics:**
   - Produces plans, not code. It never scaffolds or writes implementation.
   - Saves two files to the working directory: a `<topic>-plan-YYYY-MM-DD.md` and a `<topic>-prompt-YYYY-MM-DD.md` transition prompt for handing off to a fresh session.

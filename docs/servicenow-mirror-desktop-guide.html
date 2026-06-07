@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ServiceNow Docs in Claude Desktop — Peer Setup Guide</title>
+<style>
+  :root{
+    --bg:#0f1115; --panel:#171a21; --panel2:#1e222b; --border:#2a2f3a;
+    --text:#e6e8ee; --muted:#9aa3b2; --accent:#62d0ff; --accent2:#8affc1;
+    --warn:#ffb454; --bad:#ff6b6b; --good:#8affc1; --code:#0b0d11;
+    --mono:"SF Mono",ui-monospace,"Cascadia Code",Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);
+    font:15px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;}
+  .wrap{max-width:980px;margin:0 auto;padding:40px 24px 80px;}
+  header{border-bottom:1px solid var(--border);padding-bottom:20px;margin-bottom:28px;}
+  h1{font-size:26px;margin:0 0 6px;letter-spacing:-.3px;}
+  h1 .em{color:var(--accent);}
+  .sub{color:var(--muted);font-size:14px;}
+  .tag{display:inline-block;background:var(--panel2);border:1px solid var(--border);
+    color:var(--accent2);font-size:11px;font-weight:600;padding:2px 9px;border-radius:20px;
+    margin-right:6px;vertical-align:middle;}
+  h2{font-size:19px;margin:38px 0 12px;padding-top:6px;display:flex;align-items:center;gap:10px;}
+  h2 .n{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;
+    background:var(--accent);color:#06121a;border-radius:7px;font-size:14px;font-weight:700;}
+  h3{font-size:15px;margin:22px 0 8px;color:var(--accent);}
+  p{margin:10px 0;}
+  .muted{color:var(--muted);}
+  a{color:var(--accent);}
+  code{font-family:var(--mono);background:var(--code);border:1px solid var(--border);
+    padding:1px 6px;border-radius:5px;font-size:13px;color:#d6e8ff;}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:12px;
+    padding:18px 20px;margin:14px 0;}
+  .callout{border-left:3px solid var(--warn);background:var(--panel2);border-radius:8px;
+    padding:12px 16px;margin:14px 0;font-size:14px;}
+  .callout.bad{border-left-color:var(--bad);}
+  .callout.good{border-left-color:var(--good);}
+  .callout b{color:var(--warn);}
+  .callout.bad b{color:var(--bad);}
+  .callout.good b{color:var(--good);}
+  .blockhead{display:flex;justify-content:space-between;align-items:center;
+    background:var(--panel2);border:1px solid var(--border);border-bottom:none;
+    border-radius:10px 10px 0 0;padding:9px 14px;font-size:13px;font-weight:600;color:var(--muted);}
+  pre{margin:0;background:var(--code);border:1px solid var(--border);border-radius:0 0 10px 10px;
+    padding:16px;overflow-x:auto;font-family:var(--mono);font-size:12.5px;line-height:1.55;
+    color:#cdd6e4;max-height:340px;overflow-y:auto;}
+  pre.short{max-height:none;}
+  .copybtn{background:var(--accent);color:#06121a;border:none;border-radius:6px;
+    padding:5px 12px;font-size:12px;font-weight:700;cursor:pointer;transition:.15s;}
+  .copybtn:hover{filter:brightness(1.12);}
+  .copybtn.done{background:var(--good);}
+  table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13.5px;}
+  th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:top;}
+  th{color:var(--muted);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.4px;}
+  td code{font-size:12px;}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  @media(max-width:680px){.grid{grid-template-columns:1fr}}
+  .pill{font-size:11px;font-weight:700;padding:2px 8px;border-radius:5px;}
+  .pill.ok{background:rgba(138,255,193,.12);color:var(--good);}
+  .pill.no{background:rgba(255,107,107,.12);color:var(--bad);}
+  ul{margin:8px 0;padding-left:22px;}
+  li{margin:5px 0;}
+  footer{margin-top:50px;border-top:1px solid var(--border);padding-top:18px;
+    color:var(--muted);font-size:12.5px;}
+  .kbd{font-family:var(--mono);background:var(--panel2);border:1px solid var(--border);
+    border-bottom-width:2px;border-radius:5px;padding:1px 7px;font-size:12px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div><span class="tag">INTERNAL</span><span class="tag">ITOM / Delivery</span></div>
+  <h1>Grounding <span class="em">Claude Desktop</span> in the ServiceNow docs mirror</h1>
+  <p class="sub">Make Desktop answer SN product questions <b>only</b> from the official GitHub docs mirror — verifiable, customer-defensible, no fabrication, no silent web-search fallback. &nbsp;·&nbsp; Tested green against the <code>australia</code> branch, 2026-05-29.</p>
+</header>
+
+<div class="callout good">
+  <b>Why this exists.</b> The public docsite (<code>docs.servicenow.com</code>) is a JS app Desktop can't read, and Desktop's native web fetch is sandbox-blocked from the mirror. Left alone, the model "hedges and proceeds" — it web-searches or answers from memory and you get unverifiable claims in front of a customer. This setup forces every answer through a fetchable source with a citable raw URL.
+</div>
+
+<h2><span class="n">1</span> One-time setup</h2>
+<p>The mechanism: a <b>custom local fetch MCP connector</b> — a lightweight local tool that retrieves raw files from <b>ServiceNow's official GitHub docs mirror</b> for Claude. Desktop can reach <code>raw.githubusercontent.com</code> only through this connector, not its sandbox-blocked native fetch. Install <code>uv</code>, then point Desktop at <code>uvx</code>.</p>
+
+<h3>Install uv &amp; find uvx</h3>
+<div class="blockhead"><span>macOS / Linux</span><button class="copybtn" onclick="cp(this,'setup')">Copy</button></div>
+<pre class="short" id="setup">curl -LsSf https://astral.sh/uv/install.sh | sh
+which uvx        # copy this absolute path</pre>
+
+<h3>Edit the Desktop config</h3>
+<p class="muted">macOS <code>~/Library/Application Support/Claude/claude_desktop_config.json</code> · Linux <code>~/.config/Claude/</code></p>
+<div class="blockhead"><span>claude_desktop_config.json — use YOUR uvx path</span><button class="copybtn" onclick="cp(this,'cfg')">Copy</button></div>
+<pre class="short" id="cfg">"mcpServers": {
+  "fetch": {
+    "command": "/opt/homebrew/bin/uvx",
+    "args": ["mcp-server-fetch", "--ignore-robots-txt"]
+  }
+}</pre>
+<ul>
+  <li><code>command</code> must be the <b>absolute</b> uvx path — Desktop ignores your shell <code>$PATH</code>.</li>
+  <li><code>--ignore-robots-txt</code> is required (<code>raw.githubusercontent.com/robots.txt</code> disallows <code>/</code>).</li>
+  <li>Fully quit (<span class="kbd">⌘Q</span>) and relaunch. Verify under <b>Connectors → Desktop → fetch</b> (LOCAL DEV).</li>
+</ul>
+
+<h3>Find it in Connectors</h3>
+<p>Appears under <b>Settings → Connectors → Desktop</b> as <code>fetch</code> (<b>LOCAL DEV</b>).</p>
+
+<h2><span class="n">2</span> Project instructions — paste both blocks</h2>
+<p><span style="color:var(--accent)"><b>Create a Desktop Project</b></span> — name it something like <b>"ServiceNow Docs — Mirror"</b> — open its <b>Custom Instructions</b>, and paste both blocks below (one after the other).</p>
+<p>The grounding lives <b>entirely in this Project</b> — only chats started inside it are mirror-bound; regular Desktop chats are unaffected, so do all your ServiceNow doc lookups here.</p>
+
+<div class="blockhead"><span>Block 1 — Retrieval rules</span><button class="copybtn" onclick="cp(this,'b1')">Copy Block 1</button></div>
+<pre id="b1">## ServiceNow documentation retrieval — MANDATORY
+
+For ANY question about ServiceNow product behavior, requirements, configuration,
+or features, you MUST retrieve the answer from the official GitHub docs mirror
+BEFORE answering. Do not answer from memory.
+
+TOOL: Use ONLY the "fetch" MCP connector (the LOCAL DEV one under Desktop) for
+every retrieval. NEVER use web search or built-in/native web browsing for
+ServiceNow docs — they are blocked from the GitHub mirror and will fail or mislead.
+NEVER fetch docs.servicenow.com or www.servicenow.com/docs — dead JavaScript pages.
+
+RETRIEVAL FLOW (every hop uses the fetch MCP connector):
+1. Fetch the bundle list:
+   https://raw.githubusercontent.com/ServiceNow/ServiceNowDocs/australia/llms.txt
+   Read past the header to the "## Documents" section.
+2. COPY the full https:// URL of the publication's index.md from that text.
+3. Fetch that index.md. COPY the full https:// URL of the target file from it.
+4. Fetch the file. Cite the exact raw URL.
+
+RESPONSE SIZE — IMPORTANT: This app's fetch connector BREAKS on large responses
+(symptoms: "Unexpected end of JSON input", "not valid JSON"). Do NOT request a
+large/max length. Use a modest max_length (~5000) and paginate with start_index
+to read more of a big file. Large index files (e.g. ITOM) must be read in pages,
+not in one shot. If you get a JSON/parse error, RETRY with a SMALLER max_length —
+do NOT switch to web search.
+
+PAGINATION FLOOR — when the question asks for a LIST/CATALOG/ALL items (e.g. "list
+all patterns", "every supported X"), the answer is usually spread across many
+sections of one file. You MUST page that file to the END (keep advancing start_index
+until the fetched chunk is shorter than max_length, i.e. EOF) before presenting the
+list — do NOT stop after the first few pages. Items often live in more than one
+naming family/section (e.g. a legacy "X (LP)" set AND a newer "Azure X" set), so a
+keyword you saw early does not mean you've seen them all. If you must stop before
+EOF, say the list is PARTIAL and state the last start_index you read so it can be
+resumed. Never present a partial list as if it were complete.
+
+NEVER construct or guess a raw URL — copy the absolute https:// URL verbatim from
+a document you just fetched. Do NOT follow or resolve relative ../ links; the docs
+contain broken relative links that 404 (the file is real but in a different folder).
+RECOVERY when a link 404s or a file isn't where a doc points: (1) check the
+"Known doc locations" block below for the file; (2) if not there, fetch the bundle
+index and page it for the FILENAME; (3) only if both fail, STOP and ask for the URL.
+A 404 is NEVER proof the topic is absent from the mirror — it usually means the path
+was wrong, not the doc missing.
+
+Branch = release family. "australia" is current GA. Others: zurich, yokohama, xanadu.
+
+RULES:
+- Every factual claim must cite the exact raw URL you fetched THIS turn.
+- The mirror covers PRODUCT DOCUMENTATION only. It does NOT contain Now Support
+  KB articles (KBxxxxxxx) — those are login-gated and unfetchable. If the answer
+  requires a KB, give what the mirror has, then cite the KB by number and state it
+  is login-gated. Do NOT invent its contents.
+- If a fetch fails on the MCP connector, or the doc/section doesn't exist: STOP.
+  Say "I couldn't retrieve this from the mirror" and ask how to proceed. Do NOT
+  fall back to web search, snippets, or memory. Do NOT hedge-and-answer.
+- SEARCH FLOOR — before EVER concluding "not in the mirror" or that something is
+  "a Store app not in the docs," you MUST have fetched the relevant bundle INDEX
+  and searched it (paginating through it) for the topic plus likely synonyms:
+  connector, integration, data-mapping, classes, target-tables, sgc. A 404 on a
+  GUESSED path is NOT evidence of absence — only an index that lacks the term is.
+  "Store app" is NOT a reason to skip the mirror: many Store-app docs (Service
+  Graph Connectors, API SGC) ARE in it. Web search is forbidden regardless. Only
+  after the index genuinely lacks the term may you STOP and report it as a gap.</pre>
+
+<div class="blockhead" style="margin-top:16px"><span>Block 2 — Known doc locations</span><button class="copybtn" onclick="cp(this,'b2')">Copy Block 2</button></div>
+<pre id="b2">## Known doc locations (skip navigation — fetch these directly)
+
+These are confirmed file paths on the australia branch. Prepend
+https://raw.githubusercontent.com/ServiceNow/ServiceNowDocs/australia/markdown/
+and fetch with the MCP connector. For other releases, swap "australia" for
+zurich / yokohama / xanadu.
+
+MID Server (ITOM Visibility / Discovery / Event Mgmt host):
+- System requirements: servicenow-platform/mid-server/r_MIDServerSystemRequirements.md
+- Configuration:       servicenow-platform/mid-server/c_MIDServerConfiguration.md
+- (all MID Server docs are flat in servicenow-platform/mid-server/)
+
+Agent Client Collector (ACC):
+- System requirements: it-operations-management/agent-client-collector/acc-sys-requirements.md
+- Install (Windows):   it-operations-management/agent-client-collector/acc-install-windows.md
+- MID-less config:     it-operations-management/agent-client-collector/acc-configuring-without-mid.md
+- (all ACC docs are flat in it-operations-management/agent-client-collector/)
+
+CMDB / CSDM (these folders have NO own index.md — find files via the
+servicenow-platform/index.md bundle index, which lists them):
+- CMDB landing:  servicenow-platform/configuration-management-database-cmdb/manage-cmdb.md
+- CMDB overview: servicenow-platform/configuration-management-database-cmdb/c_ITILConfigurationManagement.md
+- CMDB tables:   servicenow-platform/configuration-management-database-cmdb/cmdb-tables-details.md
+  (BASE table dictionary ONLY — does NOT include connector/store-app classes)
+- CSDM:          servicenow-platform/common-service-data-model-csdm/
+
+Service Graph Connectors — "what data populates CMDB" (Azure, AWS, GCP, vCenter, etc.):
+- Folder: servicenow-platform/service-graph-connectors/
+- Pattern per vendor: cmdb-data-mapping-{vendor}.md (data source → staging → target
+  CMDB classes) and cmdb-{vendor}-classes.md (per-class attributes).
+  e.g. cmdb-data-mapping-azure.md, cmdb-azure-classes.md
+- This IS in the mirror — do NOT call it a "Store app" and skip it.
+
+API Service Graph Connectors — third-party API inventory (MuleSoft, Apigee, AWS/Azure
+API gateways, Kong, Boomi):
+- Folder: servicenow-platform/configuration-management-database-cmdb/
+- Pattern per vendor: api-sgc-{vendor}-tables.md (target CMDB classes),
+  api-sgc-{vendor}.md (overview), api-sgc-{vendor}-conn.md (connection).
+  e.g. api-sgc-mulesoft-tables.md → cmdb_ci_managed_api (the API),
+       cmdb_ci_anypoint_api_gateway, cmdb_ci_api_frontend, cmdb_ci_api_backend,
+       cmdb_ci_api_deployment, cmdb_ci_data_service_instance
+- Do NOT conclude "no class exists" from cmdb-tables-details.md — check these first.
+
+Cloud Discovery patterns — OOB pattern catalogs ("list the Azure/GCP discovery patterns"):
+- Folder: it-operations-management/discovery-and-service-mapping-patterns/
+- Pattern per vendor: {vendor}-cloud-discovery-patterns.md
+  e.g. azure-cloud-discovery-patterns.md (25+ named patterns: VM, SQL Server, Blob
+  Storage, Load Balancer, NIC, Public IP, Resource Group, Security Group, …),
+  gcp-cloud-discovery-patterns.md
+- This IS in the mirror — fetch it directly; do NOT call it a "Store-app-only" gap.
+- BROKEN LINK: discovery/azure-cloud-discovery.md links this as
+  ../../service-mapping/reference/azure-cloud-discovery-patterns.md — that path 404s.
+  The real folder is discovery-and-service-mapping-patterns/. Use the path above;
+  never resolve that relative link.
+- (The downloadable Cloud Discovery patterns .xlsx referenced in azure-cloud-discovery.md
+  lives on downloads.docs.servicenow.com — outside the mirror, binary, unfetchable.
+  Cite its URL if asked; don't claim to have read it.)
+
+Bundle indexes (when the file isn't listed above — open index.md and COPY the
+absolute file URL; do not construct):
+- ITOM:     it-operations-management/index.md   (LARGE — ~1.2 MB; read in PAGES via start_index, modest max_length each; never request it all at once)
+- Platform: servicenow-platform/index.md
+- ITSM:     it-service-management/index.md
+- ITAM:     it-asset-management/index.md
+
+NAVIGATION LIMIT: For deep files in large bundles (e.g. anything in
+agent-client-collector/), this app may be unable to discover the URL by reading
+the index. If you can't locate a file, STOP and ask for the exact URL — do not
+fabricate the path or the answer.
+
+KNOWN GAPS (not in the mirror — cite, don't invent):
+- ACC supported-OS version matrix → ServiceNow Store "Agent Client Collector Framework" page
+- ACC-V MID Server agent-count sizing tiers → login-gated KB (Now Support)</pre>
+
+<h2><span class="n">3</span> Smoke tests</h2>
+<p><span style="color:var(--accent)"><b>Paste these in a fresh project chat.</b></span> Each should stay connector-only, cite a raw URL, and refuse to fabricate. All four pass on a correct setup.</p>
+<table>
+  <thead><tr><th style="width:42%">Prompt</th><th>Pass looks like</th></tr></thead>
+  <tbody>
+    <tr><td><code>What data is populated into CMDB with the Azure Service Graph connector?</code></td><td>Lands on <code>cmdb-data-mapping-azure.md</code>, full source→target table, no web search.</td></tr>
+    <tr><td><code>List OOB Azure Discovery patterns. Use the ITOM bundle index.</code></td><td>Pages <code>azure-cloud-discovery-patterns.md</code> to EOF; full catalog (no broken-link detour, no partial list passed off as complete).</td></tr>
+    <tr><td><code>Per-MID-Server agent-count sizing tiers for ACC-V?</code></td><td>Stops, cites the gated KB as a gap, invents zero tier numbers. <span class="pill no">gap</span></td></tr>
+    <tr><td><code>Minimum Windows system requirements for MID Server for ACC</code></td><td>Generic reqs from <code>r_MIDServerSystemRequirements.md</code> + defers OS matrix to Store / KB1172387, no invented Windows specifics. <span class="pill ok">verified</span></td></tr>
+  </tbody>
+</table>
+
+<div class="callout">
+  <b>Branch tip.</b> Everything above is the <code>australia</code> GA branch. For a customer on an older family, swap the branch token in the URL: <code>zurich</code>, <code>yokohama</code>, or <code>xanadu</code>. Same folder layout.
+</div>
+
+<h2><span class="n">4</span> Key hurdles addressed</h2>
+<p class="muted">Nothing here needs action from you — Blocks 1 &amp; 2 already neutralize all four. They're documented so you know <i>why</i> the instructions look the way they do, and what could resurface if you edit the rules.</p>
+<div class="grid">
+  <div class="card">
+    <h3 style="margin-top:0">Broken relative links</h3>
+    <p class="muted" style="margin:0">Docs link to <code>../../service-mapping/reference/…</code> paths that 404 — the real file is in a different folder. The model used to guess the path, fail, and declare "not in mirror." Block 2 hard-codes the real paths; Block 1 says a 404 ≠ absence.</p>
+  </div>
+  <div class="card">
+    <h3 style="margin-top:0">Big-index paging</h3>
+    <p class="muted" style="margin:0">The ITOM index is ~1.2 MB and deep folders sit past ~888 KB. Desktop can't grep — it pages by reading. Large/max fetches throw JSON-RPC errors and trigger web-search fallback. Fix: small <code>max_length</code> + paginate.</p>
+  </div>
+  <div class="card">
+    <h3 style="margin-top:0">Pagination floor on lists</h3>
+    <p class="muted" style="margin:0">"List all X" answers are spread across one big file. The model stopped early and gave a partial list as if complete. Block 1 now forces paging to EOF, or an explicit "PARTIAL — resume at offset N."</p>
+  </div>
+  <div class="card">
+    <h3 style="margin-top:0">Gated KBs &amp; Store pages</h3>
+    <p class="muted" style="margin:0">Some content genuinely isn't in the mirror (login-gated KBs, the supported-OS matrix on the Store, the patterns <code>.xlsx</code>). Correct behavior: cite by reference, don't invent. Block 1/2 enforce this.</p>
+  </div>
+</div>
+
+<footer>
+  Internal enablement · ITOM delivery. Source of truth: <code>servicenow_rag_claude_desktop.md</code> + <code>project-instructions-v3.md</code> in the search-routing project.
+  Validated against ServiceNow/ServiceNowDocs @ <code>australia</code>, 2026-05-29. Not an official ServiceNow artifact — internal use.
+</footer>
+
+</div>
+<script>
+function cp(btn,id){
+  const t=document.getElementById(id).innerText;
+  navigator.clipboard.writeText(t).then(()=>{
+    const o=btn.textContent; btn.textContent='Copied ✓'; btn.classList.add('done');
+    setTimeout(()=>{btn.textContent=o;btn.classList.remove('done');},1400);
+  });
+}
+</script>
+</body>
+</html>
