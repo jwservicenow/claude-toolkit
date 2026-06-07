@@ -1,18 +1,66 @@
 # claude-code-toolkit
 
-Tools that make Claude smarter for ServiceNow work — built by a ServiceNow practitioner and shared for peers.
+Tools that make Claude smarter for ServiceNow work — built by a ServiceNow practitioner, shared for peers.
 
 Everything here works inside **Claude Code** (the command-line app). Some tools also have a Claude Desktop version — noted where applicable.
 
+| Tool | What it does |
+|------|-------------|
+| [/newsession](#newsession) | Compress a long chat into a short summary, paste it into a fresh session, and pick up right where you were |
+| [/newplan](#newplan) | Turn a goal into a structured written plan with trade-offs |
+| [/servicenow_rag](#servicenow_rag) | Answer ServiceNow questions from the official docs mirror — citable URLs, no guessing |
+| [Status bar](#status-bar) | Show model, context size, and usage at the bottom of Claude Code |
+| [Desktop guide](#servicenow-docs-for-claude-desktop) | ServiceNow docs setup for Claude Desktop users |
+
 ---
 
-## What's in here
+### `/newsession`
 
-### `/servicenow_rag` — Ask Claude about ServiceNow using the real docs
+Long conversations slow Claude down. Type `/newsession` and it writes a short summary of everything that happened — paste it into a new chat and you pick up right where you were, without replaying the whole history.
+
+Optionally pass a filename and the next session will be shaped around that file:
+```
+/newsession my-runbook.md
+```
+
+**Install**
+
+```bash
+mkdir -p ~/.claude/skills/newsession
+curl -o ~/.claude/skills/newsession/SKILL.md \
+  https://raw.githubusercontent.com/jwservicenow/claude-code-toolkit/main/skills/newsession/SKILL.md
+```
+
+Restart Claude Code. Then type `/newsession`.
+
+---
+
+### `/newplan`
+
+Type `/newplan` followed by what you want to do. Claude asks a few clarifying questions, lays out your options with trade-offs, then writes a complete plan file into your project folder.
+
+```
+/newplan migrate our CMDB to CSDM
+/newplan set up Discovery for Azure
+```
+
+**Install**
+
+```bash
+mkdir -p ~/.claude/skills/newplan
+curl -o ~/.claude/skills/newplan/SKILL.md \
+  https://raw.githubusercontent.com/jwservicenow/claude-code-toolkit/main/skills/newplan/SKILL.md
+```
+
+Restart Claude Code. Then type `/newplan`.
+
+---
+
+### `/servicenow_rag`
 
 Claude normally can't read the ServiceNow documentation site — it's blocked from AI tools. This command routes your question through ServiceNow's official GitHub docs mirror instead, so every answer comes with a real, citable URL — not something Claude made up from memory.
 
-*Claude Code only. On Claude Desktop? Use the [Desktop setup guide](docs/servicenow-mirror-desktop-guide.html) — different setup, same result.*
+*Claude Code only. On Claude Desktop? Use the [Desktop setup guide](#servicenow-docs-for-claude-desktop) — different setup, same result.*
 
 <details>
 <summary>How it works under the hood</summary>
@@ -26,54 +74,9 @@ ServiceNow publishes a copy of their documentation as plain text files on GitHub
 5. Falls back to Now Support KBs or Community posts if the mirror doesn't have it — flagged clearly so you know the source.
 6. Stops and tells you if it can't find anything retrievable. No guessing.
 
-**What you get:** Verifiable answers with real URLs. No made-up table names. No invented version requirements. No silent fallback to memory.
-
 </details>
 
----
-
-### `/newsession` — Start fresh when a conversation gets too long
-
-Long conversations slow Claude down. Type `/newsession` and it writes a short summary of everything that happened — paste it into a new chat and you pick up right where you were, without replaying the whole history.
-
-Optionally pass a filename and the next session will be shaped around that file:
-```
-/newsession my-runbook.md
-```
-
----
-
-### `/newplan` — Turn an idea into a written plan
-
-Type `/newplan` followed by what you want to do. Claude asks a few questions, lays out your options with trade-offs, then writes a complete plan file into your project folder.
-
-```
-/newplan migrate our CMDB to CSDM
-/newplan set up Discovery for Azure
-```
-
----
-
-### Status bar — See model and context info at the bottom of Claude Code
-
-<img src="docs/statusline-preview.png" width="500" alt="Statusline preview">
-
-Shows your working folder, which model you're on, context window size, and a live usage bar. Useful for knowing when a conversation is getting too long.
-
----
-
-### Docs
-
-- **[setup.md](docs/setup.md)** — How to run a personal and a work Claude account on the same Mac without them mixing. About 15 minutes start to finish.
-- **[ServiceNow Desktop guide](docs/servicenow-mirror-desktop-guide.html)** — Sets up Claude Desktop to answer ServiceNow questions from the official docs mirror. Use this if you're on Desktop, not the CLI.
-
----
-
-## Install
-
-### `/servicenow_rag`
-
-Paste this into your terminal and press Enter:
+**Install**
 
 ```bash
 mkdir -p ~/.claude/commands
@@ -83,25 +86,23 @@ curl -o ~/.claude/commands/servicenow_rag.md \
 
 Restart Claude Code. Then type `/servicenow_rag` followed by your question.
 
----
-
-### `/newsession` and `/newplan`
-
-```bash
-mkdir -p ~/.claude/skills/newsession ~/.claude/skills/newplan
-curl -o ~/.claude/skills/newsession/SKILL.md \
-  https://raw.githubusercontent.com/jwservicenow/claude-code-toolkit/main/skills/newsession/SKILL.md
-curl -o ~/.claude/skills/newplan/SKILL.md \
-  https://raw.githubusercontent.com/jwservicenow/claude-code-toolkit/main/skills/newplan/SKILL.md
+**Check it's working** — ask something too specific for Claude to know from memory:
 ```
-
-Restart Claude Code. Then type `/newsession` or `/newplan`.
+/servicenow_rag what sys_property controls Discovery IP range exclusions?
+```
+If Claude fetches from GitHub before answering, it's working. If it answers immediately with no fetch step, something went wrong during install.
 
 ---
 
 ### Status bar
 
-**Requires `jq`.** Check if you have it by running `jq --version` in your terminal. If not, install it first:
+<img src="docs/statusline-preview.png" width="500" alt="Statusline preview">
+
+Shows your working folder, which model you're on, context window size, and a live usage bar. Useful for knowing when a conversation is getting too long.
+
+**Install**
+
+**Requires `jq`.** Check if you have it: run `jq --version` in your terminal. If not:
 ```bash
 brew install jq
 ```
@@ -137,25 +138,19 @@ curl -o ~/Downloads/servicenow-mirror-desktop-guide.html \
 open ~/Downloads/servicenow-mirror-desktop-guide.html
 ```
 
-This downloads a setup guide and opens it in your browser. Follow the steps inside — about 10 minutes total.
+Downloads a setup guide and opens it in your browser. Follow the steps inside — about 10 minutes total.
+
+---
+
+## Docs
+
+- **[setup.md](docs/setup.md)** — How to run a personal and a work Claude account on the same Mac without them mixing. About 15 minutes start to finish.
 
 ---
 
 ## Keeping up to date
 
 Re-run any `curl` command above to get the latest version. It overwrites your local copy automatically.
-
----
-
-## Verify `/servicenow_rag` is working
-
-Ask it something too specific for Claude to know from memory:
-
-```
-/servicenow_rag what sys_property controls Discovery IP range exclusions?
-```
-
-If Claude fetches from GitHub before answering, it's working. If it answers immediately with no fetch step, something went wrong during install.
 
 ---
 
