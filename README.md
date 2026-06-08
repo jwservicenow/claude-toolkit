@@ -1,23 +1,23 @@
 # claude-code-toolkit
 
-Tools that make Claude smarter for ServiceNow work — built by a ServiceNow practitioner, shared for peers.
+Tools that make Claude smarter for ServiceNow work — built by a ServiceNow ITOM practitioner, shared for peers.
 
-Everything here works inside **Claude Code** (the command-line app). Some tools also have a Claude Desktop version — noted where applicable.
+Everything here works inside **Claude Code** (the command-line app). Some tools also have a **Claude Desktop** version — noted where applicable.
 
 | Tool | What it does |
 |------|-------------|
 | [/newsession](#newsession) | Compress a long chat into a short summary, paste it into a fresh session, and pick up right where you were |
 | [/newplan](#newplan) | Turn a goal into a structured written plan with trade-offs |
-| [/servicenow_rag](#servicenow_rag) | Answer ServiceNow questions from the official docs mirror — citable URLs, no guessing |
+| [/servicenow_rag](#servicenow_rag) | Questions about ServiceNow are grounded in the our docsite — citable URLs, no guessing or hallucinations |
 | [Desktop guide](#similar-setup-for-claude-desktop) | Ground Claude Desktop knowledge replies to ServiceNow docsite (via Project Instructions) |
-| [Status bar](#status-bar) | Show model, context size, and usage at the bottom of Claude Code |
-| [Native MCP install guide](native_mcp_install_guide.md) | Connect Claude Code to ServiceNow using the platform's built-in connector — no Python script, no plain-text credentials, 17 purpose-built tools |
+| [Status bar](#status-bar) | Show model, context size, and usage at the bottom of Claude Code session UI |
+| [Native MCP install guide](native_mcp_install_guide.md) | Connect Claude Code to ServiceNow using the platform's ootb MCP — no scripts needed, OAuth 2.1 security profile with PKCE, 17 purpose-built tools |
 
 ---
 
 ### `/newsession`
 
-Long conversations slow Claude down. Type `/newsession` and it writes a short summary of everything that happened — paste it into a new chat and you pick up right where you were, without replaying the whole history.
+Long conversations suffer with slow downs, memory loss and excessive token spend. Type `/newsession` and it writes a short summary of everything that happened — paste it into a new chat and you pick up right where you were, without replaying the whole history.
 
 Optionally pass a filename and the next session will be shaped around that file:
 ```
@@ -59,7 +59,7 @@ Restart Claude Code. Then type `/newplan`.
 
 ### `/servicenow_rag`
 
-Claude normally can't read the ServiceNow documentation site — it's blocked from AI tools. This command routes your question through ServiceNow's official GitHub docs mirror instead, so every answer comes with a real, citable URL — not something Claude made up from memory.
+Claude normally can't read the ServiceNow documentation site because of javascript. Many sites block AI tools. This solution routes your questions through ServiceNow's official GitHub docs mirror instead, so every answer comes with a real, citable URL — not something Claude made up from memory or found in a stale Google index.
 
 *Claude Code only. On Claude Desktop? Use the [Desktop setup guide](#similar-setup-for-claude-desktop) — different setup, same result.*
 
@@ -109,7 +109,7 @@ Downloads a setup guide and opens it in your browser. Follow the steps inside �
 
 ---
 
-### Status bar
+### Status bar customization
 
 <img src="docs/statusline-preview.png" width="500" alt="Statusline preview">
 
