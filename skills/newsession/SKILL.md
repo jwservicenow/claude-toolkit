@@ -23,21 +23,24 @@ Inside the code block, use plain-text section labels (no markdown bold or asteri
 Goal:
 One sentence — what this work is trying to accomplish.
 
-This session:
+Previous session:
 3–5 bullets, past tense, this conversation only. What actually happened. Skip anything already done before this session started.
 
 Next action:
-The single most immediate thing to do. Enough context to execute without re-reading history.
+The single most immediate thing to do. Enough context to execute without re-reading history. If a verification or test result is pending, include the pass/fail criteria and what each outcome means — not just the command to run.
 
 Awaiting:
 Use only when the session ends blocked on user input. One sentence — what's blocked and what input is needed.
 
+Deferred:
+Use when topics were discussed but intentionally set aside. One line each — what was discussed and that it was parked. Prevents the next session from re-litigating resolved decisions.
+
 Key artifacts:
-Only what's needed for the next action — file paths, IPs, sys_ids, commands, URLs.
+Only what's needed for the next action — file paths, IPs, sys_ids, commands, URLs. Include verbatim any lookup tables, slot maps, or ID-to-name mappings needed to interpret next-session output — do not summarize these into prose.
 
 If a runbook was provided, add a footer line: "Read [path] first." If the runbook describes infrastructure or operational targets (hosts, customer instances, production systems), also add: "Change control: state the action and wait for acknowledgement before proceeding."
 
-Cap at 250 words inside the code block.
+Cap at 300 words inside the code block.
 
 After generating the transition prompt, save it to disk:
 - If $CLAUDE_CONFIG_DIR contains "claude-work", write to ~/ClaudeOS/work/.last-newsession.md
