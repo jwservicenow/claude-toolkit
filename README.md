@@ -1,4 +1,4 @@
-# claude-code-toolkit
+# claude-toolkit
 
 Tools that make Claude smarter for ServiceNow work — built by a ServiceNow ITOM practitioner, shared for peers.
 
@@ -29,7 +29,7 @@ Optionally pass a filename and the next session will be shaped around that file:
 ```bash
 mkdir -p ~/.claude/skills/newsession
 curl -o ~/.claude/skills/newsession/SKILL.md \
-  https://raw.githubusercontent.com/jwservicenow/claude-code-toolkit/main/skills/newsession/SKILL.md
+  https://raw.githubusercontent.com/jwservicenow/claude-toolkit/main/skills/newsession/SKILL.md
 ```
 
 Restart Claude Code. Then type `/newsession`.
@@ -50,7 +50,7 @@ Type `/newplan` followed by what you want to do. Claude asks a few clarifying qu
 ```bash
 mkdir -p ~/.claude/skills/newplan
 curl -o ~/.claude/skills/newplan/SKILL.md \
-  https://raw.githubusercontent.com/jwservicenow/claude-code-toolkit/main/skills/newplan/SKILL.md
+  https://raw.githubusercontent.com/jwservicenow/claude-toolkit/main/skills/newplan/SKILL.md
 ```
 
 Restart Claude Code. Then type `/newplan`.
@@ -82,7 +82,7 @@ ServiceNow publishes a copy of their documentation as plain text files on GitHub
 ```bash
 mkdir -p ~/.claude/commands
 curl -o ~/.claude/commands/servicenow_rag.md \
-  https://raw.githubusercontent.com/jwservicenow/claude-code-toolkit/main/commands/servicenow_rag.md
+  https://raw.githubusercontent.com/jwservicenow/claude-toolkit/main/commands/servicenow_rag.md
 ```
 
 Restart Claude Code. Then type `/servicenow_rag` followed by your question.
@@ -101,7 +101,7 @@ This is a separate setup for people using Claude Desktop.
 
 ```bash
 curl -o ~/Downloads/servicenow-mirror-desktop-guide.html \
-  https://raw.githubusercontent.com/jwservicenow/claude-code-toolkit/main/docs/servicenow-mirror-desktop-guide.html
+  https://raw.githubusercontent.com/jwservicenow/claude-toolkit/main/docs/servicenow-mirror-desktop-guide.html
 open ~/Downloads/servicenow-mirror-desktop-guide.html
 ```
 
@@ -125,7 +125,7 @@ brew install jq
 **Step 1** — Download the script:
 ```bash
 curl -o ~/.claude/statusline-command.sh \
-  https://raw.githubusercontent.com/jwservicenow/claude-code-toolkit/main/scripts/statusline-command.sh
+  https://raw.githubusercontent.com/jwservicenow/claude-toolkit/main/scripts/statusline-command.sh
 chmod +x ~/.claude/statusline-command.sh
 ```
 
@@ -167,7 +167,7 @@ Re-run any `curl` command above to get the latest version. It overwrites your lo
 
 ## Questions or requests
 
-Found a bug or want to request something new? [Open an issue](https://github.com/jwservicenow/claude-code-toolkit/issues) — it's the best way to reach me.
+Found a bug or want to request something new? [Open an issue](https://github.com/jwservicenow/claude-toolkit/issues) — it's the best way to reach me.
 
 ## License
 
