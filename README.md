@@ -6,8 +6,8 @@ Everything here works inside **Claude Code** (the command-line app). Some tools 
 
 | Tool | What it does |
 |------|-------------|
-| [/newsession](#newsession) | Compress a long chat into a short summary, paste it into a fresh session, and pick up right where you were |
-| [/newplan](#newplan) | Turn a goal into a structured written plan with trade-offs |
+| [/newsession](#newsession) | Long chat getting slow or pricey? Turn it into a dense handoff you paste into a fresh session — after a quick check for loose ends worth finishing first |
+| [/newplan](#newplan) | Turn a goal into an approved, written plan — clarifying questions, 3–4 ranked approaches with trade-offs, saved as a plan file |
 | [/servicenow_rag](#servicenow_rag) | Questions about ServiceNow are grounded in the our docsite — citable URLs, no guessing or hallucinations |
 | [Desktop guide](#similar-setup-for-claude-desktop) | Ground Claude Desktop knowledge replies to ServiceNow docsite (via Project Instructions) |
 | [Status bar](#status-bar) | Show model, context size, and usage at the bottom of Claude Code session UI |
@@ -17,7 +17,7 @@ Everything here works inside **Claude Code** (the command-line app). Some tools 
 
 ### `/newsession`
 
-Long conversations suffer with slow downs, memory loss and excessive token spend. Type `/newsession` and it writes a short summary of everything that happened — paste it into a new chat and you pick up right where you were, without replaying the whole history.
+Long conversations get slow, lose the thread, and burn tokens. Type `/newsession` and it does two things: first it scans the session for loose ends and asks whether any are better finished *now* than handed off; then it writes a dense, structured handoff — goal, decisions, constraints, next action — and saves it as a resume file right in your project folder. Paste it into a new chat and pick up exactly where you left off, no replaying history.
 
 Optionally pass a filename and the next session will be shaped around that file:
 ```
@@ -38,7 +38,7 @@ Restart Claude Code. Then type `/newsession`.
 
 ### `/newplan`
 
-Type `/newplan` followed by what you want to do. Claude asks a few clarifying questions, lays out your options with trade-offs, then presents the plan for review and approval. After giving the OK, writes a complete plan file into your project folder.
+Type `/newplan` followed by what you want to do. Claude explores your project for context, asks up to four clarifying questions, then lays out three to four approaches ranked by trade-offs. It self-reviews, presents the plan for your approval, and on your OK writes a complete, self-contained plan file into your project folder — ready to hand to a fresh session or a teammate.
 
 ```
 /newplan migrate our CMDB to CSDM
