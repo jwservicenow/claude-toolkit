@@ -24,11 +24,12 @@ State what you found in one sentence before moving on. If nothing is relevant, s
 
 ### Step 2 — Ask Clarifying Questions
 
-Ask up to **4 questions** in a single message. Stop as soon as you have enough to propose approaches — don't use all 4 for the sake of it.
+Ask up to **4 questions**, one at a time. Stop as soon as you have enough to propose approaches — don't use all 4 for the sake of it.
 
 - Prefer multiple-choice questions over open-ended ones
-- Focus on: purpose, constraints, success criteria, scope
-- Send all questions at once — do not drip them one at a time
+- Focus on: **the goal** (mandatory), constraints, success criteria, scope
+- Pin down a single, clearly stated goal and get the user to explicitly agree to it before proposing approaches. This goal is the spine of the plan — everything else hangs off it, and it gets verified at the end.
+- One question per message — wait for the answer before asking the next
 
 ### Step 3 — Propose 3–4 Approaches
 
@@ -49,7 +50,7 @@ Once the user picks an approach, write the complete plan at once using this stru
 # [Topic] Plan
 
 ## Goal
-What we're trying to achieve and why.
+The single agreed goal from Step 2 — what we're trying to achieve and why. Stated once here, tracked through the steps, verified at the end.
 
 ## Approach
 The chosen approach and the reasoning behind it.
@@ -69,6 +70,9 @@ What could go wrong, how likely, and how bad.
 ## Open Assumptions
 Things assumed to be true that have not been verified.
 
+## Goal Verification
+The single check that confirms the agreed goal (top of this plan) was actually achieved — not just that the steps ran. State the concrete, observable condition that proves it's done, and who confirms it.
+
 ---
 
 ### Step 5 — Self-Review (do this before showing the user anything)
@@ -80,6 +84,7 @@ Review the draft silently:
 3. **Assumption verification** — Which assumptions can you confirm from the context you read in Step 1? Mark those confirmed in the plan. Move anything unverified to Open Assumptions.
 4. **Remaining assumptions** — Anything you assumed while writing that the user never confirmed? Add to Open Assumptions.
 5. **Scope check** — Is this focused enough to execute, or does it need to be broken down?
+6. **Goal trace** — Does the Goal Verification section actually test the agreed goal from Step 2, and do the Steps lead to it? If the goal drifted while writing, fix it so top and bottom match.
 
 Fix issues inline. Then show the user the finished plan.
 
@@ -108,12 +113,18 @@ The transition prompt should contain:
 
 Then echo the full contents of the prompt file to the screen so the user can copy-paste it immediately if starting now.
 
-Tell the user both filenames. That's the end — no handoff, no next steps.
+Tell the user both filenames.
+
+### Step 8 — Finish
+
+The deliverables are the two files from Steps 6–7: the plan (`*-plan-*.md`) and the standalone transition prompt (`*-prompt-*.md`). **Do not create a README** — keep the project lean; the plan doc is the self-contained resume point and the prompt file is the paste-to-resume pointer. Leave any existing README untouched.
+
+That's the end — no handoff, no next steps.
 
 ## Rules
 
 - User-invoked only. Never activate automatically.
-- Ask all clarifying questions in one message, not one at a time.
+- One question at a time. Wait for each answer.
 - Max 4 clarifying questions. Stop earlier if you have what you need.
 - Always propose 3–4 approaches. Not fewer.
 - Always self-review before showing the plan.
