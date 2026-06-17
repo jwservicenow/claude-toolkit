@@ -9,7 +9,7 @@ Everything here works inside **Claude Code** (the command-line app). Some tools 
 | [/newsession](#newsession) | Long chat getting slow or pricey? Turn it into a dense handoff you paste into a fresh session — after a quick check for loose ends worth finishing first |
 | [/newplan](#newplan) | Turn a goal into an approved, written plan — clarifying questions, 3–4 ranked approaches with trade-offs, saved as a plan file |
 | [/servicenow_rag](#servicenow_rag) | Questions about ServiceNow are grounded in the our docsite — citable URLs, no guessing or hallucinations |
-| [Desktop guide](#similar-setup-for-claude-desktop) | Ground Claude Desktop knowledge replies to ServiceNow docsite (via Project Instructions) |
+| [Desktop guide](https://jwservicenow.github.io/claude-toolkit/docs/servicenow-mirror-desktop-guide.html) | Ground Claude Desktop knowledge replies to ServiceNow docsite (via Project Instructions) |
 | [Status bar](#status-bar) | Show model, context size, and usage at the bottom of Claude Code session UI |
 | [Native MCP install guide](native_mcp_install_guide.md) | Connect Claude Code to ServiceNow using the platform's ootb MCP — no scripts needed, OAuth 2.1 security profile with PKCE, 17 purpose-built tools |
 
@@ -97,7 +97,7 @@ If Claude fetches from GitHub before answering, it's working. If it answers imme
 
 ### Similar setup for Claude Desktop
 
-This is a separate setup for people using Claude Desktop.
+This is a separate setup for people using Claude Desktop. **[View the guide →](https://jwservicenow.github.io/claude-toolkit/docs/servicenow-mirror-desktop-guide.html)**
 
 ```bash
 curl -o ~/Downloads/servicenow-mirror-desktop-guide.html \
