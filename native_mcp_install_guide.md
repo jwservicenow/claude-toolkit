@@ -1,4 +1,4 @@
-# Connecting Claude Code to ServiceNow — Platform-Native MCP Path
+# Connecting Claude Code your PDI — Platform-Native MCP Path
 
 **What you'll end up with:** Claude Code connected to your ServiceNow instance using the
 platform's own built-in connector — no Python script on your laptop, no passwords in plain-text
