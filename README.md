@@ -11,7 +11,7 @@ Everything here works inside **Claude Code** (the command-line app). Some tools 
 | [/servicenow_rag](#servicenow_rag) | Questions about ServiceNow are grounded in the our docsite — citable URLs, no guessing or hallucinations |
 | [Desktop guide](https://jwservicenow.github.io/claude-toolkit/docs/servicenow-mirror-desktop-guide.html) | Ground Claude Desktop knowledge replies to ServiceNow docsite (via Project Instructions) |
 | [Status bar](#status-bar) | Show model, context size, and usage at the bottom of Claude Code session UI |
-| [Native MCP install guide](docs/native_mcp_install_guide.md) | Connect Claude Code to ServiceNow using the platform's ootb MCP — no scripts needed, OAuth 2.1 security profile with PKCE, 17 purpose-built tools |
+| [PDI Native MCP install guide](docs/pdi_native_mcp_install_guide.md) | Connect Claude Code to ServiceNow using the platform's ootb MCP — no scripts needed, OAuth 2.1 security profile with PKCE, 17 purpose-built tools |
 
 ---
 
@@ -149,7 +149,7 @@ Connects Claude Code to your ServiceNow instance using the platform's own built-
 
 **Requires:** ServiceNow Australia release (Zurich Patch 9+) with Now Assist. If your instance doesn't meet that, use the DIY Table-API guide instead.
 
-[Open the guide](docs/native_mcp_install_guide.md)
+[Open the guide](docs/pdi_native_mcp_install_guide.md)
 
 ---
 
