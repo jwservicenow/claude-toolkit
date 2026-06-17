@@ -143,7 +143,7 @@ chmod +x ~/.claude/statusline-command.sh
 
 ---
 
-### Native MCP install guide
+### Connect Claude to PDI: Native MCP install guide
 
 Connects Claude Code to your ServiceNow instance using the platform's own built-in connector instead of a local Python script. No passwords in plain-text files — credentials stay in your macOS Keychain. Gives you 17 purpose-built tools for CMDB, ITSM, and ITOM work.
 
