@@ -1,6 +1,6 @@
 ---
 name: newsession
-description: Token flush for long conversations — when context is filling up or a topic is wrapping up, invoke /newsession to compress everything into a compact handoff prompt you can paste into a fresh session. Resumes work instantly without replaying history. Optionally shaped by a runbook or planning file. Strictly user-invoked — never auto-triggers.
+description: Token flush for long conversations — when context is filling up or a topic is wrapping up, invoke /newsession. Scans for loose ends worth finishing now before flushing, then compresses everything into a compact handoff prompt you can paste into a fresh session. Resumes work instantly without replaying history. Optionally shaped by a runbook or planning file. Strictly user-invoked — never auto-triggers.
 ---
 
 # /newsession — Session handoff
