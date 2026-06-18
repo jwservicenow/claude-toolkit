@@ -9,7 +9,7 @@ Everything here works inside **Claude Code** (the command-line app). Some tools 
 | [/newsession](#newsession) | Long chat getting slow or pricey? Turn it into a dense handoff you paste into a fresh session — after a quick check for loose ends worth finishing first |
 | [/newplan](#newplan) | Turn a goal into an approved, written plan — clarifying questions, 3–4 ranked approaches with trade-offs, saved as a plan file |
 | [/servicenow_rag](#servicenow_rag) | ServiceNow RAG — answers from official sources only. DocSite, KB, Community, Developer, @servicenow YouTube. Citable URLs, explicit assumptions flagged. |
-| [Desktop guide](https://jwservicenow.github.io/claude-toolkit/docs/servicenow-mirror-desktop-guide.html) | Ground Claude Desktop knowledge replies to ServiceNow docsite (via Project Instructions) |
+| [Desktop guide](https://jwservicenow.github.io/claude-toolkit/docs/servicenow-mirror-desktop-guide.html) | Ground Claude Desktop answers in the ServiceNow docsite — fetch pulls real doc content, Project Instructions control the source order and citation behavior |
 | [Status bar](#status-bar) | Show model, context size, and usage at the bottom of Claude Code session UI |
 | [PDI Native MCP install guide](docs/pdi_native_mcp_install_guide.md) | Connect Claude Code to ServiceNow using the platform's ootb MCP — no scripts needed, OAuth 2.1 security profile with PKCE, 17 purpose-built tools |
 
