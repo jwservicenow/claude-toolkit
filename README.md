@@ -8,7 +8,7 @@ Everything here works inside **Claude Code** (the command-line app). Some tools 
 |------|-------------|
 | [/newsession](#newsession) | Compress a long chat into a short summary, paste it into a fresh session, and pick up right where you were |
 | [/newplan](#newplan) | Turn a goal into a structured written plan with trade-offs |
-| [/servicenow_rag](#servicenow_rag) | Questions about ServiceNow are grounded in the our docsite — citable URLs, no guessing or hallucinations |
+| [/servicenow_rag](#servicenow_rag) | ServiceNow RAG — answers from official sources only. DocSite, KB, Community, Developer, @servicenow YouTube. Citable URLs, explicit assumptions flagged. |
 | [Desktop guide](#similar-setup-for-claude-desktop) | Ground Claude Desktop knowledge replies to ServiceNow docsite (via Project Instructions) |
 | [Status bar](#status-bar) | Show model, context size, and usage at the bottom of Claude Code session UI |
 | [Native MCP install guide](native_mcp_install_guide.md) | Connect Claude Code to ServiceNow using the platform's ootb MCP — no scripts needed, OAuth 2.1 security profile with PKCE, 17 purpose-built tools |
@@ -69,11 +69,13 @@ Claude normally can't read the ServiceNow documentation site because of javascri
 ServiceNow publishes a copy of their documentation as plain text files on GitHub at `ServiceNow/ServiceNowDocs`, specifically so AI tools can read it. This command goes straight to that source:
 
 1. Looks up the right documentation bundle from ServiceNow's published index.
-2. Finds the specific topic file in that bundle.
-3. Reads the file and answers your question from it — citing the exact URL it pulled from.
-4. Checks the ServiceNow Community for real-world context the official docs don't cover.
-5. Falls back to Now Support KBs or Community posts if the mirror doesn't have it — flagged clearly so you know the source.
-6. Stops and tells you if it can't find anything retrievable. No guessing.
+2. Finds the specific topic file in that bundle and reads it — citing the real docs.servicenow.com URL.
+3. Supplements with Now Support KB (~90% trusted) — known issues, gotchas, platform-specific behavior.
+4. Supplements with ServiceNow Community (~80% trusted) — real-world workarounds and operational context.
+5. Supplements with developer.servicenow.com (~90% trusted) — APIs, scripting references, how-to guides.
+6. Supplements with the official @servicenow YouTube channel (reference only) — surfaces video links, content not fetchable.
+7. Falls back to the same sources if the mirror has nothing — flagged clearly so you know what's grounded vs. assumed.
+8. Stops and tells you if retrieval fails entirely. Any training-knowledge gap is explicitly flagged as an assumption.
 
 </details>
 
