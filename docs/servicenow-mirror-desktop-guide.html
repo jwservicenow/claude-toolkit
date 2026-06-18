@@ -161,6 +161,12 @@ Branch = release family. "australia" is current GA. Others: zurich, yokohama, xa
 
 RULES:
 - Every factual claim must cite the exact raw URL you fetched THIS turn.
+- CITATION URL: Every Block 1 source must be cited as its canonical docs URL,
+  not the raw GitHub URL. Transform any fetched raw URL as follows:
+  strip the raw prefix up to /markdown/, replace .md with .html, prepend
+  https://www.servicenow.com/docs/r/
+  e.g. .../australia/markdown/servicenow-platform/mid-server/r_MIDServerSystemRequirements.md
+       → https://www.servicenow.com/docs/r/servicenow-platform/mid-server/r_MIDServerSystemRequirements.html
 - The mirror covers PRODUCT DOCUMENTATION only. It does NOT contain Now Support
   KB articles (KBxxxxxxx) — those are login-gated and unfetchable. If the answer
   requires a KB, give what the mirror has, then cite the KB by number and state it
@@ -235,6 +241,15 @@ Cloud Discovery patterns — OOB pattern catalogs ("list the Azure/GCP discovery
 - (The downloadable Cloud Discovery patterns .xlsx referenced in azure-cloud-discovery.md
   lives on downloads.docs.servicenow.com — outside the mirror, binary, unfetchable.
   Cite its URL if asked; don't claim to have read it.)
+
+Server &amp; Scripting API Reference:
+- API reference index: api-reference/index.md
+- Glide server APIs (GlideRecord, GlideSystem, GlideDateTime, etc.):
+  api-reference/scripts/p_GlideServerAPIs.md  (consolidated file)
+- IRE scripting API (IdentificationEngineScriptableApi):
+  api-reference/server-api-reference/c_IdentEngineScriptAPI.md
+- Do NOT rely on Block 3 web search for scripting APIs — the mirror has
+  the authoritative full method signatures and return values.
 
 Bundle indexes (when the file isn't listed above — open index.md and COPY the
 absolute file URL; do not construct):
