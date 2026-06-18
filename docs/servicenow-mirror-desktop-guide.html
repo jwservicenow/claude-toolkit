@@ -107,8 +107,8 @@ which uvx        # copy this absolute path</pre>
 <h3>Find it in Connectors</h3>
 <p>Appears under <b>Settings → Connectors → Desktop</b> as <code>fetch</code> (<b>LOCAL DEV</b>).</p>
 
-<h2><span class="n">2</span> Project instructions — paste both blocks</h2>
-<p><span style="color:var(--accent)"><b>Create a Desktop Project</b></span> — name it something like <b>"ServiceNow Docs — Mirror"</b> — open its <b>Custom Instructions</b>, and paste both blocks below (one after the other).</p>
+<h2><span class="n">2</span> Project instructions — paste Blocks 1 &amp; 2 (Block 3 optional)</h2>
+<p><span style="color:var(--accent)"><b>Create a Desktop Project</b></span> — name it something like <b>"ServiceNow Docs — Mirror"</b> — open its <b>Custom Instructions</b>, and paste Blocks 1 and 2 below (one after the other). Optionally add Block 3 if you want secondary sources (community posts and KB citations).</p>
 <p>The grounding lives <b>entirely in this Project</b> — only chats started inside it are mirror-bound; regular Desktop chats are unaffected, so do all your ServiceNow doc lookups here.</p>
 
 <div class="blockhead"><span>Block 1 — Retrieval rules</span><button class="copybtn" onclick="cp(this,'b1')">Copy Block 1</button></div>
@@ -266,6 +266,33 @@ fabricate the path or the answer.
 KNOWN GAPS (not in the mirror — cite, don't invent):
 - ACC supported-OS version matrix → ServiceNow Store "Agent Client Collector Framework" page
 - ACC-V MID Server agent-count sizing tiers → login-gated KB (Now Support)</pre>
+
+<div class="blockhead" style="margin-top:16px"><span>Block 3 — Secondary sources (optional)</span><button class="copybtn" onclick="cp(this,'b3')">Copy Block 3</button></div>
+<pre id="b3">## BLOCK 3 — Secondary Trusted Sources
+
+Always supplement Block 1 responses with these trusted secondary sources.
+
+ALLOWED SOURCES — web search only, scoped to these domains:
+
+  servicenow.com/community (~80% trusted)
+    Use for: known issues, workarounds, edge-case behavior, implementation patterns
+    absent from product docs.
+    Search query format: site:servicenow.com/community <topic keywords>
+    Always flag in response: "Community content — peer-authored, not authoritative."
+
+  support.servicenow.com/kb (~90% trusted, login-gated)
+    NOT fetchable — auth wall blocks all retrieval.
+    Action: cite the KB number only (KBxxxxxxx) and state it is login-gated.
+    Never invent KB content.
+
+RULES:
+  - Web search is permitted in this block ONLY and ONLY for the two domains above.
+  - Discard and do not cite any result from outside these domains.
+  - Never use web search for the open internet.
+  - Every claim from this block must cite a verified source URL or KB number.
+  - Flag all Block 3 responses with trust level at point of citation.
+  - If web search returns no valid on-domain results: stop and say so.
+    Do not answer from memory.</pre>
 
 <h2><span class="n">3</span> Smoke tests</h2>
 <p><span style="color:var(--accent)"><b>Paste these in a fresh project chat.</b></span> Each should stay connector-only, cite a raw URL, and refuse to fabricate. All four pass on a correct setup.</p>
