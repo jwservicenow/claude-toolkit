@@ -101,18 +101,18 @@ which uvx        # copy this absolute path</pre>
 <ul>
   <li><code>command</code> must be the <b>absolute</b> uvx path — Desktop ignores your shell <code>$PATH</code>.</li>
   <li><code>--ignore-robots-txt</code> is required (<code>raw.githubusercontent.com/robots.txt</code> disallows <code>/</code>).</li>
-  <li>Fully quit (<span class="kbd">⌘Q</span>) and relaunch. Verify under <b>Connectors → Desktop → fetch</b> (LOCAL DEV).</li>
+  <li>Fully quit (<span class="kbd">⌘Q</span>) and relaunch. Verify under <b>Connectors → Customize → fetch</b> (LOCAL DEV).</li>
 </ul>
 
 <h3>Find it in Connectors</h3>
 <p>Appears under <b>Settings → Connectors → Desktop</b> as <code>fetch</code> (<b>LOCAL DEV</b>).</p>
 
 <h2><span class="n">2</span> Project instructions — paste Blocks 1 &amp; 2 (Block 3 optional)</h2>
-<p><span style="color:var(--accent)"><b>Create a Desktop Project</b></span> — name it something like <b>"ServiceNow Docs — Mirror"</b> — open its <b>Custom Instructions</b>, and paste Blocks 1 and 2 below (one after the other). Optionally add Block 3 if you want secondary sources (community posts and KB citations).</p>
+<p><span style="color:var(--accent)"><b>Create a Desktop Project</b></span> — name it something like <b>"ServiceNow Docs — Mirror"</b> — open its <b>Instructions</b>, and paste Blocks 1 and 2 below (one after the other). Optionally add Block 3 if you want secondary sources (community posts and KB citations).</p>
 <p>The grounding lives <b>entirely in this Project</b> — only chats started inside it are mirror-bound; regular Desktop chats are unaffected, so do all your ServiceNow doc lookups here.</p>
 
 <div class="blockhead"><span>Block 1 — Retrieval rules</span><button class="copybtn" onclick="cp(this,'b1')">Copy Block 1</button></div>
-<pre id="b1">## ServiceNow documentation retrieval — MANDATORY
+<pre id="b1">## BLOCK 1 — ServiceNow documentation retrieval — MANDATORY
 
 For ANY question about ServiceNow product behavior, requirements, configuration,
 or features, you MUST retrieve the answer from the official GitHub docs mirror
@@ -184,7 +184,7 @@ RULES:
   after the index genuinely lacks the term may you STOP and report it as a gap.</pre>
 
 <div class="blockhead" style="margin-top:16px"><span>Block 2 — Known doc locations</span><button class="copybtn" onclick="cp(this,'b2')">Copy Block 2</button></div>
-<pre id="b2">## Known doc locations (skip navigation — fetch these directly)
+<pre id="b2">## BLOCK 2 — Known doc locations (skip navigation — fetch these directly)
 
 These are confirmed file paths on the australia branch. Prepend
 https://raw.githubusercontent.com/ServiceNow/ServiceNowDocs/australia/markdown/
