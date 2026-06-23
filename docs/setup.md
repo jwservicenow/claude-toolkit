@@ -12,7 +12,6 @@ Before starting, confirm you have:
 
 - Claude Pro subscription (personal) and/or work Claude Enterprise access
 - macOS with Homebrew installed — if not: `/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"`
-- Node.js 18+ — check with `node --version`, install with `brew install node` if needed
 - Claude Code installed: `curl -fsSL https://claude.ai/install.sh | bash`
 - Find your claude binary path (you'll need this): `/usr/bin/which claude`
 
@@ -149,6 +148,8 @@ claudew
 ## Step 7 — Add Personal MCP Servers
 
 Run these commands one at a time. These add MCP servers at **user scope** (`-s user`) so they load regardless of which subdirectory you launch from.
+
+> **Note:** The `npx`-based MCP servers below require Node.js 18+. Check with `node --version`; install with `brew install node` if needed.
 
 **filesystem** — gives Claude Code read/write access to your personal Claude folder:
 ```bash
