@@ -12,6 +12,7 @@ Everything here works inside **Claude Code** (the command-line app). Some tools 
 | [/newplan](#newplan) | Turn a goal into an approved, written plan — clarifying questions, 3–4 ranked approaches with trade-offs, saved as a plan file |
 | [PDI Native MCP install guide](docs/pdi_native_mcp_install_guide.md) | Connect Claude Code to ServiceNow using the platform's ootb MCP — no scripts needed, OAuth 2.1 security profile with PKCE, 17 purpose-built tools |
 | [Status bar](#status-bar) | Show model, context size, and usage at the bottom of Claude Code session UI |
+| [Using Multiple Claude Subscriptions on Mac](docs/setup.md) | Run a personal Claude account and a work account on the same Mac without them mixing — separate configs, separate sessions |
 
 ---
 
@@ -161,16 +162,4 @@ chmod +x ~/.claude/statusline-command.sh
 
 ---
 
-## Keeping up to date
-
-Re-run any `curl` command above to get the latest version. It overwrites your local copy automatically.
-
----
-
-## Questions or requests
-
-Found a bug or want to request something new? [Open an issue](https://github.com/jwservicenow/claude-toolkit/issues) — it's the best way to reach me.
-
-## License
-
-MIT — see [LICENSE](LICENSE).
+<sub>Re-run any `curl` command above to get the latest version. Bugs or requests → [open an issue](https://github.com/jwservicenow/claude-toolkit/issues). [MIT License](LICENSE).</sub>
