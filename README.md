@@ -125,7 +125,7 @@ Connects Claude Code to your ServiceNow instance using the platform's own built-
 
 <img src="docs/statusline-preview.png" width="500" alt="Statusline preview">
 
-Shows your working folder, which model you're on, context window size, and a live usage bar. Useful for knowing when a conversation is getting too long.
+Shows your working folder, which model you're on, context window size, live usage bar and session cost. Useful for knowing when a conversation is getting too long or too expensive.
 
 **Install**
 
