@@ -16,9 +16,9 @@ Everything here works inside **Claude Code** (the command-line app). Some tools 
 
 ---
 
-### `Similar setup for Claude Desktop`
+### `Claude Desktop and ServiceNow docsite`
 
-This is a separate setup for people using Claude Desktop. **[View the guide →](https://jwservicenow.github.io/claude-toolkit/docs/servicenow-mirror-desktop-guide.html)**
+This is the setup for Claude Desktop users. **[View the guide →](https://jwservicenow.github.io/claude-toolkit/docs/servicenow-mirror-desktop-guide.html)**
 
 ```bash
 curl -o ~/Downloads/servicenow-mirror-desktop-guide.html \
@@ -32,7 +32,7 @@ Downloads a setup guide and opens it in your browser. Follow the steps inside �
 
 ### `/servicenow_rag`
 
-Claude normally can't read the ServiceNow documentation site because of javascript. Many sites block AI tools. This solution routes your questions through ServiceNow's official GitHub docs mirror instead, so every answer comes with a real, citable URL — not something Claude made up from memory or found in a stale Google index.
+Setup for Claude Code users. AI typically cannot read documentation sites because of javascript, and growing use of AI blocks. This solution routes your questions through ServiceNow's official GitHub docs mirror instead, which is entirely markdown text. Annswers also come with a real, citable URL — not something Claude made up from memory or found in a stale Google index.
 
 *Claude Code only. On Claude Desktop? Use the [Desktop setup guide](#similar-setup-for-claude-desktop) — different setup, same result.*
 
