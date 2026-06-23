@@ -12,7 +12,7 @@ Everything here works inside **Claude Code** (the command-line app). Some tools 
 | [/newplan](#newplan) | Turn a goal into an approved, written plan — clarifying questions, 3–4 ranked approaches with trade-offs, saved as a plan file |
 | [PDI Native MCP install guide](docs/pdi_native_mcp_install_guide.md) | Connect Claude Code to ServiceNow using the platform's ootb MCP — no scripts needed, OAuth 2.1 security profile with PKCE, 17 purpose-built tools |
 | [Status bar](#status-bar) | Show model, context size, and usage at the bottom of Claude Code session UI |
-| [Using Multiple Claude Subscriptions on Mac](docs/setup.md) | Run a personal Claude account and a work account on the same Mac without them mixing — separate configs, separate sessions |
+| [Using Multiple Claude Subscriptions on Mac](docs/setup.md) | Run ServiceNow's Enterprise account and your personal Claude account on the same Mac without them mixing — separate configs, separate sessions |
 
 ---
 
