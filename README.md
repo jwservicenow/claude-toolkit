@@ -111,7 +111,7 @@ Downloads a setup guide and opens it in your browser. Follow the steps inside â€
 
 ---
 
-### Status bar customization
+### `Status bar customization`
 
 <img src="docs/statusline-preview.png" width="500" alt="Statusline preview">
 
@@ -145,7 +145,7 @@ chmod +x ~/.claude/statusline-command.sh
 
 ---
 
-### Connect Claude to PDI: Native MCP install guide
+### `Connect Claude to PDI: Native MCP install guide`
 
 Connects Claude Code to your ServiceNow instance using the platform's own built-in connector instead of a local Python script. No passwords in plain-text files â€” credentials stay in your macOS Keychain. Gives you 17 purpose-built tools for CMDB, ITSM, and ITOM work.
 
