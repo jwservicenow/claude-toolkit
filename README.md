@@ -155,7 +155,7 @@ Connects Claude Code to your ServiceNow instance using the platform's own built-
 
 ---
 
-## Docs
+### `Using Multiple Claude Subscriptions on Mac`
 
 - **[setup.md](docs/setup.md)** — How to run a personal and a work Claude account on the same Mac without them mixing. About 15 minutes start to finish.
 
