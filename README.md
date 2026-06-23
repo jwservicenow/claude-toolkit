@@ -6,12 +6,66 @@ Everything here works inside **Claude Code** (the command-line app). Some tools 
 
 | Tool | What it does |
 |------|-------------|
+| [Claude Desktop guide](https://jwservicenow.github.io/claude-toolkit/docs/servicenow-mirror-desktop-guide.html) | Ground Claude Desktop answers in the ServiceNow docsite — added custom MCP fetch server (mcp-server-fetch via uvx) to fix the pulls of raw content from the GitHub docs mirror; Coupled with strict Project Instructions to reinforce mirror-only retrievel and citation rules. |
+| [/servicenow_rag](#servicenow_rag) | ServiceNow RAG — Claude Code answers from official sources only: DocSite, KB, Community, Developer, @servicenow YouTube. Citable URLs, explicit assumptions flagged. |
 | [/newsession](#newsession) | Long chat getting slow or pricey? Turn it into a dense handoff you paste into a fresh session — after a quick check for loose ends worth finishing first |
 | [/newplan](#newplan) | Turn a goal into an approved, written plan — clarifying questions, 3–4 ranked approaches with trade-offs, saved as a plan file |
-| [/servicenow_rag](#servicenow_rag) | ServiceNow RAG — Claude Code answers from official sources only: DocSite, KB, Community, Developer, @servicenow YouTube. Citable URLs, explicit assumptions flagged. |
-| [Claude Desktop guide](https://jwservicenow.github.io/claude-toolkit/docs/servicenow-mirror-desktop-guide.html) | Ground Claude Desktop answers in the ServiceNow docsite — added custom MCP fetch server (mcp-server-fetch via uvx) to fix the pulls of raw content from the GitHub docs mirror; Coupled with strict Project Instructions to reinforce mirror-only retrievel and citation rules. |
-| [Status bar](#status-bar) | Show model, context size, and usage at the bottom of Claude Code session UI |
 | [PDI Native MCP install guide](docs/pdi_native_mcp_install_guide.md) | Connect Claude Code to ServiceNow using the platform's ootb MCP — no scripts needed, OAuth 2.1 security profile with PKCE, 17 purpose-built tools |
+| [Status bar](#status-bar) | Show model, context size, and usage at the bottom of Claude Code session UI |
+
+---
+
+### `Similar setup for Claude Desktop`
+
+This is a separate setup for people using Claude Desktop. **[View the guide →](https://jwservicenow.github.io/claude-toolkit/docs/servicenow-mirror-desktop-guide.html)**
+
+```bash
+curl -o ~/Downloads/servicenow-mirror-desktop-guide.html \
+  https://raw.githubusercontent.com/jwservicenow/claude-toolkit/main/docs/servicenow-mirror-desktop-guide.html
+open ~/Downloads/servicenow-mirror-desktop-guide.html
+```
+
+Downloads a setup guide and opens it in your browser. Follow the steps inside — about 10 minutes total.
+
+---
+
+### `/servicenow_rag`
+
+Claude normally can't read the ServiceNow documentation site because of javascript. Many sites block AI tools. This solution routes your questions through ServiceNow's official GitHub docs mirror instead, so every answer comes with a real, citable URL — not something Claude made up from memory or found in a stale Google index.
+
+*Claude Code only. On Claude Desktop? Use the [Desktop setup guide](#similar-setup-for-claude-desktop) — different setup, same result.*
+
+<details>
+<summary>How it works under the hood</summary>
+
+ServiceNow publishes a copy of their documentation as plain text files on GitHub at `ServiceNow/ServiceNowDocs`, specifically so AI tools can read it. This command goes straight to that source:
+
+1. Looks up the right documentation bundle from ServiceNow's published index.
+2. Finds the specific topic file in that bundle and reads it — citing the real docs.servicenow.com URL.
+3. Supplements with Now Support KB (~90% trusted) — known issues, gotchas, platform-specific behavior.
+4. Supplements with ServiceNow Community (~80% trusted) — real-world workarounds and operational context.
+5. Supplements with developer.servicenow.com (~90% trusted) — APIs, scripting references, how-to guides.
+6. Supplements with the official @servicenow YouTube channel (reference only) — surfaces video links, content not fetchable.
+7. Falls back to the same sources if the mirror has nothing — flagged clearly so you know what's grounded vs. assumed.
+8. Stops and tells you if retrieval fails entirely. Any training-knowledge gap is explicitly flagged as an assumption.
+
+</details>
+
+**Install**
+
+```bash
+mkdir -p ~/.claude/commands
+curl -o ~/.claude/commands/servicenow_rag.md \
+  https://raw.githubusercontent.com/jwservicenow/claude-toolkit/main/commands/servicenow_rag.md
+```
+
+Restart Claude Code. Then type `/servicenow_rag` followed by your question.
+
+**Check it's working** — ask something too specific for Claude to know from memory:
+```
+/servicenow_rag what sys_property controls Discovery IP range exclusions?
+```
+If Claude fetches from GitHub before answering, it's working. If it answers immediately with no fetch step, something went wrong during install.
 
 ---
 
@@ -57,57 +111,13 @@ Restart Claude Code. Then type `/newplan`.
 
 ---
 
-### `/servicenow_rag`
+### `Connect Claude to PDI: Native MCP install guide`
 
-Claude normally can't read the ServiceNow documentation site because of javascript. Many sites block AI tools. This solution routes your questions through ServiceNow's official GitHub docs mirror instead, so every answer comes with a real, citable URL — not something Claude made up from memory or found in a stale Google index.
+Connects Claude Code to your ServiceNow instance using the platform's own built-in connector instead of a local Python script. No passwords in plain-text files — credentials stay in your macOS Keychain. Gives you 17 purpose-built tools for CMDB, ITSM, and ITOM work.
 
-*Claude Code only. On Claude Desktop? Use the [Desktop setup guide](#similar-setup-for-claude-desktop) — different setup, same result.*
+**Requires:** ServiceNow Australia release (Zurich Patch 9+) with Now Assist. If your instance doesn't meet that, use the DIY Table-API guide instead.
 
-<details>
-<summary>How it works under the hood</summary>
-
-ServiceNow publishes a copy of their documentation as plain text files on GitHub at `ServiceNow/ServiceNowDocs`, specifically so AI tools can read it. This command goes straight to that source:
-
-1. Looks up the right documentation bundle from ServiceNow's published index.
-2. Finds the specific topic file in that bundle and reads it — citing the real docs.servicenow.com URL.
-3. Supplements with Now Support KB (~90% trusted) — known issues, gotchas, platform-specific behavior.
-4. Supplements with ServiceNow Community (~80% trusted) — real-world workarounds and operational context.
-5. Supplements with developer.servicenow.com (~90% trusted) — APIs, scripting references, how-to guides.
-6. Supplements with the official @servicenow YouTube channel (reference only) — surfaces video links, content not fetchable.
-7. Falls back to the same sources if the mirror has nothing — flagged clearly so you know what's grounded vs. assumed.
-8. Stops and tells you if retrieval fails entirely. Any training-knowledge gap is explicitly flagged as an assumption.
-
-</details>
-
-**Install**
-
-```bash
-mkdir -p ~/.claude/commands
-curl -o ~/.claude/commands/servicenow_rag.md \
-  https://raw.githubusercontent.com/jwservicenow/claude-toolkit/main/commands/servicenow_rag.md
-```
-
-Restart Claude Code. Then type `/servicenow_rag` followed by your question.
-
-**Check it's working** — ask something too specific for Claude to know from memory:
-```
-/servicenow_rag what sys_property controls Discovery IP range exclusions?
-```
-If Claude fetches from GitHub before answering, it's working. If it answers immediately with no fetch step, something went wrong during install.
-
----
-
-### `Similar setup for Claude Desktop`
-
-This is a separate setup for people using Claude Desktop. **[View the guide →](https://jwservicenow.github.io/claude-toolkit/docs/servicenow-mirror-desktop-guide.html)**
-
-```bash
-curl -o ~/Downloads/servicenow-mirror-desktop-guide.html \
-  https://raw.githubusercontent.com/jwservicenow/claude-toolkit/main/docs/servicenow-mirror-desktop-guide.html
-open ~/Downloads/servicenow-mirror-desktop-guide.html
-```
-
-Downloads a setup guide and opens it in your browser. Follow the steps inside — about 10 minutes total.
+[Open the guide](docs/pdi_native_mcp_install_guide.md)
 
 ---
 
@@ -142,16 +152,6 @@ chmod +x ~/.claude/statusline-command.sh
 **Step 3** — Restart Claude Code.
 
 > **Running two Claude accounts?** If you followed the dual-account setup guide, add the `statusLine` block to `~/.claude-work/settings.json` and/or `~/.claude-personal/settings.json` instead of `~/.claude/settings.json`.
-
----
-
-### `Connect Claude to PDI: Native MCP install guide`
-
-Connects Claude Code to your ServiceNow instance using the platform's own built-in connector instead of a local Python script. No passwords in plain-text files — credentials stay in your macOS Keychain. Gives you 17 purpose-built tools for CMDB, ITSM, and ITOM work.
-
-**Requires:** ServiceNow Australia release (Zurich Patch 9+) with Now Assist. If your instance doesn't meet that, use the DIY Table-API guide instead.
-
-[Open the guide](docs/pdi_native_mcp_install_guide.md)
 
 ---
 
