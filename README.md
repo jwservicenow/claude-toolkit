@@ -7,7 +7,7 @@ Everything here works inside **Claude Code** (the command-line app). Some tools 
 | Tool | What it does |
 |------|-------------|
 | [Claude Desktop and ServiceNow docsite](https://jwservicenow.github.io/claude-toolkit/docs/servicenow-mirror-desktop-guide.html) | Ground answers from Claude Desktop about ServiceNow to only search the docsite. Two controls: configure custom web fetch (mcp-server-fetch via uvx) to fix the pulls of raw content from the GitHub docs mirror; Coupled with strict Project Instructions to reinforce mirror-only retrievel and citation rules. |
-| [/servicenow_rag](#servicenow_rag) | ServiceNow RAG — Claude Code answers from official sources only: DocSite, KB, Community, Developer, @servicenow YouTube. Citable URLs, explicit assumptions flagged. |
+| [/servicenow_rag](#servicenow_rag) | Claude Code version: answers are only from official sources: DocSite, KB, Community, Developer, @servicenow YouTube. Citable URLs, explicit assumptions flagged. |
 | [/newsession](#newsession) | Long chat getting slow or pricey? Turn it into a dense handoff you paste into a fresh session — after a quick check for loose ends worth finishing first |
 | [/newplan](#newplan) | Turn a goal into an approved, written plan — clarifying questions, 3–4 ranked approaches with trade-offs, saved as a plan file |
 | [PDI Native MCP install guide](docs/pdi_native_mcp_install_guide.md) | Connect Claude Code to ServiceNow using the platform's ootb MCP — no scripts needed, OAuth 2.1 security profile with PKCE, 17 purpose-built tools |
