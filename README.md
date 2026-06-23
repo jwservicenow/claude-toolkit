@@ -18,7 +18,7 @@ Everything here works inside **Claude Code** (the command-line app). Some tools 
 
 ### `Claude Desktop and ServiceNow docsite`
 
-**[View the guide →](https://jwservicenow.github.io/claude-toolkit/docs/servicenow-mirror-desktop-guide.html)**
+**[View the setup guide](https://jwservicenow.github.io/claude-toolkit/docs/servicenow-mirror-desktop-guide.html)** or download using curl:
 
 ```bash
 curl -o ~/Downloads/servicenow-mirror-desktop-guide.html \
@@ -26,7 +26,7 @@ curl -o ~/Downloads/servicenow-mirror-desktop-guide.html \
 open ~/Downloads/servicenow-mirror-desktop-guide.html
 ```
 
-Downloads a setup guide and opens it in your browser. Follow the steps inside — about 10 minutes total.
+Follow the steps inside — about 10 minutes total.
 
 ---
 
