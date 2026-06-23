@@ -11,7 +11,7 @@ Everything here works inside **Claude Code** (the command-line app). Some tools 
 | [/newsession](#newsession) | Long chat getting slow or pricey? Turn it into a compact handoff you paste into a fresh session — after a quick check for loose ends worth finishing first |
 | [/newplan](#newplan) | Turn a goal into an approved, written plan — interviews you, asks clarifying questions, provides 3–4 ranked approaches with trade-offs, saved as a plan file |
 | [PDI integration - native MCP install](docs/pdi_native_mcp_install_guide.md) | Connect Claude Code to ServiceNow using the platform's ootb MCP — no scripts needed, OAuth 2.1 security profile with PKCE, 17 purpose-built tools |
-| [Status bar](#status-bar) | Show model, context size, and usage at the bottom of Claude Code session UI |
+| [Status bar](#status-bar-customization) | Show model, context size, usage bar, and session cost at the bottom of Claude Code session UI |
 | [Using Multiple Claude Subscriptions on Mac](docs/setup.md) | Run ServiceNow's Enterprise account and your personal Claude account on the same Mac without them mixing — separate configs, separate sessions |
 
 ---
