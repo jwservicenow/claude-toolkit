@@ -1,12 +1,12 @@
 # claude-toolkit
 
-Tools that make Claude smarter for ServiceNow work — built by a ServiceNow ITOM practitioner, shared for peers.
+Tools that make Claude smarter for ServiceNow work - built by a ServiceNow ITOM practitioner, shared to peers.
 
 Everything here works inside **Claude Code** (the command-line app). Some tools also have a **Claude Desktop** version — noted where applicable.
 
 | Tool | What it does |
 |------|-------------|
-| [Claude Desktop guide](https://jwservicenow.github.io/claude-toolkit/docs/servicenow-mirror-desktop-guide.html) | Ground Claude Desktop answers in the ServiceNow docsite — added custom MCP fetch server (mcp-server-fetch via uvx) to fix the pulls of raw content from the GitHub docs mirror; Coupled with strict Project Instructions to reinforce mirror-only retrievel and citation rules. |
+| [Claude Desktop and ServiceNow docsite](https://jwservicenow.github.io/claude-toolkit/docs/servicenow-mirror-desktop-guide.html) | Ground answers from Claude Desktop about ServiceNow to only search the docsite. Two controls: configure custom web fetch (mcp-server-fetch via uvx) to fix the pulls of raw content from the GitHub docs mirror; Coupled with strict Project Instructions to reinforce mirror-only retrievel and citation rules. |
 | [/servicenow_rag](#servicenow_rag) | ServiceNow RAG — Claude Code answers from official sources only: DocSite, KB, Community, Developer, @servicenow YouTube. Citable URLs, explicit assumptions flagged. |
 | [/newsession](#newsession) | Long chat getting slow or pricey? Turn it into a dense handoff you paste into a fresh session — after a quick check for loose ends worth finishing first |
 | [/newplan](#newplan) | Turn a goal into an approved, written plan — clarifying questions, 3–4 ranked approaches with trade-offs, saved as a plan file |
