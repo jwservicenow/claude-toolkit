@@ -7,7 +7,7 @@ Everything here works inside **Claude Code** (the command-line app). Some tools 
 | Tool | What it does |
 |------|-------------|
 | [Claude Desktop and ServiceNow docsite](https://jwservicenow.github.io/claude-toolkit/docs/servicenow-mirror-desktop-guide.html) | Claude Desktop can't read the ServiceNow docsite directly — this fixes it. Wires in a custom MCP fetch server to pull from the GitHub docs mirror, then locks it down with Project Instructions that re-enforces docsite-only answers with citable URLs. |
-| [/servicenow_rag](#servicenow_rag) | Claude Code version: Answers expanded to include additional prioritized official sources: DocSite, KB, Community, Developer, @servicenow YouTube. Citable URLs, explicit assumptions flagged. |
+| [/servicenow_rag](#servicenow_rag) | Claude Code skill — Fetches from ServiceNow's official GitHub docs mirror first, then KB, Community, and developer.servicenow.com in order. Grounded answers with citable URLs; AI assumptions flagged explicitly. |
 | [/newsession](#newsession) | Long chat getting slow or pricey? Turn it into a dense handoff you paste into a fresh session — after a quick check for loose ends worth finishing first |
 | [/newplan](#newplan) | Turn a goal into an approved, written plan — clarifying questions, 3–4 ranked approaches with trade-offs, saved as a plan file |
 | [PDI Native MCP install guide](docs/pdi_native_mcp_install_guide.md) | Connect Claude Code to ServiceNow using the platform's ootb MCP — no scripts needed, OAuth 2.1 security profile with PKCE, 17 purpose-built tools |
@@ -18,7 +18,7 @@ Everything here works inside **Claude Code** (the command-line app). Some tools 
 
 ### `Claude Desktop and ServiceNow docsite`
 
-This is the setup for Claude Desktop users. **[View the guide →](https://jwservicenow.github.io/claude-toolkit/docs/servicenow-mirror-desktop-guide.html)**
+**[View the guide →](https://jwservicenow.github.io/claude-toolkit/docs/servicenow-mirror-desktop-guide.html)**
 
 ```bash
 curl -o ~/Downloads/servicenow-mirror-desktop-guide.html \
@@ -34,7 +34,6 @@ Downloads a setup guide and opens it in your browser. Follow the steps inside �
 
 Claude Code version — Fetches directly from ServiceNow's official GitHub docs mirror before answering. The same plain-text source ServiceNow publishes for AI tools. Supplements with Support site KBs, Community posts, and developer.servicenow.com in priority order. Every answer is grounded in a retrieved source; anything drawn from AI training knowledge is explicitly flagged as an assumption.
 
-*Claude Code only. On Claude Desktop? Use the [Desktop setup guide](#claude-desktop-and-servicenow-docsite) — different setup, same result.*
 
 <details>
 <summary>How it works under the hood</summary>
