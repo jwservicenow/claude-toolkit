@@ -97,7 +97,7 @@ If Claude fetches from GitHub before answering, it's working. If it answers imme
 
 ---
 
-### Similar setup for Claude Desktop
+### `Similar setup for Claude Desktop`
 
 This is a separate setup for people using Claude Desktop. **[View the guide →](https://jwservicenow.github.io/claude-toolkit/docs/servicenow-mirror-desktop-guide.html)**
 
