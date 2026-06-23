@@ -1,6 +1,6 @@
 # claude-toolkit
 
-Tools that make Claude smarter for ServiceNow work - built by a ServiceNow ITOM practitioner, shared to peers.
+Tools that make Claude smarter for ServiceNow work - contributed by a ServiceNow ITOM practitioner, shared to peers.
 
 Everything here works inside **Claude Code** (the command-line app). Some tools also have a **Claude Desktop** version — noted where applicable.
 
