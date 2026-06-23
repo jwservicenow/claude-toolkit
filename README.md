@@ -32,7 +32,7 @@ Downloads a setup guide and opens it in your browser. Follow the steps inside �
 
 ### `/servicenow_rag`
 
-Setup for Claude Code users. AI typically cannot read documentation sites because of javascript, and growing use of AI blocks. This solution routes your questions through ServiceNow's official GitHub docs mirror instead, which is entirely markdown text. Answers also come with a real, citable URL — not something Claude made up from memory or found in a stale Google index.
+Claude Code version — Fetches directly from ServiceNow's official GitHub docs mirror before answering. The same plain-text source ServiceNow publishes for AI tools. Supplements with Support site KBs, Community posts, and developer.servicenow.com in priority order. Every answer is grounded in a retrieved source; anything drawn from AI training knowledge is explicitly flagged as an assumption.
 
 *Claude Code only. On Claude Desktop? Use the [Desktop setup guide](#claude-desktop-and-servicenow-docsite) — different setup, same result.*
 
