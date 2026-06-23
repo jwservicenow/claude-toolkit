@@ -111,9 +111,9 @@ Restart Claude Code. Then type `/newplan`.
 
 ---
 
-### `Connect Claude to PDI: Native MCP install guide`
+### `Connect Claude Code to PDI: Native MCP install guide`
 
-Connects Claude Code to your ServiceNow instance using the platform's own built-in connector instead of a local Python script. No passwords in plain-text files — credentials stay in your macOS Keychain. Gives you 17 purpose-built tools for CMDB, ITSM, and ITOM work.
+Connects Claude Code to your ServiceNow instance using the platform's own built-in connector. No local Python script, no clear text passwords — credentials stay in your macOS Keychain. Gives you 17 purpose-built tools for CMDB, ITSM, and ITOM work.
 
 **Requires:** ServiceNow Australia release (Zurich Patch 9+) with Now Assist. If your instance doesn't meet that, use the DIY Table-API guide instead.
 
