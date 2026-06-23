@@ -11,7 +11,6 @@ Steps:
    If the question specifies a different release (xanadu, yokohama, zurich), use that branch instead.
 
 2. Fetch that publication's index.md to find the specific topic file.
-   Do not follow ../reference/ relative links — broken (open bug #17).
 
 3. Fetch the topic file using its raw.githubusercontent.com URL.
    Never use docs.servicenow.com or GitHub blob URLs — both are JS SPAs with no readable content.
