@@ -6,7 +6,7 @@ Everything here works inside **Claude Code** (the command-line app). Some tools 
 
 | Tool | What it does |
 |------|-------------|
-| [Claude Desktop and ServiceNow docsite](https://jwservicenow.github.io/claude-toolkit/docs/servicenow-mirror-desktop-guide.html) | Ground answers from Claude Desktop about ServiceNow to only search the docsite. Two controls: configure custom web fetch (mcp-server-fetch via uvx) to fix the pulls of raw content from the GitHub docs mirror; Coupled with strict Project Instructions to reinforce mirror-only retrievel and citation rules. |
+| [Claude Desktop and ServiceNow docsite](https://jwservicenow.github.io/claude-toolkit/docs/servicenow-mirror-desktop-guide.html) | Claude Desktop can't read the ServiceNow docsite directly — this fixes it. Wires in a custom MCP fetch server to pull from the GitHub docs mirror, then locks it down with Project Instructions that enforce source-only answers and citable URLs. |
 | [/servicenow_rag](#servicenow_rag) | Claude Code version: Answers expanded to include additional prioritized official sources: DocSite, KB, Community, Developer, @servicenow YouTube. Citable URLs, explicit assumptions flagged. |
 | [/newsession](#newsession) | Long chat getting slow or pricey? Turn it into a dense handoff you paste into a fresh session — after a quick check for loose ends worth finishing first |
 | [/newplan](#newplan) | Turn a goal into an approved, written plan — clarifying questions, 3–4 ranked approaches with trade-offs, saved as a plan file |
@@ -32,9 +32,9 @@ Downloads a setup guide and opens it in your browser. Follow the steps inside �
 
 ### `/servicenow_rag`
 
-Setup for Claude Code users. AI typically cannot read documentation sites because of javascript, and growing use of AI blocks. This solution routes your questions through ServiceNow's official GitHub docs mirror instead, which is entirely markdown text. Annswers also come with a real, citable URL — not something Claude made up from memory or found in a stale Google index.
+Setup for Claude Code users. AI typically cannot read documentation sites because of javascript, and growing use of AI blocks. This solution routes your questions through ServiceNow's official GitHub docs mirror instead, which is entirely markdown text. Answers also come with a real, citable URL — not something Claude made up from memory or found in a stale Google index.
 
-*Claude Code only. On Claude Desktop? Use the [Desktop setup guide](#similar-setup-for-claude-desktop) — different setup, same result.*
+*Claude Code only. On Claude Desktop? Use the [Desktop setup guide](#claude-desktop-and-servicenow-docsite) — different setup, same result.*
 
 <details>
 <summary>How it works under the hood</summary>
