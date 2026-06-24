@@ -13,10 +13,10 @@
 Two runners. Every test is labeled with who executes it.
 
 **Path A — Claude Code** `(Code)`  
-Runs via `/servicenow_rag` in this Claude Code session. Jim triggers each test by typing `/servicenow_rag <prompt>`. Results appear directly in this session and are recorded here.
+Runs via `/servicenow_rag` in this Claude Code session. The operator triggers each test by typing `/servicenow_rag <prompt>`. Results appear directly in this session and are recorded here.
 
 **Path B — Claude Desktop** `(Desktop)`  
-Jim runs the prompt in Claude Desktop using the ServiceNow project instructions. After getting a response, paste the full result back into this Claude Code session. Each Desktop test includes a **Paste result here:** block for that output.
+The operator runs the prompt in Claude Desktop using the ServiceNow project instructions. After getting a response, paste the full result back into this Claude Code session. Each Desktop test includes a **Paste result here:** block for that output.
 
 ---
 
@@ -108,7 +108,7 @@ For each, report: filename, canonical_url present (Y/N), URL value if present.
 
 ---
 
-### Test SM-4 · Pagination Depth `(Desktop — Jim runs, paste result here)`
+### Test SM-4 · Pagination Depth `(Desktop — paste result here)`
 
 **Prompt to run in Claude Desktop:**
 ```
@@ -169,7 +169,7 @@ Report content length for each. Flag any file under 200 bytes of body content.
 
 ---
 
-### Test MS-4 · Pagination Depth — Supported Platforms `(Desktop — Jim runs, paste result here)`
+### Test MS-4 · Pagination Depth — Supported Platforms `(Desktop — paste result here)`
 
 **Prompt to run in Claude Desktop:**
 ```
@@ -261,7 +261,7 @@ For each, report: filename, canonical_url present (Y/N), URL value if present.
 
 ---
 
-### Test ACC-5 · Pagination Depth `(Desktop — Jim runs, paste result here)`
+### Test ACC-5 · Pagination Depth `(Desktop — paste result here)`
 
 **Prompt to run in Claude Desktop:**
 ```
@@ -336,7 +336,7 @@ For each, report: filename, canonical_url present (Y/N), URL value if present.
 
 ---
 
-### Test EM-5 · Pagination Depth `(Desktop — Jim runs, paste result here)`
+### Test EM-5 · Pagination Depth `(Desktop — paste result here)`
 
 **Prompt to run in Claude Desktop:**
 ```
@@ -413,7 +413,7 @@ For each, report: filename, canonical_url present (Y/N), URL value if present.
 
 ---
 
-### Test HLA-5 · Pagination Depth `(Desktop — Jim runs, paste result here)`
+### Test HLA-5 · Pagination Depth `(Desktop — paste result here)`
 
 **Prompt to run in Claude Desktop:**
 ```
