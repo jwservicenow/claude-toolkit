@@ -31,7 +31,7 @@ This round focused on the ITOM bundles — MID Server, Service Mapping, Agent Cl
 
 ### 1. Systemic Zero-Byte Files Returning HTTP 200 — *Critical (Both surfaces)*
 
-Across the five ITOM areas tested, we confirmed **18 zero-byte topic files** — surfaced incidentally during normal queries, not via an exhaustive sweep, so the true count is almost certainly higher. Breakdown: MID Server 8, Service Mapping 5, Event Management 3, ACC 1, HLA 1. This is the same defect first reported in the Azure cloud discovery patterns file (`azure-cloud-discovery-patterns.md`), now confirmed to be systemic.
+A bundle-wide sweep of `it-operations-management/` (every `.md` sized via the GitHub git tree) found **597 of 2,881 files (20.7%) are zero bytes** — all returning HTTP 200, with no stub files (content is binary: fully populated or completely empty). The defect is systemic, not isolated. For comparison, the same sweep measured 28% empty in the ITAM bundle and 32% in ITSM. The 18 files surfaced during the five-area suites (MID Server 8, Service Mapping 5, Event Management 3, ACC 1, HLA 1; full paths in the Appendix) are the high-impact subset hit during real queries — note the 8 MID Server files live under `servicenow-platform/` and are *additional* to the 597. This is the same defect first reported in the Azure cloud discovery patterns file (`azure-cloud-discovery-patterns.md`), now confirmed systemic at scale.
 
 **Impact:** The core problem is not that the files are empty — it is that an empty file returns **HTTP 200, not 404**. To a retrieval tool this looks like a successful fetch that yielded no content. There is no error to catch and no signal to fall back, so the tool treats the gap as success and improvises (see Finding #2).
 
@@ -117,7 +117,7 @@ Every Desktop answer was cross-checked on the Code side. No confabulation was fo
 
 | Priority | Finding | Surface |
 |---|---|---|
-| Critical | Systemic zero-byte files returning HTTP 200 (18 confirmed across 5 ITOM areas) | Both |
+| Critical | Systemic zero-byte files returning HTTP 200 (597/2,881 bundle-wide, 20.7%; 18 high-impact files detailed) | Both |
 | Critical | MID Server empty core files → path-guessing, branch-hop, non-authoritative fallback (mixed provenance) | Both |
 | High | Service Mapping empty files (5 files) | Desktop |
 | High | Monolithic ITOM index (~1.2MB) — confirmed cross-bundle drift trigger | Both |
@@ -129,7 +129,20 @@ Every Desktop answer was cross-checked on the Code side. No confabulation was fo
 
 ## Appendix — Confirmed Empty Files & Broken Targets
 
-All paths are repo-relative under `markdown/`, on the **`australia`** branch, verified **June 24, 2026** against `raw.githubusercontent.com`. Each file below returns **HTTP 200 with 0 bytes**. This list was compiled from files encountered during normal queries — it is **not** an exhaustive sweep, so the true count is likely higher.
+All paths are repo-relative under `markdown/`, on the **`australia`** branch, verified **June 24, 2026** against `raw.githubusercontent.com`. Each file below returns **HTTP 200 with 0 bytes**. The named files are the high-impact subset hit during the five-area suites; the bundle-wide sweep below establishes the full scale.
+
+**Bundle-wide sweep — `it-operations-management/`: 597 of 2,881 files (20.7%) are 0 bytes.** (Excludes MID Server, which lives under `servicenow-platform/`.) Worst sub-dirs:
+
+| Sub-dir | .md files | Empty (0-byte) | % empty |
+|---|---:|---:|---:|
+| discovery-and-service-mapping-patterns | 277 | 169 | 61% |
+| service-mapping | 150 | 71 | 47% |
+| itom-visibility | 149 | 37 | 24% |
+| health-log-analytics | 230 | 49 | 21% |
+| event-management | 380 | 76 | 20% |
+| discovery | 413 | 72 | 17% |
+| cloud-configuration-governance | 223 | 40 | 17% |
+| agent-client-collector | 306 | 26 | 8% |
 
 **Service Mapping — `it-operations-management/service-mapping/` (5)**
 - `prerequisites-service-mapping.md`
@@ -159,6 +172,6 @@ All paths are repo-relative under `markdown/`, on the **`australia`** branch, ve
 **Health Log Analytics — `it-operations-management/health-log-analytics/` (1)**
 - `hla-custom-alert-rules.md`
 
-**Total: 18 confirmed zero-byte files across 5 ITOM areas.**
+**Named above: 18 high-impact zero-byte files across 5 ITOM areas. Bundle-wide: 597 of 2,881 (20.7%) in `it-operations-management/`, plus the 8 MID Server files under `servicenow-platform/`.**
 
 **On broken links:** No genuine broken cross-reference was found in any tested bundle. The 404s observed during testing (`c_TopDownDiscovery.md`, `c_SMMapping.md` in Service Mapping; various MID Server paths) were filenames the AI *guessed* after hitting empty files — a repo-wide code search confirms nothing in the docs links to them. The single root cause across every finding is the empty-file-returns-HTTP-200 behavior.
