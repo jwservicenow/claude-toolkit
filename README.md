@@ -12,7 +12,7 @@ Everything here works inside **Claude Code** (the command-line app). Some tools 
 | [/newplan](#newplan) | Turn a goal into an approved, written plan — interviews you, asks clarifying questions, provides 3–4 ranked approaches with trade-offs, saved as a plan file |
 | [PDI integration - native MCP install](docs/pdi_native_mcp_install_guide.md) | Connect Claude Code to ServiceNow using the platform's ootb MCP — no scripts needed, OAuth 2.1 security profile with PKCE, 17 purpose-built tools |
 | [Status bar](#status-bar-customization) | Show model, context size, usage bar, and session cost at the bottom of Claude Code session UI |
-| [Using Multiple Claude Subscriptions on Mac](docs/setup.md) | Run ServiceNow's Enterprise account and your personal Claude account on the same Mac without them mixing — separate configs, separate sessions |
+| [Using Multiple Claude Subscriptions on Mac](docs/dual-subscription-setup.md) | Run ServiceNow's Enterprise account and your personal Claude account on the same Mac without them mixing — separate configs, separate sessions |
 
 ---
 
@@ -157,7 +157,7 @@ chmod +x ~/.claude/statusline-command.sh
 
 ### `Using Multiple Claude Subscriptions on Mac`
 
-- **[setup.md](docs/setup.md)** — How to run a personal and a work Claude account on the same Mac without them mixing. About 15 minutes start to finish.
+- **[dual-subscription-setup.md](docs/dual-subscription-setup.md)** — How to run a personal and a work Claude account on the same Mac without them mixing. About 15 minutes start to finish.
 
 ---
 
