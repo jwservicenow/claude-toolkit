@@ -10,6 +10,8 @@ is the operative path for grounded, citable answers. These artifacts assess how 
 assistant can answer ServiceNow technical questions from that mirror, and recommend mirror-side
 improvements where retrieval breaks down.
 
+The cross-bundle rollup lives in [`SUMMARY.md`](SUMMARY.md).
+
 ## Layout
 
 ```
