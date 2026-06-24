@@ -16,6 +16,8 @@ improvements where retrieval breaks down.
 mirror-testing/
   itom/    ITOM Visibility testing (Discovery, MID Server, Service Mapping,
            Agent Client Collector, Event Management, Health Log Analytics)
+  itam/    IT Asset Management testing (HAM, SAM, Asset-CMDB sync,
+           software normalization, SaaS License Management) — planned
   itsm/    ITSM testing (planned)
 ```
 
