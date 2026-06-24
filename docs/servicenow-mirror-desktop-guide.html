@@ -112,7 +112,7 @@ which uvx        # copy this absolute path</pre>
 <p>The grounding lives <b>entirely in this Project</b> — only chats started inside it are mirror-bound; regular Desktop chats are unaffected, so do all your ServiceNow doc lookups here.</p>
 
 <div class="blockhead"><span>Block 1 — Retrieval rules</span><button class="copybtn" onclick="cp(this,'b1')">Copy Block 1</button></div>
-<pre id="b1">## BLOCK 1 — ServiceNow documentation retrieval — MANDATORY
+<pre id="b1">## ServiceNow documentation retrieval — MANDATORY
 
 For ANY question about ServiceNow product behavior, requirements, configuration,
 or features, you MUST retrieve the answer from the official GitHub docs mirror
@@ -160,12 +160,6 @@ Branch = release family. "australia" is current GA. Others: zurich, yokohama, xa
 
 RULES:
 - Every factual claim must cite the exact raw URL you fetched THIS turn.
-- CITATION URL: Every Block 1 source must be cited as its canonical docs URL,
-  not the raw GitHub URL. Transform any fetched raw URL as follows:
-  strip the raw prefix up to /markdown/, replace .md with .html, prepend
-  https://www.servicenow.com/docs/r/
-  e.g. .../australia/markdown/servicenow-platform/mid-server/r_MIDServerSystemRequirements.md
-       → https://www.servicenow.com/docs/r/servicenow-platform/mid-server/r_MIDServerSystemRequirements.html
 - The mirror covers PRODUCT DOCUMENTATION only. It does NOT contain Now Support
   KB articles (KBxxxxxxx) — those are login-gated and unfetchable. If the answer
   requires a KB, give what the mirror has, then cite the KB by number and state it
@@ -183,7 +177,7 @@ RULES:
   after the index genuinely lacks the term may you STOP and report it as a gap.</pre>
 
 <div class="blockhead" style="margin-top:16px"><span>Block 2 — Known doc locations</span><button class="copybtn" onclick="cp(this,'b2')">Copy Block 2</button></div>
-<pre id="b2">## BLOCK 2 — Known doc locations (skip navigation — fetch these directly)
+<pre id="b2">## Known doc locations (skip navigation — fetch these directly)
 
 These are confirmed file paths on the australia branch. Prepend
 https://raw.githubusercontent.com/ServiceNow/ServiceNowDocs/australia/markdown/
@@ -235,7 +229,7 @@ Cloud Discovery patterns — OOB pattern catalogs ("list the Azure/GCP discovery
   If empty: fetch r_SupportedApplications.md instead (see below) — do NOT navigate the ITOM index.
 - Supported applications table (complete cross-vendor pattern list incl. Azure, GCP, AWS):
   it-operations-management/itom-visibility/r_SupportedApplications.md
-  (LARGE — paginate with start_index; Azure section is around offset 45000–60000)
+  (LARGE — paginate with modest max_length)
 - (The downloadable Cloud Discovery patterns .xlsx referenced in azure-cloud-discovery.md
   lives on downloads.docs.servicenow.com — outside the mirror, binary, unfetchable.
   Cite its URL if asked; don't claim to have read it.)
