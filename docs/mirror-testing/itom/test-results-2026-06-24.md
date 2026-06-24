@@ -28,7 +28,37 @@ All five areas are present on `australia`, but they are **not co-located**:
 
 ## Root-Cause Summary
 
-The single root cause behind nearly every finding: **empty topic files return HTTP 200 with 0 bytes, not 404.** A retrieval tool sees a successful fetch that yielded no content, has no error to catch, and improvises — paginating the oversized index, guessing filenames, hopping branches, and ultimately falling back to non-authoritative (Community) content with no visible provenance signal. ~18 empty files were confirmed across the five areas; no *genuine* broken cross-reference was found in any bundle.
+The single root cause behind nearly every finding: **empty topic files return HTTP 200 with 0 bytes, not 404.** A retrieval tool sees a successful fetch that yielded no content, has no error to catch, and improvises — paginating the oversized index, guessing filenames, hopping branches, and ultimately falling back to non-authoritative (Community) content with no visible provenance signal. The 18 empties cited in the original five-area suites were *incidental* to those tests; the bundle-wide sweep below establishes the true scale. No *genuine* broken cross-reference was found in any bundle.
+
+---
+
+## Bundle-Wide Empty-File Sweep
+
+A full sweep of the `it-operations-management/` bundle (every `.md`, sized via the GitHub git tree) puts the targeted findings in context — and confirms the empty-file problem is systemic, not isolated to the five tested areas.
+
+**Headline: 597 of 2,881 files (20.7%) are 0 bytes**, all HTTP 200, zero stubs (no file 1–199 bytes — content is binary: fully populated or completely empty). This is the same pattern measured in ITAM (28%) and ITSM (32%), making the three bundles directly comparable.
+
+| Sub-dir | .md files | Empty (0-byte) | % empty |
+|---|---:|---:|---:|
+| discovery-and-service-mapping-patterns | 277 | 169 | **61%** |
+| service-mapping | 150 | 71 | 47% |
+| itom-visibility | 149 | 37 | 24% |
+| metric-intelligence | 45 | 10 | 22% |
+| health-log-analytics | 230 | 49 | 21% |
+| event-management | 380 | 76 | 20% |
+| discovery | 413 | 72 | 17% |
+| cloud-configuration-governance | 223 | 40 | 17% |
+| service-operations-workspace-for-itom-apps | 128 | 15 | 12% |
+| now-assist-for-it-operations-management | 42 | 4 | 10% |
+| agent-client-collector | 306 | 26 | 8% |
+| cloud-account-management | 84 | 5 | 6% |
+| service-reliability-management | 80 | 2 | 3% |
+| (other small dirs + bundle-root loose files) | ~374 | 21 | — |
+| **TOTAL** | **2,881** | **597** | **20.7%** |
+
+**Two caveats:**
+1. **MID Server is excluded** — it lives at `servicenow-platform/mid-server/`, not this bundle (the `bundle-routing` finding in Pre-Flight). Its 8 confirmed empties are tallied in the suites below but are *not* in the 597 — so the true ITOM-topic gap is larger than this table shows.
+2. **`discovery-and-service-mapping-patterns` (169 empty / 277, 61%)** is the largest empty cluster *by absolute count* across all three bundle assessments (ITOM/ITAM/ITSM). By percentage it ranks behind ITAM's smaller `product-catalog` sub-dir (66%, 29/44).
 
 ---
 
