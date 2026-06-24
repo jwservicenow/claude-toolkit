@@ -234,6 +234,33 @@ Cloud Discovery patterns — OOB pattern catalogs ("list the Azure/GCP discovery
   lives on downloads.docs.servicenow.com — outside the mirror, binary, unfetchable.
   Cite its URL if asked; don't claim to have read it.)
 
+Service Mapping:
+- Overview:        it-operations-management/service-mapping/c_ServiceMappingOverview.md
+- Using SM:        it-operations-management/service-mapping/using-service-mapping.md
+- Mapping methods: it-operations-management/service-mapping/c_DefineMapBusinessServices.md
+- SM reference:    it-operations-management/service-mapping/service-mapping-reference.md
+- (all SM docs are flat in it-operations-management/service-mapping/)
+- WARNING: SM content sits past offset 1,100,000 in the ITOM index. DO NOT navigate
+  the ITOM index for SM topics — use the paths above directly every time.
+
+Event Management:
+- Overview:        it-operations-management/event-management/c_EM.md
+- Alert rules:     it-operations-management/event-management/c_EMAlertRule.md
+- Alert overview:  it-operations-management/event-management/c_EMAlert.md
+- Configuration:   it-operations-management/event-management/c_EMConfiguration.md
+- (all EM docs are flat in it-operations-management/event-management/)
+- WARNING: EM content sits past offset 750,000 in the ITOM index. Use these paths
+  directly rather than navigating the ITOM index.
+
+Health Log Analytics (HLA):
+- Landing page:    it-operations-management/health-log-analytics/hla-landing-page.md
+- Architecture:    it-operations-management/health-log-analytics/hla-architecture.md
+- Configuring:     it-operations-management/health-log-analytics/hla-configuring.md
+- Administer:      it-operations-management/health-log-analytics/hla-administer.md
+- (all HLA docs are flat in it-operations-management/health-log-analytics/)
+- WARNING: HLA content sits past offset 900,000 in the ITOM index. Use these paths
+  directly rather than navigating the ITOM index.
+
 Server &amp; Scripting API Reference:
 - API reference index: api-reference/index.md
 - Glide server APIs (GlideRecord, GlideSystem, GlideDateTime, etc.):
@@ -257,7 +284,17 @@ fabricate the path or the answer.
 
 KNOWN GAPS (not in the mirror — cite, don't invent):
 - ACC supported-OS version matrix → ServiceNow Store "Agent Client Collector Framework" page
-- ACC-V MID Server agent-count sizing tiers → login-gated KB (Now Support)</pre>
+- ACC-V MID Server agent-count sizing tiers → login-gated KB (Now Support)
+Service Mapping gaps (confirmed empty or missing as of 2026-06-24, australia branch):
+- r_EntryPointsforBizSvcDef.md          — empty (entry point attributes reference)
+- t_DefineNewBusinessService.md         — empty (single service mapping procedure)
+- prerequisites-service-mapping.md      — empty
+- map-application-suggestion.md         — empty
+- check-service-mapping-readiness-for-mapping.md — empty
+- c_TopDownDiscovery.md                 — 404 (file missing)
+- c_SMMapping.md                        — 404 (file missing)
+  If asked about entry points or top-down discovery: use c_DefineMapBusinessServices.md
+  and service-mapping-reference.md — those have content. State gaps explicitly.</pre>
 
 <div class="blockhead" style="margin-top:16px"><span>Block 3 — Secondary sources (optional)</span><button class="copybtn" onclick="cp(this,'b3')">Copy Block 3</button></div>
 <pre id="b3">## Secondary Trusted Sources
