@@ -19,6 +19,20 @@ This round focused on the ITOM bundles — MID Server, Service Mapping, Agent Cl
 
 ---
 
+## Behavioral Validation
+
+The structural sweep below is corroborated by **5 area suites run through the retrieval skill across both surfaces** (`/servicenow_rag` on Code and the fetch-MCP project on Desktop): **1 PASS, 4 FLAG.** The empties land on the pages that drive routine answers, so most questions hit a blank before reaching usable detail:
+
+- **Agent Client Collector** (PASS — positive control) — deployment and ACC→MID Server communication answer fast and fully mirror-cited; proves the method and format are sound.
+- **MID Server** (FLAG, worst observed) — the OS/hardware-requirements and cluster pages are empty; Desktop then path-guessed, branch-hopped (australia→yokohama→xanadu), paginated a >1 MB index 40+ times, and answered 100% from Community content framed as official — provenance blur, no mirror answer.
+- **Service Mapping** (FLAG) — the entry-point reference (`r_EntryPointsforBizSvcDef.md`) and `t_DefineNewBusinessService.md` are empty; same path-guess → Community fallback pattern.
+- **Event Management** (FLAG, recovered) — the step-by-step `create-alert-management-rule.md` is empty (concept page survives the *what*, not the *how*); paginated but recovered a verifiable answer.
+- **Health Log Analytics** (FLAG) — content is present and the answer was correct, but there is no navigable HLA→Event Management cross-link, so the cross-bundle hand-off rode on inference + Community blogs.
+
+This is the difference between "20.7% of files are empty" and "the mirror cannot answer a routine MID Server requirements question" — the latter is what an admin needs to act on. (Every empty and populated page above was re-verified live, HTTP + bytes.)
+
+---
+
 ## What's Working Well
 
 **The cross-reference fix is the standout win.** On `australia`, internal cross-references that previously used fragile relative paths now resolve to absolute `raw.githubusercontent.com` URLs and work correctly — a real improvement for multi-hop queries that span topic files.
