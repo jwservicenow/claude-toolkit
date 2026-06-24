@@ -14,21 +14,23 @@ improvements where retrieval breaks down.
 
 ```
 mirror-testing/
-  itom/    ITOM Visibility testing (Discovery, MID Server, Service Mapping,
-           Agent Client Collector, Event Management, Health Log Analytics)
-  itam/    IT Asset Management testing (HAM, SAM, Asset-CMDB sync,
-           software normalization, SaaS License Management) — planned
-  itsm/    ITSM testing (planned)
+  itom/      ITOM Visibility testing (Discovery, MID Server, Service Mapping,
+             Agent Client Collector, Event Management, Health Log Analytics)
+  itam/      IT Asset Management testing (HAM, SAM, Asset-CMDB sync,
+             software normalization, SaaS License Management)
+  itsm/      ITSM testing
+  platform/  servicenow-platform bundle testing (CMDB, CSDM, Service Catalog,
+             Knowledge Management, MID Server, Dependency Views)
 ```
 
-Each topic folder follows the same convention:
+Each bundle folder follows the same convention:
 
 | File | Purpose |
 |---|---|
 | `recommendations-<date>.md` | Prioritized findings and mirror-side fixes |
 | `test-results-<date>.md` | The full structured test script + findings log — runnable as-is |
 
-Findings use a fixed vocabulary so results are comparable across topics:
+Findings use a fixed vocabulary so results are comparable across bundles:
 
 | Finding type | Meaning |
 |---|---|
@@ -50,8 +52,8 @@ suites. Findings are recorded by ID in the findings-log table at the end of the 
 Tests target the `australia` branch (current GA) by default; substitute another release branch
 (`xanadu`, `yokohama`, `zurich`) in the raw URLs to test a different release.
 
-## Adding a new topic (e.g. ITSM)
+## Adding a new bundle (e.g. a new ServiceNow docs bundle)
 
-1. Create `mirror-testing/<topic>/`.
-2. Copy `TEST-PLAN-TEMPLATE.md` to `<topic>/test-results-<date>.md` and fill it in.
+1. Create `mirror-testing/<bundle>/`.
+2. Copy `TEST-PLAN-TEMPLATE.md` to `<bundle>/test-results-<date>.md` and fill it in.
 3. Add a `recommendations-<date>.md` (and optional `.html`) summarizing findings by impact.

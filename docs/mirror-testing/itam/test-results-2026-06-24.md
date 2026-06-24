@@ -4,9 +4,11 @@
 **Date:** June 24, 2026
 **Branch:** `australia`
 **Mirror:** ServiceNow/ServiceNowDocs (GitHub)
-**Status:** Direct-fetch (Code) testing complete · interactive-surface validation ongoing
+**Status:** Direct-fetch (Code) sweep COMPLETE · `/servicenow_rag` prompt tests COMPLETE · Claude Desktop PENDING
 
 > All numbers below are from an **exhaustive file-size sweep** of the bundle and were verified live against `raw.githubusercontent.com`.
+
+**Prompt-test headline (`/servicenow_rag`, Code):** 4 area prompts run (HAM-4, SAM-5, NORM-3, SAAS-3) — **0 PASS, 4 FLAG.** In every case the answer's driver page (transfer-order flow, compliant/non-compliant license page, normalization overview, reclaimable-subscriptions overview) is empty; supporting how-tos often survive one hop away. Every empty and populated page was re-verified live (HTTP + bytes).
 
 ---
 
@@ -54,7 +56,7 @@ An AI retrieval layer sees a successful fetch and improvises from an empty page 
 - **HAM-1 file count:** 321 files, sub-dirs N (flat under `hardware-asset-management/`).
 - **HAM-2 empty/stub sweep:** 125 empty (39%). The **classic `asset-management/` lifecycle + transfer-order + stockroom cluster is almost entirely empty** — `c_Stockrooms.md`, `c_FollowLifeCycleConsumbl.md`, `create-a-transfer-order.md`, `manage-transfer-orders.md`, `work-with-transfer-orders.md`, `move-transfer-order-line-through-stages.md`, `transfer-order-flows.md` all 0 bytes. Newer `enterprise-asset-management/` and `hardware-asset-management/` workspace equivalents (receive/putaway/pick/disposal in stockrooms) ARE populated (~2–8KB each). Coverage migrated to the workspace pages; the classic module pages were emptied.
 - **HAM-3 canonical_url:** present & correct on all populated samples (e.g. `asset-lifecycle-automation.md`, `approximated-lifecycles-hardware-products.md`). No `no-canonical-url` finding.
-- **HAM-4 (Desktop):** PENDING.
+- **HAM-4 (`/servicenow_rag`, Code):** **FLAG.** Prompt: "In Hardware Asset Management, what are the asset lifecycle states, and how does a transfer order move an asset between stockrooms?" Lifecycle is partially answerable (`asset-lifecycle-automation.md` 5.8 KB, `approximated-lifecycles-hardware-products.md` 4.7 KB populated), but the **transfer-order half has no surviving page** — `create-a-transfer-order.md`, `manage-transfer-orders.md`, `work-with-transfer-orders.md`, `move-transfer-order-line-through-stages.md`, `transfer-order-flows.md`, `c_Stockrooms.md` all 0 bytes (verified 200/0b). *Desktop: PENDING.*
 
 ## Suite 2 — Software Asset Management (SAM)
 
@@ -62,7 +64,7 @@ An AI retrieval layer sees a successful fetch and improvises from an empty page 
 - **SAM-2 multi-hop:** reconciliation/entitlement core IS populated — `c_SAMReconciliation.md` (5.2KB), `reconcile-licenses-global-entities.md` (7.4KB), `license-metric-results-fields.md` (11.3KB), `mapping-ms-license-metrics.md` (11.8KB).
 - **SAM-3 empty/stub sweep:** 70 empty (16%). Key gaps that hit the test prompt directly: `license-types-impact-reconciliation.md` (0) — the compliant-vs-noncompliant driver page; `create-entitlements-workspace.md` (0), `playbook-entitlementsetup-workspace.md` (0), `create-entitlement-sap.md` (0), the M365-from-SA-add-on entitlement pages (0). Vendor-specific entitlement how-tos (Citrix, Microsoft SA) populated.
 - **SAM-4 canonical_url:** present & correct (`Config-sam-workspace.md`). No finding.
-- **SAM-5 (Desktop):** PENDING.
+- **SAM-5 (`/servicenow_rag`, Code):** **FLAG (partial).** Prompt: "How does SAM reconcile discovered installs against purchased entitlements, and what determines a compliant vs. non-compliant license position?" The "how to reconcile" half is answerable (`t_RunReconciliation.md` 2.1 KB, `sam-license-position-report.md` 3.8 KB, IBM-specific reconciliation pages populated), but the page that determines compliant vs non-compliant — `license-types-impact-reconciliation.md` — is 0 bytes (verified), as is `software-reconciliation-results.md`. The driver of the answer is blank. *Desktop: PENDING.*
 
 ## Suite 3 — Asset ↔ CMDB Synchronization
 
@@ -73,13 +75,13 @@ An AI retrieval layer sees a successful fetch and improvises from an empty page 
 
 - **NORM-1 monolithic candidate:** `it-asset-management/index.md` = **652KB** → `oversized-index` (>500KB). This is the ITAM analog of ITOM's `r_SupportedApplications.md`. Largest topic files: SaaS integration pages 40–54KB (`integrate-sfmc-oauth.md` 53.9KB), `software-model-fields.md` 51.3KB — pagination candidates for Desktop.
 - **NORM-2 multi-hop:** **The normalization entry-point pages are empty** while their sub-pages have content: `hardware-normalization.md` (0), `Work-with-hardware-normalization.md` (0), and SAM's `sam-normalization.md` (0) are all 0 bytes; supporting pages (`opt-in-hardware-normalization.md` 3.8KB, `normalization-suggestions.md` 4.1KB, `normalization-status.md` 3.2KB, `sam-normalization-dash.md` 3.4KB) are populated. A reader landing on the overview gets nothing; the detail exists one hop away with no overview to route them.
-- **NORM-3 (Desktop):** PENDING.
+- **NORM-3 (`/servicenow_rag`, Code):** **FLAG (partial).** Prompt: "How does software normalization work, and how does the SAM Content Library map raw discovery data to normalized products and publishers?" The normalization concept/overview pages are empty — `sam-normalization.md`, `hardware-normalization.md`, `Work-with-hardware-normalization.md`, and the Microsoft/Oracle/SAP publisher-pack pages (all 0 bytes, verified). Supporting pages survive (`normalization-status.md` 3.2 KB, `sam-normalization-dash.md` 3.4 KB, `content-service-spend-detection.md` 3.3 KB), so detail exists one hop away with no overview to route to it. *Desktop: PENDING.*
 
 ## Suite 5 — SaaS License Management
 
 - **SAAS-1 file count + stub risk:** 92 files, 20 empty (22%), sub-dirs N. Core overview pages empty: `usage-summary-saas.md` (0), `reclaiming-user-subscriptions-saas.md` (0), `add-reclamation-rule-sub.md` (0) — i.e. the "surface unused/reclaimable subscriptions" overview is gutted, while vendor-specific reclaim how-tos (monday, roadmunk, surveymonkey, both classic + workspace) ARE populated (~5–7KB each).
 - **SAAS-2 multi-hop:** usage-ingestion data-stream how-tos populated and detailed (`create-data-stream-action-slc.md` 12KB, `create-data-stream-get-activity.md` 13KB). Same pattern: how-to depth present, conceptual/summary entry pages empty.
-- **SAAS-3 (Desktop):** PENDING.
+- **SAAS-3 (`/servicenow_rag`, Code):** **FLAG (partial).** Prompt: "How is SaaS License Management configured to ingest usage data from a SaaS provider, and how does it surface unused or reclaimable subscriptions?" The ingestion half is well-covered (`create-data-stream-get-activity.md` 13.1 KB, `create-data-stream-action-slc.md` 12.1 KB populated, verified), but the "surface unused/reclaimable" overview is gutted — `usage-summary-saas.md`, `reclaiming-user-subscriptions-saas.md`, `subscription-exclusions.md`, `view-user-subscription-workspace.md` all 0 bytes. *Desktop: PENDING.*
 
 ---
 
@@ -107,19 +109,19 @@ An AI retrieval layer sees a successful fetch and improvises from an empty page 
 | HAM-1 | HAM | Done — 321 files |
 | HAM-2 | HAM | FLAG — 39% empty, classic cluster gutted |
 | HAM-3 | HAM | PASS — canonical_url ok |
-| HAM-4 | HAM | PENDING (Desktop) |
+| HAM-4 | HAM | **FLAG** (`/servicenow_rag`) — transfer-order flow empty; lifecycle partial. Desktop pending |
 | SAM-1 | SAM | Done — 427 files |
 | SAM-2 | SAM | PASS — reconciliation core populated |
 | SAM-3 | SAM | FLAG — 16% empty incl. compliance driver page |
 | SAM-4 | SAM | PASS — canonical_url ok |
-| SAM-5 | SAM | PENDING (Desktop) |
+| SAM-5 | SAM | **FLAG** (`/servicenow_rag`) — compliant/non-compliant driver page empty; reconcile how-to survives. Desktop pending |
 | ASSET-1 | Asset↔CMDB | FLAG — 47% empty, nav link unverifiable |
 | ASSET-2 | Asset↔CMDB | FLAG — concept pages empty |
 | NORM-1 | Normalization | FLAG — index.md 652KB |
 | NORM-2 | Normalization | FLAG — entry-point pages empty |
-| NORM-3 | Normalization | PENDING (Desktop) |
+| NORM-3 | Normalization | **FLAG** (`/servicenow_rag`) — normalization overview empty; status/dash pages survive. Desktop pending |
 | SAAS-1 | SaaS | FLAG — overview pages empty |
 | SAAS-2 | SaaS | PASS — ingestion how-tos populated |
-| SAAS-3 | SaaS | PENDING (Desktop) |
+| SAAS-3 | SaaS | **FLAG** (`/servicenow_rag`) — reclaimable-subscriptions overview empty; ingestion how-tos survive. Desktop pending |
 </content>
 </invoke>

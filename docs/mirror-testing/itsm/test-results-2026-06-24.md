@@ -4,9 +4,11 @@
 **Date:** June 24, 2026
 **Branch:** `australia`
 **Mirror:** ServiceNow/ServiceNowDocs (GitHub)
-**Status:** Direct-fetch (Code) testing complete · interactive-surface validation ongoing
+**Status:** Direct-fetch (Code) sweep COMPLETE · `/servicenow_rag` prompt tests COMPLETE · Claude Desktop PENDING
 
 > All numbers below are from an **exhaustive file-size sweep** of each bundle and were verified live against `raw.githubusercontent.com`.
+
+**Prompt-test headline (`/servicenow_rag`, Code):** 8 prompts run (2 per area) — **3 PASS (recoverable), 5 FLAG.** Verdicts and the populated/empty pages behind each are in the Prompt-Test Results section near the end; every empty and every "answerable" page was re-verified live (HTTP + bytes).
 
 ---
 
@@ -98,41 +100,41 @@ Same defect as ITOM and ITAM: empty topic files return **HTTP 200 / 0 bytes**, n
 | IM-2 | Incident | PASS — canonical_url ok |
 | IM-3 | Incident | FLAG — core create/work pages empty |
 | IM-4 | Incident | FLAG — 17 empties (13%) |
-| IM-5 | Incident | PENDING (Desktop) |
+| IM-5 | Incident | **FLAG** (`/servicenow_rag`) — SLA conditions/pause not in-bundle; MI tab pages empty. Desktop pending |
 | CM-1 | Change | Done — part of 1.01 MB index |
 | CM-2 | Change | FLAG — approval/CAB pages empty |
 | CM-3 | Change | PASS — canonical_url ok |
 | CM-4 | Change | Deferred (xanadu branch / Desktop) |
-| CM-5 | Change | PENDING (Desktop) |
+| CM-5 | Change | **PASS** (`/servicenow_rag`) — approval + state-model pages survive; activate pages empty. Desktop pending |
 | SC-1 | Service Catalog | FLAG — bundle-routing, 1.24 MB index |
 | SC-2 | Service Catalog | FLAG — variable pages empty |
 | SC-3 | Service Catalog | FLAG — variable entry points empty |
-| SC-4 | Service Catalog | PENDING (Desktop) |
+| SC-4 | Service Catalog | **PASS/FLAG** (`/servicenow_rag`) — variable types answerable; variable-attributes empty. Desktop pending |
 | SC-5 | Service Catalog | PASS — canonical_url ok |
 | KM-1 | Knowledge | FLAG — bundle-routing, 1.24 MB index |
 | KM-2 | Knowledge | FLAG — KB + user-criteria pages empty |
 | KM-3 | Knowledge | PASS — canonical_url ok |
-| KM-4 | Knowledge | PENDING (Desktop) |
+| KM-4 | Knowledge | **FLAG** (`/servicenow_rag`) — KB-create + user-criteria + properties reference all empty. Desktop pending |
 
 ---
 
-## Interactive-Surface Validation Prompts — 2 per area (8 total)
+## Prompt-Test Results — `/servicenow_rag` (Code), 2 per area (8 total)
 
-The following prompts are used to validate each area on the interactive retrieval surface; results are cross-checked against the direct-fetch findings above.
+Run June 24, 2026. Pass = mirror has a populated page that answers in under 3 min; Flag = the named page(s) are empty or the answer must drift/cross-bundle. Every empty and every "answerable" page below was re-verified live (HTTP 200 + byte count).
 
 **Incident Management**
-1. What are the SLA conditions and pause conditions available for incident SLAs in ServiceNow?
-2. How is a major incident declared and managed in the Major Incident Workbench, and what does each workbench tab do?
+1. *"SLA conditions and pause conditions for incident SLAs"* — **FLAG.** In-bundle coverage is sparse: `incident-sla-mgmt-dashboard.md` is 0 bytes; only `incident-sla-content-pack.md` (4.7 KB) is populated. Incident SLA condition/pause logic is not documented in `incident-management` — it lives in the Service Level Management bundle (cross-bundle); an incident-scoped retrieval finds little.
+2. *"How is a major incident declared/managed in the Major Incident Workbench, and what does each tab do?"* — **FLAG (partial).** Declaration/management is answerable (`major-incident-workbench.md` 4.6 KB, `create-a-major-incident.md` 2.9 KB populated), but **every dedicated tab page is empty** — `mi-workbench-summary-tab.md`, `…collaborate-tab`, `…communicate-tab`, `…pir-tab`, plus `major-incident-overview.md`. "What each tab does" lands on blanks.
 
 **Change Management**
-1. How does the standard change approval workflow route approvals, and what tables are involved?
-2. What are all the state transitions in the Change Management workflow, including which roles can trigger each?
+1. *"How does the standard change approval workflow route approvals, and what tables are involved?"* — **PASS (empty-file hazard).** Answerable from `change-approval-policy.md` (2.4 KB), `using-change-approval-policies-cf.md` (3.2 KB), `cab-workbench.md` (3.2 KB). But the `activate-change-approval-policy.md`, `activate-cab-workbench.md`, and standard-change-template pages are empty — a name-first grep lands blank.
+2. *"All state transitions in the Change workflow, including which roles trigger each?"* — **PASS (empty-file hazard).** Answerable from `c_ChangeStateModel.md` (7.6 KB), `normal-standard-emergency-states.md` (3.3 KB), `configure-change-model-states.md` (4.8 KB), `t_ConfigStateModelTransit.md`. But `change-data-model.md`, `r_InstalledWithStateModel.md`, `t_ActivateStateModel.md`, `state-model-activate-tasks.md` are all empty.
 
-**Service Catalog**
-1. What variable types are available for a Service Catalog item? List all types and their configurable properties.
-2. How are variable sets and variable attributes configured on a catalog item?
+**Service Catalog** *(bundle-routed under `servicenow-platform/`)*
+1. *"What variable types are available and their configurable properties?"* — **PASS (empty-file hazard).** Answerable from `c_ServiceCatalogVariables.md` (4.5 KB), `r_CreatingVariablesForFieldTypes.md` (2.7 KB), `c_ScriptableServiceCatalogVariables.md` (8 KB). But `variable-attributes.md` and `variables-availability.md` are empty.
+2. *"How are variable sets and variable attributes configured?"* — **FLAG (partial).** Variable **sets** are well-covered (`c_ServiceCatalogVariableSets.md` 8.7 KB, `t_CreateAVariableSet.md` 7 KB, `c_DefineVariableSetLayout.md` 6.3 KB), but the named **variable attributes** topic is empty (`variable-attributes.md`, `variables-availability.md`, `service-catalog-variable-editor.md` all 0 bytes).
 
-**Knowledge Management**
-1. What are the steps to configure a knowledge base with user criteria restrictions?
-2. What Knowledge Management properties can be configured at the knowledge base level versus the article level?
+**Knowledge Management** *(bundle-routed under `servicenow-platform/`)*
+1. *"Steps to configure a knowledge base with user criteria restrictions?"* — **FLAG (worst of the 8).** Both core pages the prompt needs are empty: `create-a-knowledgebase.md` and `create-user-criteria-record-in-knowledge-management.md` (also `t_RequestAKnowledgeBase.md`, `t_AssignAKnowledgeBaseManager.md`). Only diagnostic pages (`diagnose-knowledge-user-criteria.md` 4.2 KB) survive — no how-to to follow.
+2. *"What KM properties are configurable at KB level vs article level?"* — **FLAG (partial).** The consolidated reference `r_KnowledgeProperties.md` is empty, as is `configure-act-know-feedback-properties.md`. Scattered specific property pages survive (`knowledge-service-portal-properties.md`, `diagnose-access-criteria-at-kb-level.md` / `-at-an-article-level.md`) but no single KB-vs-article properties page.
 </content>
