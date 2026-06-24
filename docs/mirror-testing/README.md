@@ -23,7 +23,7 @@ Each topic folder follows the same convention:
 
 | File | Purpose |
 |---|---|
-| `recommendations-<date>.md` / `.html` | Prioritized findings and mirror-side fixes (HTML is a dark-themed rendered report) |
+| `recommendations-<date>.md` | Prioritized findings and mirror-side fixes |
 | `test-results-<date>.md` | The full structured test script + findings log — runnable as-is |
 
 ## How to run
