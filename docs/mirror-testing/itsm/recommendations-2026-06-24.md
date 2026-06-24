@@ -17,6 +17,19 @@ Four areas were tested: Incident Management, Change Management, Service Catalog,
 
 ---
 
+## Behavioral Validation
+
+The structural sweep below is corroborated by **8 area prompts run through the retrieval skill** (`/servicenow_rag`, Code side; 2 per area): **3 PASS (recoverable), 5 FLAG.** Even the passes carry an empty-file hazard — they succeed only because content survives on a *differently named* page than the obvious entry point:
+
+- **Incident** (2 FLAG) — major-incident declaration answers, but every Major Incident Workbench tab page is empty; incident SLA condition/pause logic isn't in-bundle at all (lives in Service Level Management).
+- **Change** (2 PASS, with hazard) — approval routing and state transitions are answerable from surviving pages, but the obvious entry points (`activate-change-approval-policy`, `activate-cab-workbench`, `r_InstalledWithStateModel`, `t_ActivateStateModel`) are empty — a name-first lookup lands blank.
+- **Service Catalog** (1 PASS / 1 FLAG) — variable *types* answer; variable *attributes/availability* (`variable-attributes`, `variables-availability`, `service-catalog-variable-editor`) are empty.
+- **Knowledge** (2 FLAG, worst-hit) — a "configure a KB with user criteria" question lands on two empty pages at once (`create-a-knowledgebase`, `create-user-criteria-record-in-knowledge-management`); the consolidated `r_KnowledgeProperties.md` reference is also empty.
+
+This is the difference between "32% of files are empty" and "the mirror cannot answer a foundational Knowledge or Incident question" — the latter is what an admin needs to act on. (Every empty and "answerable" page above was re-verified live, HTTP + bytes.)
+
+---
+
 ## What's Working Well
 
 **canonical_url metadata is healthy.** Every populated topic page sampled across all four areas carried a correct `canonical_url` (8/8 Incident, plus Change/Catalog/Knowledge), with one isolated exception. This is a clear improvement over ITOM, where the field was inconsistent — and not a finding here.

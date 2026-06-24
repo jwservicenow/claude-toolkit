@@ -17,6 +17,19 @@ Five sub-areas were tested: Hardware Asset Management (HAM), Software Asset Mana
 
 ---
 
+## Behavioral Validation
+
+The structural sweep below is corroborated by **4 area prompts run through the retrieval skill** (`/servicenow_rag`, Code side): **0 PASS, 4 FLAG.** In every case the page that drives the answer is empty, while supporting how-tos often survive one hop away — so a natural question lands on a blank before it reaches usable detail:
+
+- **HAM** (FLAG) — asset lifecycle is partially answerable, but the transfer-order half has *no* surviving page (`create-a-transfer-order`, `manage-transfer-orders`, `work-with-transfer-orders`, `transfer-order-flows`, `c_Stockrooms` all empty).
+- **SAM** (FLAG) — the "how to reconcile" half answers, but `license-types-impact-reconciliation.md` — the page defining compliant vs. non-compliant — is empty, as is `software-reconciliation-results.md`.
+- **Normalization** (FLAG) — every overview page is empty (`sam-normalization`, `hardware-normalization`, `Work-with-hardware-normalization`, publisher-pack pages); only status/dashboard detail survives, with no overview to route to it.
+- **SaaS License Management** (FLAG) — usage ingestion is well-covered, but the "surface unused/reclaimable subscriptions" overview is gutted (`usage-summary-saas`, `reclaiming-user-subscriptions-saas`, `subscription-exclusions` empty).
+
+This is the difference between "28% of files are empty" and "the mirror cannot answer a foundational HAM or SAM question" — the latter is what an admin needs to act on. (Every empty and populated page above was re-verified live, HTTP + bytes.)
+
+---
+
 ## What's Working Well
 
 **ITAM is well-consolidated.** Unlike ITOM (where MID Server was mis-bundled under `servicenow-platform/`), ITAM content lives in a single top-level bundle, `markdown/it-asset-management/`, organized into clear sub-areas (HAM, SAM, SaaS, EAM, asset-management, contracts, procurement, normalization). One minor caveat: SAM additionally has a smaller, separate presence under `it-service-management/software-asset-management/` (ITSM-context, ~67 files) — domain overlap, not fragmentation of the ITAM bundle, which is complete on its own. Bundle location is not a finding here — a structural positive.
