@@ -149,8 +149,7 @@ EOF, say the list is PARTIAL and state the last start_index you read so it can b
 resumed. Never present a partial list as if it were complete.
 
 NEVER construct or guess a raw URL — copy the absolute https:// URL verbatim from
-a document you just fetched. Do NOT follow or resolve relative ../ links; the docs
-contain broken relative links that 404 (the file is real but in a different folder).
+a document you just fetched.
 RECOVERY when a link 404s or a file isn't where a doc points: (1) check the
 "Known doc locations" block below for the file; (2) if not there, fetch the bundle
 index and page it for the FILENAME; (3) only if both fail, STOP and ask for the URL.
@@ -234,10 +233,6 @@ Cloud Discovery patterns — OOB pattern catalogs ("list the Azure/GCP discovery
   Storage, Load Balancer, NIC, Public IP, Resource Group, Security Group, …),
   gcp-cloud-discovery-patterns.md
 - This IS in the mirror — fetch it directly; do NOT call it a "Store-app-only" gap.
-- BROKEN LINK: discovery/azure-cloud-discovery.md links this as
-  ../../service-mapping/reference/azure-cloud-discovery-patterns.md — that path 404s.
-  The real folder is discovery-and-service-mapping-patterns/. Use the path above;
-  never resolve that relative link.
 - (The downloadable Cloud Discovery patterns .xlsx referenced in azure-cloud-discovery.md
   lives on downloads.docs.servicenow.com — outside the mirror, binary, unfetchable.
   Cite its URL if asked; don't claim to have read it.)
