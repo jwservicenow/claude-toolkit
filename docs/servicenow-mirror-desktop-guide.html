@@ -229,10 +229,13 @@ API gateways, Kong, Boomi):
 Cloud Discovery patterns — OOB pattern catalogs ("list the Azure/GCP discovery patterns"):
 - Folder: it-operations-management/discovery-and-service-mapping-patterns/
 - Pattern per vendor: {vendor}-cloud-discovery-patterns.md
-  e.g. azure-cloud-discovery-patterns.md (25+ named patterns: VM, SQL Server, Blob
-  Storage, Load Balancer, NIC, Public IP, Resource Group, Security Group, …),
-  gcp-cloud-discovery-patterns.md
+  e.g. azure-cloud-discovery-patterns.md, gcp-cloud-discovery-patterns.md
 - This IS in the mirror — fetch it directly; do NOT call it a "Store-app-only" gap.
+- NOTE: azure-cloud-discovery-patterns.md currently returns empty (mirror gap 2026-06-23).
+  If empty: fetch r_SupportedApplications.md instead (see below) — do NOT navigate the ITOM index.
+- Supported applications table (complete cross-vendor pattern list incl. Azure, GCP, AWS):
+  it-operations-management/discovery/r_SupportedApplications.md
+  (LARGE — paginate with start_index; Azure section is around offset 45000–60000)
 - (The downloadable Cloud Discovery patterns .xlsx referenced in azure-cloud-discovery.md
   lives on downloads.docs.servicenow.com — outside the mirror, binary, unfetchable.
   Cite its URL if asked; don't claim to have read it.)
