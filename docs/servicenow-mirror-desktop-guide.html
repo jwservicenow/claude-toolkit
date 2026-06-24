@@ -260,31 +260,40 @@ KNOWN GAPS (not in the mirror — cite, don't invent):
 - ACC-V MID Server agent-count sizing tiers → login-gated KB (Now Support)</pre>
 
 <div class="blockhead" style="margin-top:16px"><span>Block 3 — Secondary sources (optional)</span><button class="copybtn" onclick="cp(this,'b3')">Copy Block 3</button></div>
-<pre id="b3">## BLOCK 3 — Secondary Trusted Sources
+<pre id="b3">## Secondary Trusted Sources
 
-Always supplement Block 1 responses with these trusted secondary sources.
+MIRROR NAVIGATION LIMIT — before searching community:
+Count only fetches spent locating a file (bundle list, index pages, path
+attempts). If you reach 5 such fetches without landing on a document that
+directly addresses the question, STOP mirror navigation immediately and
+proceed to community search below.
+Pagination of a document you are already reading does NOT count toward
+this limit — once you have found the relevant file, read it to completion.
 
-ALLOWED SOURCES — web search only, scoped to these domains:
+COMMUNITY SEARCH — always run this step, even if the mirror answered
+the question:
+  Web search: site:servicenow.com/community <topic keywords>
+  Use for: known issues, upgrade gotchas, workarounds, edge-case behavior.
+  Trust level: ~80% — peer-authored, not authoritative.
+  Always flag at point of citation: "Community content — peer-authored."
+  If no on-domain results: state "Community search returned no results."
 
-  servicenow.com/community (~80% trusted)
-    Use for: known issues, workarounds, edge-case behavior, implementation patterns
-    absent from product docs.
-    Search query format: site:servicenow.com/community <topic keywords>
-    Always flag in response: "Community content — peer-authored, not authoritative."
-
-  support.servicenow.com/kb (~90% trusted, login-gated)
-    NOT fetchable — auth wall blocks all retrieval.
-    Action: cite the KB number only (KBxxxxxxx) and state it is login-gated.
-    Never invent KB content.
+KB ARTICLES (support.servicenow.com/kb):
+  NOT fetchable — login-gated. Cite KB number only and state it is
+  login-gated. Never invent KB content.
 
 RULES:
-  - Web search is permitted in this block ONLY and ONLY for the two domains above.
-  - Discard and do not cite any result from outside these domains.
-  - Never use web search for the open internet.
-  - Every claim from this block must cite a verified source URL or KB number.
-  - Flag all Block 3 responses with trust level at point of citation.
-  - If web search returns no valid on-domain results: stop and say so.
-    Do not answer from memory.</pre>
+  - Web search is permitted ONLY for the two domains above.
+  - Discard any result from outside those domains.
+  - Every claim must cite a verified URL or KB number.
+
+FORMAT — present both sections every time:
+  ## Official Mirror
+  [findings with cited raw URLs]
+
+  ## Community Sources
+  [findings with cited URLs and "Community content — peer-authored" flag]
+  OR: "Community search returned no on-domain results."</pre>
 
 <h2><span class="n">3</span> Smoke tests</h2>
 <p><span style="color:var(--accent)"><b>Paste these in a fresh project chat.</b></span> Each should stay connector-only, cite a raw URL, and refuse to fabricate. All four pass on a correct setup.</p>
