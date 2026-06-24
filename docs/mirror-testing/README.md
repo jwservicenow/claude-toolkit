@@ -28,6 +28,18 @@ Each topic folder follows the same convention:
 | `recommendations-<date>.md` | Prioritized findings and mirror-side fixes |
 | `test-results-<date>.md` | The full structured test script + findings log — runnable as-is |
 
+Findings use a fixed vocabulary so results are comparable across topics:
+
+| Finding type | Meaning |
+|---|---|
+| `empty-file` | HTTP 200, 0 bytes — successful fetch, no content, no error signal |
+| `oversized-index` | A single `.md` over 500KB — pagination/truncation risk |
+| `bundle-routing` | Topic in an unexpected bundle, or split across bundles |
+| `missing-xref` | Expected cross-bundle link absent or unverifiable |
+| `no-canonical-url` | `canonical_url` front-matter missing on a populated page |
+
+The full blank scaffold lives in [`TEST-PLAN-TEMPLATE.md`](TEST-PLAN-TEMPLATE.md).
+
 ## How to run
 
 The `test-results-*.md` file is self-contained: it lists the prompts, the exact files and
@@ -41,5 +53,5 @@ Tests target the `australia` branch (current GA) by default; substitute another 
 ## Adding a new topic (e.g. ITSM)
 
 1. Create `mirror-testing/<topic>/`.
-2. Add a `test-results-<date>.md` following the structure of the ITOM file.
+2. Copy `TEST-PLAN-TEMPLATE.md` to `<topic>/test-results-<date>.md` and fill it in.
 3. Add a `recommendations-<date>.md` (and optional `.html`) summarizing findings by impact.
