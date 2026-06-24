@@ -1,0 +1,43 @@
+# ServiceNow Docs Mirror — AI Retrieval Testing
+
+This area holds test artifacts and recommendations from evaluating the
+[ServiceNow/ServiceNowDocs](https://github.com/ServiceNow/ServiceNowDocs) GitHub mirror
+as a retrieval source for AI assistants.
+
+Because `docs.servicenow.com` renders as a JavaScript single-page application — not readable
+by AI tools — the GitHub mirror, which exposes plain-text Markdown via `raw.githubusercontent.com`,
+is the operative path for grounded, citable answers. These artifacts assess how reliably an AI
+assistant can answer ServiceNow technical questions from that mirror, and recommend mirror-side
+improvements where retrieval breaks down.
+
+## Layout
+
+```
+mirror-testing/
+  itom/    ITOM Visibility testing (Discovery, MID Server, Service Mapping,
+           Agent Client Collector, Event Management, Health Log Analytics)
+  itsm/    ITSM testing (planned)
+```
+
+Each topic folder follows the same convention:
+
+| File | Purpose |
+|---|---|
+| `recommendations-<date>.md` / `.html` | Prioritized findings and mirror-side fixes (HTML is a dark-themed rendered report) |
+| `test-results-<date>.md` | The full structured test script + findings log — runnable as-is |
+
+## How to run
+
+The `test-results-*.md` file is self-contained: it lists the prompts, the exact files and
+paths to fetch, and a findings log. To reproduce or extend a run, open it in an AI assistant
+with fetch access to `raw.githubusercontent.com` (e.g. Claude Code) and work through the test
+suites. Findings are recorded by ID in the findings-log table at the end of the file.
+
+Tests target the `australia` branch (current GA) by default; substitute another release branch
+(`xanadu`, `yokohama`, `zurich`) in the raw URLs to test a different release.
+
+## Adding a new topic (e.g. ITSM)
+
+1. Create `mirror-testing/<topic>/`.
+2. Add a `test-results-<date>.md` following the structure of the ITOM file.
+3. Add a `recommendations-<date>.md` (and optional `.html`) summarizing findings by impact.
