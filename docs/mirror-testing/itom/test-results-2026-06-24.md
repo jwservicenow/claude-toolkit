@@ -36,7 +36,7 @@ One per bundle. Run each via `/servicenow_rag <prompt>` as a fast first-pass bef
 
 ## Pre-Flight — Confirm Bundle Availability
 
-`(Code — /servicenow_rag)`
+`Claude Code`
 
 ```
 Fetch https://raw.githubusercontent.com/ServiceNow/ServiceNowDocs/australia/llms.txt
@@ -60,7 +60,7 @@ Grep the output for each of the following bundle names and record the index path
 
 ## Suite 1 — Service Mapping
 
-### Test SM-1 · Sub-Directory File Count `(Code — /servicenow_rag)`
+### Test SM-1 · Sub-Directory File Count `Claude Code`
 
 > **Structure note:** Service Mapping has no separate bundle index. All files live under `it-operations-management/service-mapping/` within the single ITOM index.md. A duplicate path also exists at `product/service-mapping/` — note whether both directories are referenced.
 
@@ -76,7 +76,7 @@ Report: total file count per directory, whether the two paths contain the same o
 
 ---
 
-### Test SM-2 · Cross-Reference Density — Discovery Boundary `(Code — /servicenow_rag)`
+### Test SM-2 · Cross-Reference Density — Discovery Boundary `Claude Code`
 
 ```
 Using the Service Mapping bundle on the australia branch:
@@ -91,7 +91,7 @@ Report: files fetched, whether cross-bundle links resolved or returned 404, and 
 
 ---
 
-### Test SM-3 · canonical_url Spot-Check `(Code — /servicenow_rag)`
+### Test SM-3 · canonical_url Spot-Check `Claude Code`
 
 ```
 From the Service Mapping bundle index, fetch 5 topic files distributed across the bundle.
@@ -108,7 +108,7 @@ For each, report: filename, canonical_url present (Y/N), URL value if present.
 
 ---
 
-### Test SM-4 · Pagination Depth `(Desktop — paste result here)`
+### Test SM-4 · Pagination Depth `Claude Desktop`
 
 **Prompt to run in Claude Desktop:**
 ```
@@ -127,7 +127,7 @@ What are the entry point types available in Service Mapping, and how is each con
 
 ## Suite 2 — MID Server
 
-### Test MS-1 · No Dedicated Directory — Distributed File Locations `(Code — /servicenow_rag)`
+### Test MS-1 · No Dedicated Directory — Distributed File Locations `Claude Code`
 
 > **Structure note:** MID Server has no dedicated sub-directory. The closest root-level file is `it-operations-management/configure-a-mid-server.md`. MID Server content is otherwise distributed across `discovery/` and other ITOM sub-directories. This is itself a finding — flag as `no-dedicated-directory`.
 
@@ -143,7 +143,7 @@ Also note: MID Server lacks a dedicated sub-directory. Content is spread across 
 
 ---
 
-### Test MS-2 · Supported Platform Reference File Size `(Code — /servicenow_rag)`
+### Test MS-2 · Supported Platform Reference File Size `Claude Code`
 
 ```
 Using the MID Server bundle on the australia branch:
@@ -157,7 +157,7 @@ Report: which file(s) were fetched, file size in bytes, and the answer.
 
 ---
 
-### Test MS-3 · Empty / Stub File Sweep `(Code — /servicenow_rag)`
+### Test MS-3 · Empty / Stub File Sweep `Claude Code`
 
 ```
 From the MID Server bundle index, fetch the topic files for:
@@ -169,7 +169,7 @@ Report content length for each. Flag any file under 200 bytes of body content.
 
 ---
 
-### Test MS-4 · Pagination Depth — Supported Platforms `(Desktop — paste result here)`
+### Test MS-4 · Pagination Depth — Supported Platforms `Claude Desktop`
 
 **Prompt to run in Claude Desktop:**
 ```
@@ -186,7 +186,7 @@ What are all the supported operating systems and Java versions for MID Server in
 
 ---
 
-### Test MS-5 · canonical_url Spot-Check `(Code — /servicenow_rag)`
+### Test MS-5 · canonical_url Spot-Check `Claude Code`
 
 ```
 From the MID Server bundle index, fetch 5 topic files distributed across the bundle.
@@ -205,7 +205,7 @@ For each, report: filename, canonical_url present (Y/N), URL value if present.
 
 ## Suite 3 — Agent Client Collector
 
-### Test ACC-1 · Sub-Directory File Count `(Code — /servicenow_rag)`
+### Test ACC-1 · Sub-Directory File Count `Claude Code`
 
 > **Structure note:** ACC has no separate bundle index. All files live under `it-operations-management/agent-client-collector/` within the single ITOM index.md.
 
@@ -219,7 +219,7 @@ Report: total file count and whether any sub-directories exist within it.
 
 ---
 
-### Test ACC-2 · Empty / Stub File Sweep `(Code — /servicenow_rag)`
+### Test ACC-2 · Empty / Stub File Sweep `Claude Code`
 
 ```
 From the ACC bundle index, fetch topic files for:
@@ -233,7 +233,7 @@ Report content length for each. Flag any file under 200 bytes of body content.
 
 ---
 
-### Test ACC-3 · Multi-Hop Query `(Code — /servicenow_rag)`
+### Test ACC-3 · Multi-Hop Query `Claude Code`
 
 ```
 Using the Agent Client Collector bundle on the australia branch:
@@ -244,7 +244,7 @@ Report: files fetched, cross-reference resolution status, and the answer.
 
 ---
 
-### Test ACC-4 · canonical_url Spot-Check `(Code — /servicenow_rag)`
+### Test ACC-4 · canonical_url Spot-Check `Claude Code`
 
 ```
 From the ACC bundle index, fetch 5 topic files distributed across the bundle.
@@ -261,7 +261,7 @@ For each, report: filename, canonical_url present (Y/N), URL value if present.
 
 ---
 
-### Test ACC-5 · Pagination Depth `(Desktop — paste result here)`
+### Test ACC-5 · Pagination Depth `Claude Desktop`
 
 **Prompt to run in Claude Desktop:**
 ```
@@ -280,7 +280,7 @@ What metrics and data types can the Agent Client Collector gather from a monitor
 
 ## Suite 4 — Event Management
 
-### Test EM-1 · Sub-Directory File Count `(Code — /servicenow_rag)`
+### Test EM-1 · Sub-Directory File Count `Claude Code`
 
 > **Structure note:** Event Management has no separate bundle index. All files live under `it-operations-management/event-management/` within the single ITOM index.md.
 
@@ -294,7 +294,7 @@ Report: total file count and whether any sub-directories exist within it.
 
 ---
 
-### Test EM-2 · Multi-Hop Query — Alert Rules `(Code — /servicenow_rag)`
+### Test EM-2 · Multi-Hop Query — Alert Rules `Claude Code`
 
 ```
 Using the Event Management bundle on the australia branch:
@@ -307,7 +307,7 @@ Report: files fetched, cross-reference resolution status, and the answer.
 
 ---
 
-### Test EM-3 · Empty / Stub File Sweep — Connector Topics `(Code — /servicenow_rag)`
+### Test EM-3 · Empty / Stub File Sweep — Connector Topics `Claude Code`
 
 ```
 From the Event Management bundle index, identify topic files related to connectors or integrations.
@@ -319,7 +319,7 @@ Flag any file under 200 bytes of body content.
 
 ---
 
-### Test EM-4 · canonical_url Spot-Check `(Code — /servicenow_rag)`
+### Test EM-4 · canonical_url Spot-Check `Claude Code`
 
 ```
 From the Event Management bundle index, fetch 5 topic files distributed across the bundle.
@@ -336,7 +336,7 @@ For each, report: filename, canonical_url present (Y/N), URL value if present.
 
 ---
 
-### Test EM-5 · Pagination Depth `(Desktop — paste result here)`
+### Test EM-5 · Pagination Depth `Claude Desktop`
 
 **Prompt to run in Claude Desktop:**
 ```
@@ -355,7 +355,7 @@ What event sources and connector types are supported in ServiceNow Event Managem
 
 ## Suite 5 — Health Log Analytics (HLA)
 
-### Test HLA-1 · Sub-Directory File Count `(Code — /servicenow_rag)`
+### Test HLA-1 · Sub-Directory File Count `Claude Code`
 
 > **Structure note:** HLA has no separate bundle index. All files live under `it-operations-management/health-log-analytics/` within the single ITOM index.md.
 
@@ -369,7 +369,7 @@ Report: total file count and whether any sub-directories exist within it.
 
 ---
 
-### Test HLA-2 · Empty / Stub File Sweep `(Code — /servicenow_rag)`
+### Test HLA-2 · Empty / Stub File Sweep `Claude Code`
 
 ```
 From the HLA bundle index, fetch topic files for:
@@ -383,7 +383,7 @@ Report content length for each. Flag any file under 200 bytes of body content.
 
 ---
 
-### Test HLA-3 · Multi-Hop Query `(Code — /servicenow_rag)`
+### Test HLA-3 · Multi-Hop Query `Claude Code`
 
 ```
 Using the Health Log Analytics bundle on the australia branch:
@@ -396,7 +396,7 @@ Report: files fetched, cross-reference resolution (including cross-bundle), and 
 
 ---
 
-### Test HLA-4 · canonical_url Spot-Check `(Code — /servicenow_rag)`
+### Test HLA-4 · canonical_url Spot-Check `Claude Code`
 
 ```
 From the HLA bundle index, fetch 5 topic files distributed across the bundle.
@@ -413,7 +413,7 @@ For each, report: filename, canonical_url present (Y/N), URL value if present.
 
 ---
 
-### Test HLA-5 · Pagination Depth `(Desktop — paste result here)`
+### Test HLA-5 · Pagination Depth `Claude Desktop`
 
 **Prompt to run in Claude Desktop:**
 ```
