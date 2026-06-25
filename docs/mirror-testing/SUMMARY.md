@@ -1,6 +1,11 @@
 # ServiceNow Docs Mirror — Cross-Bundle Findings Summary
 
-**Date:** June 24, 2026 · **Branch:** `australia` · **Prepared by:** Jim Wells, ServiceNow ITOM Practice
+**Date:** June 24, 2026 (baseline) · **Re-swept:** June 25, 2026 · **Branch:** `australia` · **Prepared by:** Jim Wells, ServiceNow ITOM Practice
+
+> **Update — June 25, 2026:** The mirror team republished after root-causing the empty-file defect.
+> A full re-sweep confirms it is **fixed**: 0-byte files dropped from **~2,200 to 6** (the 6 are legacy
+> pages, empty on every release). The two structural findings persist. Full before/after:
+> [`RESWEEP-2026-06-25.md`](RESWEEP-2026-06-25.md).
 
 The [ServiceNow/ServiceNowDocs](https://github.com/ServiceNow/ServiceNowDocs) GitHub mirror is the
 operative retrieval source for AI-assisted technical work, because `docs.servicenow.com` is a
@@ -8,16 +13,17 @@ JavaScript SPA that AI tools cannot read. Four bundles were assessed with exhaus
 sweeps plus retrieval-skill ("behavioral") prompts — **every number below verified live against
 `raw.githubusercontent.com`.**
 
-| Bundle | Files swept | Empty (0-byte) | % | Behavioral | Index size |
+| Bundle | Files swept | Empty — baseline | Empty — **now** | Behavioral | Index size |
 |---|---:|---:|---:|:--:|---:|
-| ITOM — `it-operations-management` | 2,881 | 597 | 20.7% | 1P / 4F | ~1.2 MB |
-| ITAM — `it-asset-management` | 1,607 | 452 | 28% | 0P / 4F | 652 KB |
-| ITSM — 4 areas* | 876 | 279 | 32% | 3P / 5F | 1.01 MB |
-| Platform — `servicenow-platform` | 3,059 | 873 | 28.5% | 1P / 4F | 1.24 MB |
+| ITOM — `it-operations-management` | 2,881 | 597 (20.7%) | **1** | 1P / 4F | ~1.2 MB |
+| ITAM — `it-asset-management` | 1,607 | 452 (28%) | **0** | 0P / 4F | 637 KB |
+| ITSM — 4 areas* | 876 | 279 (32%) | **0** | 3P / 5F | 1.01 MB |
+| Platform — `servicenow-platform` | 3,059 | 873 (28.5%) | **5** | 1P / 4F | 1.21 MB |
 
 \*ITSM's Service Catalog + Knowledge actually live under `servicenow-platform/` (see Theme 2) and are
 counted in the ITSM sweep — they overlap the Platform row, so the columns are **not** summable.
-Behavioral rollup across the four bundles: **5 PASS / 17 FLAG of 22 area checks.**
+Behavioral rollup was taken at baseline: **5 PASS / 17 FLAG of 22 area checks** — most FLAGs traced to
+empty files now resolved; the structural FLAGs remain.
 
 ## Four cross-bundle themes
 
@@ -35,8 +41,8 @@ Behavioral rollup across the four bundles: **5 PASS / 17 FLAG of 22 area checks.
 
 ## Status with the mirror team
 
-The **empty-file defect is root-caused as a build bug** — fix and republish in progress. Bundle-routing
-and oversized-index are raised but **not yet committed**. Re-sweep all four bundles after the republish
-and lead with before/after zero-byte counts.
+The **empty-file defect (build bug) is fixed** — confirmed by the June 25 re-sweep (~2,200 → 6 zero-byte
+files; the 6 are legacy pages empty on every release). Bundle-routing and oversized-index were raised but
+**not committed**, and both persist — verified live. See [`RESWEEP-2026-06-25.md`](RESWEEP-2026-06-25.md).
 
 Per-bundle detail: [`itom/`](itom/) · [`itam/`](itam/) · [`itsm/`](itsm/) · [`platform/`](platform/).
