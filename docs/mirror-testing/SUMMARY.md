@@ -27,17 +27,21 @@ empty files now resolved; the structural FLAGs remain.
 
 ## Four cross-bundle themes
 
-1. **Systemic empty files returning HTTP 200 — *Critical.*** Every bundle runs 20.7%–32% zero-byte
-   files, with **zero stub files** (content is binary: full or empty). An empty file returns HTTP 200,
-   not 404 — a retrieval tool sees a successful fetch with no content, no error to catch, and improvises
-   (path-guessing, index pagination, Community fallback with no provenance signal). The empties cluster
-   on the **entry-point / concept / "create" pages** a broad question lands on first — so the real issue
-   is "the mirror cannot answer a foundational question," not the percentage.
-2. **Bundle-routing — *High.*** High-value areas (CMDB, CSDM, Service Catalog, Knowledge, MID Server)
-   live **only** under `servicenow-platform/`, not where an ITOM- or ITSM-scoped query looks for them.
-3. **Oversized monolithic indexes — *High.*** Each bundle index is 652 KB–1.24 MB with no sub-indexes;
-   the pagination this forces is what tips a run into path-guessing once it also hits an empty file.
-4. **canonical_url metadata.** Healthy in ITAM, ITSM, and Platform; inconsistent **only in ITOM**.
+1. **Systemic empty files returning HTTP 200 — *Critical · RESOLVED (2026-06-25).*** At baseline every
+   bundle ran 20.7%–32% zero-byte files, with **zero stub files** (content is binary: full or empty). An
+   empty file returns HTTP 200, not 404 — a retrieval tool saw a successful fetch with no content, no
+   error to catch, and improvised (path-guessing, index pagination, Community fallback with no provenance
+   signal). The empties clustered on the **entry-point / concept / "create" pages** a broad question
+   lands on first, so the real issue was "the mirror cannot answer a foundational question," not the
+   percentage. The mirror team's republish fixed this — **~2,200 → 6 zero-byte files**, the 6 remaining
+   being legacy pages empty on every release (see [`RESWEEP-2026-06-25.md`](RESWEEP-2026-06-25.md)).
+2. **Bundle-routing — *High · still open.*** High-value areas (CMDB, CSDM, Service Catalog, Knowledge,
+   MID Server) live **only** under `servicenow-platform/`, not where an ITOM- or ITSM-scoped query looks
+   for them. Confirmed still present on the 2026-06-25 re-sweep (canonical MID Server ~85 files).
+3. **Oversized monolithic indexes — *High · still open.*** Each bundle index is 637 KB–1.21 MB with no
+   sub-indexes; the pagination this forces is what tipped a run into path-guessing once it also hit an
+   empty file. Unchanged on the re-sweep (Platform 1.21 MB · ITOM 1.15 MB · ITSM 1.01 MB · ITAM 637 KB).
+4. **canonical_url metadata.** Healthy in ITAM, ITSM, and Platform; inconsistent **only in ITOM** (baseline finding).
 
 ## Status with the mirror team
 
