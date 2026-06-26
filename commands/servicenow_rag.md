@@ -21,7 +21,10 @@ Steps:
    site:servicenow.com/community <topic keywords>
 
 5. Cite using canonical_url from the file's YAML frontmatter.
-   If absent (open bug #11), construct the docs.servicenow.com URL manually from the file path.
+   If absent, derive the canonical URL: strip .md from the mirror filename →
+   prepend https://docs.servicenow.com/docs/r/
+   Example: r_MIDServerSystemRequirements.md → https://docs.servicenow.com/docs/r/r_MIDServerSystemRequirements
+   These URLs are JS-rendered — do NOT fetch them. Cite only; they require a browser.
    Flag anything edition-gated or version-specific.
 
 Fallback if mirror doesn't have it:

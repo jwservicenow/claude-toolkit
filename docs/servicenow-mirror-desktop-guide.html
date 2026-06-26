@@ -78,7 +78,7 @@
 </header>
 
 <div class="callout good">
-  <b>Why this exists.</b> The public docsite (<code>docs.servicenow.com</code>) is a JS app Desktop can't read, and Desktop's native web fetch is sandbox-blocked from the mirror. Left alone, the model "hedges and proceeds" — it web-searches or answers from memory and you get unverifiable claims in front of a customer. This setup forces every answer through a fetchable source with a citable raw URL.
+  <b>Why this exists.</b> The public docsite (<code>docs.servicenow.com</code>) is a JS app Desktop can't read, and Desktop's native web fetch is sandbox-blocked from the mirror. Left alone, the model "hedges and proceeds" — it web-searches or answers from memory and you get unverifiable claims in front of a customer. This setup forces every answer through a fetchable source with a citable canonical docs.servicenow.com URL.
 </div>
 
 <h2><span class="n">1</span> One-time setup</h2>
@@ -129,7 +129,7 @@ RETRIEVAL FLOW (every hop uses the fetch MCP connector):
    Read past the header to the "## Documents" section.
 2. COPY the full https:// URL of the publication's index.md from that text.
 3. Fetch that index.md. COPY the full https:// URL of the target file from it.
-4. Fetch the file. Cite the exact raw URL.
+4. Fetch the file. Cite the canonical docs.servicenow.com URL (see RULES below), not the raw mirror URL.
 
 RESPONSE SIZE — IMPORTANT: This app's fetch connector BREAKS on large responses
 (symptoms: "Unexpected end of JSON input", "not valid JSON"). Do NOT request a
@@ -159,7 +159,11 @@ was wrong, not the doc missing.
 Branch = release family. "australia" is current GA. Others: zurich, yokohama, xanadu.
 
 RULES:
-- Every factual claim must cite the exact raw URL you fetched THIS turn.
+- Cite every factual claim with the CANONICAL docs.servicenow.com URL, not the raw mirror URL.
+  Derive it: strip .md from the mirror filename → prepend https://docs.servicenow.com/docs/r/
+  Example: r_MIDServerSystemRequirements.md → https://docs.servicenow.com/docs/r/r_MIDServerSystemRequirements
+  These URLs are JS-rendered (require a browser) — do NOT fetch them. They are stable canonical references.
+  Optionally note the raw mirror URL used for retrieval in parentheses.
 - The mirror covers PRODUCT DOCUMENTATION only. It does NOT contain Now Support
   KB articles (KBxxxxxxx) — those are login-gated and unfetchable. If the answer
   requires a KB, give what the mirror has, then cite the KB by number and state it
@@ -326,7 +330,7 @@ RULES:
 
 FORMAT — present both sections every time:
   ## Official Mirror
-  [findings with cited raw URLs]
+  [findings with cited canonical docs.servicenow.com URLs]
 
   ## Community Sources
   [findings with cited URLs and "Community content — peer-authored" flag]
