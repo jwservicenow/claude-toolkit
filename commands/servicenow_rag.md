@@ -7,18 +7,34 @@ Question: $ARGUMENTS
 Steps:
 1. Fetch the publication index:
    https://raw.githubusercontent.com/ServiceNow/ServiceNowDocs/australia/llms.txt
-   Scan it to identify the relevant publication. Default branch is australia (current GA).
-   If the question specifies a different release (xanadu, yokohama, zurich), use that branch instead.
+   Match the question to the right publication using this routing table (folder name → publication):
+     CMDB, IRE, Discovery, MID Server, Service Mapping, ITOM → servicenow-platform
+     ITSM, Incident, Change, Problem, Service Catalog        → it-service-management
+     ITAM, Software Asset, HAM, SAM                         → it-asset-management
+     CSM, Customer workflows                                 → customer-service-management
+     Scripting, API, REST, GlideRecord                      → api-reference
+     AI Control Tower, Now Assist, Generative AI, Gen AI,
+       Now LLM, AI Gateway, AI Agent, AI Governance         → intelligent-experiences
+       Note: Now Assist *product-specific skills* live in their product publication,
+       not intelligent-experiences — e.g. Now Assist for ITSM → it-service-management,
+       Now Assist for ITOM → servicenow-platform, Now Assist for CSM → customer-service-management
+   If uncertain, pick the best match from the full list in llms.txt.
+   Default branch is australia (current GA). Use xanadu/yokohama/zurich if the question specifies.
 
-2. Fetch that publication's index.md to find the specific topic file.
+2. Fetch that publication's index.md. Request the verbatim raw content — every line and every URL.
+   Do not summarize or infer. Extract exact file paths from the returned links only.
 
 3. Fetch the topic file using its raw.githubusercontent.com URL.
    Never use docs.servicenow.com or GitHub blob URLs — both are JS SPAs with no readable content.
+   For any IRE or CMDB configuration topic, also check for a non-CMDB sibling: if you fetch
+   a file like create-ire-data-source-rule.md, also fetch create-non-cmdb-ire-data-src-rule.md
+   (and vice versa). The docs publish paired CMDB/non-CMDB variants for most IRE config topics.
+   A 404 on the sibling is fine — just skip it.
 
-4. Supplement with Community — official docs cover definitions and structure; Community covers
-   operational behavior, gotchas, and real-world implications. Search and fetch Community sources
-   even when the mirror has relevant content:
-   site:servicenow.com/community <topic keywords>
+4. Supplement with Community using WebSearch:
+   Query: site:community.servicenow.com <topic keywords>
+   Fetch the top 1-2 results that look relevant (articles/forum posts, not search pages).
+   Community covers operational behavior, gotchas, and real-world implications that docs omit.
 
 5. Cite using canonical_url from the file's YAML frontmatter.
    If absent, derive the canonical URL: strip .md from the mirror filename →
