@@ -1,6 +1,6 @@
 ---
 name: newsession
-description: Token flush for long conversations — when context is filling up or a topic is wrapping up, invoke /newsession. Scans for loose ends worth finishing now before flushing, then compresses everything into a compact handoff prompt you can paste into a fresh session. Resumes work instantly without replaying history. Optionally shaped by a runbook or planning file. Strictly user-invoked — never auto-triggers.
+description: Token flush for long conversations — when context is filling up or a topic is wrapping up, invoke /newsession. Two modes: `/newsession` (full — scans for loose ends, writes file, displays handoff block) and `/newsession fast` (silent — writes file only, no scan, no output). Optionally shaped by a runbook or planning file. Strictly user-invoked — never auto-triggers.
 ---
 
 # /newsession — Session handoff
@@ -11,7 +11,11 @@ Look at what actually happened in this conversation (this session only — not m
 
 ## Step 1 — Resolve the optional argument
 
-If `$ARGUMENTS` is provided, determine how to treat it:
+If `$ARGUMENTS` is the literal word `fast`:
+- Skip to Step 3 (Save) immediately — no argument processing, no pre-flight scan, no display.
+- Derive `<topic>` from the current directory's name.
+
+Otherwise, if `$ARGUMENTS` is provided, determine how to treat it:
 1. If it contains a "/" or ends in a file extension, treat as a file path — read it as a runbook and let its content shape the handoff.
 2. If it's a bare filename (no slash, has extension), locate it: `find ~/ClaudeOS -name "<filename>" -type f 2>/dev/null | head -5` — one match → use it; multiple → list and ask; none → ask for full path.
 3. If it's a short phrase (no slash, no extension, one or more words), treat as a focus instruction — bias the handoff toward that topic/area without filtering out other important context.
