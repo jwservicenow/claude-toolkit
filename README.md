@@ -13,6 +13,7 @@ Everything here works inside **Claude Code** (the command-line app). Some tools 
 | [PDI integration - native MCP install](docs/pdi_native_mcp_install_guide.md) | Connect Claude Code to ServiceNow using the platform's ootb MCP — no scripts needed, OAuth 2.1 security profile with PKCE, 17 purpose-built tools |
 | [Status bar](#status-bar-customization) | Show model, context size, usage bar, and session cost at the bottom of Claude Code session UI |
 | [Using Multiple Claude Subscriptions on Mac](docs/dual-subscription-setup.md) | Run ServiceNow's Enterprise account and your personal Claude account on the same Mac without them mixing — separate configs, separate sessions |
+| [SSH Agent Key Management for Claude Homelab Access](docs/ssh-agent-homelab.md) | Load a passphrase-protected SSH key into the macOS agent for a configurable window (default 2h) so Claude can reach your lab hosts — and access expires automatically when you're done |
 
 ---
 
@@ -158,6 +159,12 @@ chmod +x ~/.claude/statusline-command.sh
 ### `Using Multiple Claude Subscriptions on Mac`
 
 - **[dual-subscription-setup.md](docs/dual-subscription-setup.md)** — How to run a personal and a work Claude account on the same Mac without them mixing. About 15 minutes start to finish.
+
+---
+
+### `SSH Agent Key Management for Claude Homelab Access`
+
+- **[ssh-agent-homelab.md](docs/ssh-agent-homelab.md)** — A `~/.zshrc` function that loads your homelab SSH key for a configurable number of hours (`ssh-up` = 2h, `ssh-up 4` = 4h) and displays the exact clock time it expires. Access auto-evicts when the window closes — no manual cleanup needed. Covers key generation, copying to hosts, and the common "Permission denied = expired, not broken" failure pattern.
 
 ---
 
