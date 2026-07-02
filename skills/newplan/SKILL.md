@@ -56,7 +56,7 @@ The single agreed goal from Step 2 — what we're trying to achieve and why. Sta
 The chosen approach and the reasoning behind it.
 
 ## Steps
-Ordered list of concrete steps to execute the plan.
+Ordered list of concrete steps to execute the plan. The **final step is always closure** — point it at the `## Closure` section below.
 
 ## Testing
 How to verify it worked.
@@ -72,6 +72,13 @@ Things assumed to be true that have not been verified.
 
 ## Goal Verification
 The single check that confirms the agreed goal (top of this plan) was actually achieved — not just that the steps ran. State the concrete, observable condition that proves it's done, and who confirms it.
+
+## Closure
+The last task of every plan, always present. Once the goal above is verified and the work is done:
+1. Banner the plan header with **`STATUS YYYY-MM-DD — DONE.`** (today's date).
+2. Move both this plan (`<topic>-plan-*.md`) and its prompt (`<topic>-prompt-*.md`) into the project's `archive/` folder.
+
+Until these are done, this section stands as the open marker that the plan isn't closed yet.
 
 ---
 
