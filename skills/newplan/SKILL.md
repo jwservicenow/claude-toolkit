@@ -72,6 +72,17 @@ Every plan carries this line verbatim so the executing session inherits it:
 > chat — never batched.** Chat and commit messages are not records. See
 > `shared/skills/newplan/record-controls.md`.
 
+**Set the §7 invariants up at write time — they are cheap to establish and expensive to retrofit.**
+When this plan opens a findings, defects or runbook artifact, give each one a header that:
+
+1. carries the ownership table for the whole set, with the handoff row written as a **glob**
+   (`<topic>-prompt-YYYY-MM-DD*.md`), never a specific letter — §7.1;
+2. cites `CANONICAL:record-controls` in one line instead of describing its own role — §7.2;
+3. says the runbook is section-numbered and is cited as `runbook §n` — §7.3.
+
+`/newsession` Step 2.6 checks these every flush. A plan that skips them hands that check a
+standing failure on day one.
+
 ## Backout
 How to undo or recover if something goes wrong.
 
@@ -110,6 +121,7 @@ Review the draft silently:
 
 Fix issues inline. Then show the user the finished plan.
 - **Does the plan carry a `## Controls` section citing `record-controls.md`?** A plan that names findings and defects artifacts but never says when they get written will produce a session that records nothing until asked.
+- **Do the artifacts this plan opens satisfy `record-controls.md` §7?** Glob handoff pointer, a `CANONICAL:record-controls` citation in each header, runbook declared section-numbered. These are the invariants `/newsession` Step 2.6 verifies — set them now, not after they drift.
 
 ### Step 6 — Save the File
 

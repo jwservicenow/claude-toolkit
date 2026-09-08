@@ -12,14 +12,14 @@ Look at what actually happened in this conversation (this session only — not m
 ## Step 1 — Resolve the optional argument
 
 If `$ARGUMENTS` is empty:
-- Run **Step 2.5** (close-out sweep — it is silent, and it is the whole reason a flush is safe), then go straight to Step 3 (Save). No pre-flight scan, no display. Skip Step 4 as well: write the file, then end the turn with the literal text `<!-- no output -->` and nothing else. It renders as nothing, so the user sees no output, and the harness gets a non-empty reply so it never asks for one.
+- Run **Step 2.5** (close-out sweep — it is silent, and it is the whole reason a flush is safe) and then **Step 2.6** (artifact-set consistency check, equally silent), then go straight to Step 3 (Save). No pre-flight scan, no display. Skip Step 4 as well: write the file, then end the turn with the literal text `<!-- no output -->` and nothing else. It renders as nothing, so the user sees no output, and the harness gets a non-empty reply so it never asks for one.
 - Derive `<topic>` by Step 3's ordering (worked-on plan's label, else the current directory's name).
 
 If `$ARGUMENTS` is the literal word `full`:
-- Run Step 2, then Step 2.5, then Step 3, then Step 4.
+- Run Step 2, then Step 2.5, then Step 2.6, then Step 3, then Step 4.
 - Derive `<topic>` by Step 3's ordering — `full` takes no focus argument, so rule 1 never applies.
 
-Otherwise, if `$ARGUMENTS` is provided, determine how to treat it (Step 2 still does **not** run — only `full` turns it on; **Step 2.5 always runs**; finish with Step 4):
+Otherwise, if `$ARGUMENTS` is provided, determine how to treat it (Step 2 still does **not** run — only `full` turns it on; **Steps 2.5 and 2.6 always run**; finish with Step 4):
 1. If it contains a "/" or ends in a file extension, treat as a file path — read it as a runbook and let its content shape the handoff.
 2. If it's a bare filename (no slash, has extension), locate it: `find ~/ClaudeOS -name "<filename>" -type f 2>/dev/null | head -5` — one match → use it; multiple → list and ask; none → ask for full path.
 3. If it's a short phrase (no slash, no extension, one or more words), treat as a focus instruction — bias the handoff toward that topic/area without filtering out other important context.
@@ -82,6 +82,36 @@ its one line from Step 4. If the sweep finds nothing, it says nothing — which 
 case when the timing rule in the spec is being followed. A sweep that regularly finds a backlog
 means the rule is not being followed and the sweep is being used as the mechanism instead of the
 backstop.
+
+## Step 2.6 — Artifact-set consistency check (runs in **both** modes, always)
+
+Runs after the sweep, before the handoff is written. Step 2.5 asks *"did this session's knowledge
+reach an artifact?"* — this asks *"is the artifact set still internally consistent?"* Different
+failure, and the sweep cannot see it, because the drift is usually not from this session's work.
+
+The invariants are `record-controls.md` **§7** (`CANONICAL:record-controls`) — follow them, do not
+restate them. Skip this step entirely if the project has no durable artifacts beyond the plan.
+
+Four checks, all mechanical. Run them against the artifact set the handoff points at:
+
+| Check | §7 | How |
+|---|---|---|
+| No artifact names a specific prompt version | 7.1 | `grep -l '\-prompt-[0-9-]*[a-z]\.md' <artifacts>` — any hit is stale by definition. Rewrite to the `*` glob |
+| Every artifact cites the spec | 7.2 | `grep -L 'CANONICAL:record-controls' <artifacts>` — every file listed is missing its header line |
+| Citations run both ways | 7.3 | If the runbook cites `F#`/`D#`, confirm those entries name the owning `§n` back. A runbook with zero inbound `runbook §` references is the signature failure |
+| **Nothing lives only in the handoff** | 7.4 | Read the **prior** prompt block by block. Any number, table, count, trap or rule that carries no `F#`, `D#`, `§n`, `AC#` or path is **orphaned** |
+
+**7.4 is the one that matters**, and it is the only one needing judgement. For each orphan, write
+it into the artifact that owns it by the Step 2.5 table, then cite it from the new handoff instead
+of carrying it. An orphan is not a formatting problem — it is a missing `F#` sitting in a pointer
+file, and it dies at this flush if it is not written now.
+
+Same permissions and same silence as Step 2.5: **appends only, never creates.** If an orphan's
+owning artifact does not exist, carry it into the handoff's Deferred section naming the artifact
+it is owed to — do not invent one, do not ask mid-flush. Write nothing to chat in either mode.
+
+A check that fails every session means `/newplan` set the project up without these invariants, or
+the artifacts were hand-edited around them. Say so in the handoff's Open threads, once.
 
 ## Step 3 — Save the handoff to disk
 

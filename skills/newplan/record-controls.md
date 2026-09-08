@@ -107,3 +107,38 @@ block, one home. Two copies drift the first time one is edited.
 When a later finding corrects an earlier one, **both stay**. Amend the old entry to point at the
 new one. A finding that is silently rewritten destroys the record of what was believed and when,
 which is usually the thing that explains a later mistake.
+
+---
+
+## 7. Set-level invariants — what a consistent artifact set looks like
+
+Sections 1–6 govern one entry at a time. These govern the **set**, and they are the rules
+`/newsession`'s Step 2.6 check enforces. Each is mechanical on purpose — a session should be able
+to verify it with `grep`, not judgement.
+
+**7.1 The handoff names artifacts by glob, never by version.** A prompt is superseded every
+session; a fixed pointer like `…-prompt-2026-09-07c.md` in an artifact is stale within hours and
+sends the next session to a dead file. Artifacts refer to `<topic>-prompt-YYYY-MM-DD*.md` and let
+the newest-letter-wins rule resolve it.
+
+**7.2 Every artifact cites this spec; none restates it.** One line in each header naming
+`CANONICAL:record-controls`. An artifact that describes its own role in its own words has forked
+the spec, and the fork drifts the first time either side is edited.
+
+**7.3 Citation runs both ways.** If the runbook cites `F1`, `F1` names the `runbook §` that owns
+its operational form. A one-way edge means half the set does not know the other half is
+citable — which is how a section-numbered runbook ends up with zero inbound `§n` references and
+gets restated instead of cited.
+
+**7.4 Nothing lives only in the handoff.** This is the whole point. Every number, table, trap,
+count or rule in the prompt must be *citable* — it carries an `F#`, `D#`, `§n` or `AC#`, or it
+names a path. A block in the prompt that carries none of these is **orphaned**: no artifact owns
+it, so it dies at the next flush, and it is invisible to everything that cites by number.
+
+> An orphan is not a formatting problem. It is a missing artifact entry that happens to be
+> sitting in a pointer file. §3 already says the handoff is not a record; 7.4 is how that is
+> checked rather than assumed.
+
+Found 2026-09-07: the six-area document split and the `--no-ignore-files` grep trap existed only
+in the handoff, and three of four artifacts pointed at a prompt two generations dead. Fixed as
+`F21` and `runbook §3.8`.
