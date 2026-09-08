@@ -21,7 +21,7 @@ If `$ARGUMENTS` is the literal word `full`:
 
 Otherwise, if `$ARGUMENTS` is provided, determine how to treat it (Step 2 still does **not** run — only `full` turns it on; **Steps 2.5, 2.55 and 2.6 always run**; finish with Step 4):
 1. If it contains a "/" or ends in a file extension, treat as a file path — read it as a runbook and let its content shape the handoff.
-2. If it's a bare filename (no slash, has extension), locate it: `find ~/ClaudeOS -name "<filename>" -type f 2>/dev/null | head -5` — one match → use it; multiple → list and ask; none → ask for full path.
+2. If it's a bare filename (no slash, has extension), locate it: `find <workspace root> -name "<filename>" -type f 2>/dev/null | head -5` (the workspace root is the ancestor directory holding the branch/project tree) — one match → use it; multiple → list and ask; none → ask for full path.
 3. If it's a short phrase (no slash, no extension, one or more words), treat as a focus instruction — bias the handoff toward that topic/area without filtering out other important context.
 
 ## Step 2 — Critical-only check (`full` only — never runs by default)
@@ -112,12 +112,12 @@ Two mechanics, both required:
 - **Search `archive/` recursively as well as the cwd**, for prompts *and* for the findings file in
   check 3. A chain that was archived along with its findings doc must not get a second one.
 - **Strip the archive prefix before matching the topic.** `/prompt-sweep` prefixes each archived
-  file with its parent folder name, so topic `homelab` in project `homelab/` is archived as
-  `homelab-homelab-prompt-*.md`. Drop a leading `<project-dir>-` before comparing, or every
-  archived chain reads as a different topic and counts zero. **Strip it repeatedly, not once —
-  the prefix stacks**: a chain archived, then re-swept later, carries it twice
-  (`homelab-homelab-health-dashboard-prompt-*.md` is topic `health-dashboard`). Loop while the
-  name still starts with `<project-dir>-` and is not itself the project name.
+  file with its parent folder name, so topic `bar` in project `foo/` is archived as
+  `foo-foo-prompt-*.md`. Drop a leading `<project-dir>-` before comparing, or every archived
+  chain reads as a different topic and counts zero. **Strip it repeatedly, not once — the prefix
+  stacks**: a chain archived, then re-swept later, carries it twice (`foo-foo-bar-prompt-*.md` is
+  topic `bar`). Loop while the name still starts with `<project-dir>-` and is not itself the
+  project name.
 
 Use `find`, **not** `grep` — `archive/` is gitignored, and the shell's `grep` silently skips
 ignored paths. A count that comes back suspiciously low is this, every time.
@@ -129,14 +129,14 @@ find ./archive -name '*-prompt-*.md' 2>/dev/null        # the rest, prefix-strip
 
 Two commands, deliberately. Combining them with `-o` puts `-maxdepth` after a predicate, where it
 stops applying globally and silently returns the live files only — the exact undercount this
-section exists to prevent. Verified against `homelab/` on 2026-09-07: the combined form returned
-15 prompts, the two-command form 174.
+section exists to prevent. Verified against a real archive of 174 prompts: the combined form
+returned 15, the two-command form 174.
 
-Worked example, `~/ClaudeOS/personal/projects/homelab` on 2026-09-07: topic `homelab` totals
-**20** flushes — 3 live, 4 archived as `homelab-prompt-*`, 13 as `homelab-homelab-prompt-*`.
-Live-only counting reads 3; prefix-blind counting reads 7. Across that folder, repeated stripping
-collapses 65 apparent topics into the 55 real ones, and `health-dashboard` — which needs two
-strips — goes from a top count of 9 to its true 16.
+Worked example. A project `foo/` whose topic `bar` has 3 live prompts, 4 archived as
+`bar-prompt-*` and 13 as `foo-bar-prompt-*` totals **20** flushes. Live-only counting reads 3;
+prefix-blind counting reads 7. On a long-lived project the difference is not marginal — repeated
+stripping can collapse dozens of apparent topics into the real ones, and a twice-swept topic can
+go from an apparent single-digit count to several times that.
 
 A dormant chain never fires this step, whatever its count, because the step only runs during a
 flush of that topic. The count matters at exactly one moment: when a long-archived thread is
@@ -205,9 +205,9 @@ the artifacts were hand-edited around them. Say so in the handoff's Open threads
 Save the generated handoff prompt as a standalone prompt file — this becomes the project's resume point. Mirror `/newplan`'s naming:
 - Write to the **current working directory** (the project being worked on) as `<topic>-prompt-YYYY-MM-DD.md` with today's date. Derive `<topic>` in this order, first match wins:
   1. `$ARGUMENTS`, if it named a focus.
-  2. The label of the `*-plan-*.md` in the cwd that **this session actually worked on** — strip the `-plan-YYYY-MM-DD.md` suffix and reuse the label verbatim, so the pair matches (`vuln-mitigation-plan-2026-08-03.md` → `vuln-mitigation-prompt-2026-08-03.md`). If none was worked on this session, skip to 3 — do not adopt a plan's label just because the file is present. If several were worked, break the tie **deterministically, in this order**: (a) highest date in the filename; (b) still tied → most recently modified on disk (`ls -t`); (c) still tied → skip to 3 and use the directory name. Never pick between same-date plans by judgment — an arbitrary pick is what mis-files a handoff.
+  2. The label of the `*-plan-*.md` in the cwd that **this session actually worked on** — strip the `-plan-YYYY-MM-DD.md` suffix and reuse the label verbatim, so the pair matches (`<label>-plan-2026-08-03.md` → `<label>-prompt-2026-08-03.md`). If none was worked on this session, skip to 3 — do not adopt a plan's label just because the file is present. If several were worked, break the tie **deterministically, in this order**: (a) highest date in the filename; (b) still tied → most recently modified on disk (`ls -t`); (c) still tied → skip to 3 and use the directory name. Never pick between same-date plans by judgment — an arbitrary pick is what mis-files a handoff.
   3. The current directory's name.
-- If the cwd is a branch root (e.g. `~/ClaudeOS/personal`) rather than a project dir, write the file there as the fallback.
+- If the cwd is a branch root (the parent of a `projects/` tree) rather than a project dir, write the file there as the fallback.
 - The newest `*-prompt-*.md` for a topic is its resume pointer — **newest = highest date, then highest letter suffix** (`…-08-03c.md` beats `…-08-03b.md` beats `…-08-03.md`). Before writing the new prompt, **demote the prior prompt for the same `<topic>` to SUPERSEDED**: prepend the banner `STATUS YYYY-MM-DD — SUPERSEDED by <new-prompt-filename>.` (today's date) as its first line. Do **not** delete it — `/prompt-sweep` archives superseded prompts later, with the user's approval. **Never demote a `keep-loose` REUSABLE prompt** (first line `LIFECYCLE: REUSABLE — keep-loose.`) — skip it entirely when choosing the prior prompt.
 
 Write only the contents of the handoff prompt (no intro line, no fences) to the file with the Write tool. Do **not** create or modify a README or a `.last-newsession.md`.
