@@ -107,25 +107,42 @@ superseded prompts into the project's `archive/`, so the cwd holds only the rece
 chain. Counting live files alone reports a thread that has flushed seventeen times as its first
 flush, and the step then never fires for exactly the long-running work it exists to catch.
 
-Two mechanics, both required:
+Three mechanics, all required. The first two are about *finding* the archived files; the third is
+about *matching* them, and a project with subfolders needs all three or it counts zero.
 
-- **Search `archive/` recursively as well as the cwd**, for prompts *and* for the findings file in
-  check 3. A chain that was archived along with its findings doc must not get a second one.
+- **Resolve `archive/` against the project root, never the cwd.** A project keeps **one**
+  `archive/`, at its root, but a flush often runs from a subfolder — `foo/baz/`, working topic
+  `bar`. `find ./archive …` from there matches nothing, `2>/dev/null` swallows the error, and the
+  chain counts zero. That is the same undercount as counting live files only, one directory down.
+  Walk up from the cwd to the nearest ancestor that contains an `archive/` and use that path.
+- **Search that archive recursively**, for prompts *and* for the findings file in check 3. A chain
+  that was archived along with its findings doc must not get a second one.
 - **Strip the archive prefix before matching the topic.** `/prompt-sweep` prefixes each archived
-  file with its parent folder name, so topic `bar` in project `foo/` is archived as
-  `foo-foo-prompt-*.md`. Drop a leading `<project-dir>-` before comparing, or every archived
-  chain reads as a different topic and counts zero. **Strip it repeatedly, not once — the prefix
-  stacks**: a chain archived, then re-swept later, carries it twice (`foo-foo-bar-prompt-*.md` is
-  topic `bar`). Loop while the name still starts with `<project-dir>-` and is not itself the
-  project name.
+  file with **the folder it was swept from** — the project directory for a root-level topic, but
+  the *subfolder* for everything else. Topic `bar` in `foo/baz/` archives as `baz-bar-prompt-*.md`,
+  **not** `foo-bar-prompt-*.md`. Stripping only `<project-dir>-` therefore misses every subfolder
+  topic and reads the topic as `baz-bar`.
+  **Strip a leading `<dir>-` where `<dir>` is the project directory or the name of any directory
+  that exists inside it, and loop — the prefix stacks**: archived, then re-swept later, it is
+  carried twice (`foo-foo-bar-prompt-*.md` is topic `bar`).
+  **Stop before the last strip eats the topic** — the remainder must still match `*-prompt-*`.
+  `baz-baz-prompt-*.md` strips once to `baz-prompt-*.md`, topic `baz`; a second strip would leave
+  `prompt-*.md` and lose it.
+
+Restricting `<dir>` to directories that actually exist is what stops a topic whose name happens to
+begin with a folder name from being eaten by the loop.
 
 Use `find`, **not** `grep` — `archive/` is gitignored, and the shell's `grep` silently skips
 ignored paths. A count that comes back suspiciously low is this, every time.
 
 ```
+root=<nearest ancestor of the cwd that contains archive/>
 find . -maxdepth 1 -name '<topic>-prompt-*.md'          # the live tail
-find ./archive -name '*-prompt-*.md' 2>/dev/null        # the rest, prefix-stripped before matching
+find "$root/archive" -name '*-prompt-*.md'              # the rest, prefix-stripped before matching
 ```
+
+**Do not `2>/dev/null` the second command.** A missing `archive/` is the signal that `$root` was
+resolved wrong; silencing it turns a wrong path into a plausible count of zero.
 
 Two commands, deliberately. Combining them with `-o` puts `-maxdepth` after a predicate, where it
 stops applying globally and silently returns the live files only — the exact undercount this
@@ -133,7 +150,9 @@ section exists to prevent. Verified against a real archive of 174 prompts: the c
 returned 15, the two-command form 174.
 
 Worked example. A project `foo/` whose topic `bar` has 3 live prompts, 4 archived as
-`bar-prompt-*` and 13 as `foo-bar-prompt-*` totals **20** flushes. Live-only counting reads 3;
+`bar-prompt-*` and 13 as `foo-bar-prompt-*` totals **20** flushes. Had `bar` lived in `foo/baz/`,
+those 17 would sit in `foo/archive/` as `baz-bar-prompt-*` — invisible from `foo/baz/` and
+mis-topiced from `foo/`, which is why the first and third mechanics exist. Live-only counting reads 3;
 prefix-blind counting reads 7. On a long-lived project the difference is not marginal — repeated
 stripping can collapse dozens of apparent topics into the real ones, and a twice-swept topic can
 go from an apparent single-digit count to several times that.
