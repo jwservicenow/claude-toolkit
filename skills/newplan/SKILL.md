@@ -96,13 +96,26 @@ Things assumed to be true that have not been verified.
 The single check that confirms the agreed goal (top of this plan) was actually achieved — not just that the steps ran. State the concrete, observable condition that proves it's done, and who confirms it.
 
 ## Closure
-The last task of every plan, always present. Once the goal above is verified and the work is done:
-1. Banner the plan header with **`STATUS YYYY-MM-DD — DONE.`** (today's date) — the DONE/SUPERSEDED vocabulary defined in `shared/skills/prompt-sweep/prmpt-lifecycle.md`.
+The last task of every plan, always present.
+
+**A plan never closes itself.** Closure runs only when the user asks for it, in words. Verified
+acceptance criteria, a finished step list, an empty backlog — none of these authorise it, and
+neither does a session ending. A plan left open costs nothing; a plan closed early is archived
+out of sight with its work unfinished.
+
+**When the user does ask, the banner states what was achieved and what was not.** If every
+criterion passed, say so. If some did not, name them in the banner itself — not only in the
+findings doc — so the closed plan is honest on its face to anyone who opens it later. A plan may
+legitimately be closed with criteria unmet; what is not legitimate is a banner that hides it.
+
+Once the user has asked and the work is settled:
+1. Banner the plan header with **`STATUS YYYY-MM-DD — DONE.`** (today's date), followed by one
+   line naming any unmet criteria — e.g. `AC1–AC6 unmet: the promotion step never fired.` — the DONE/SUPERSEDED vocabulary defined in `shared/skills/prompt-sweep/prmpt-lifecycle.md`.
 2. Move both this plan (`<topic>-plan-*.md`) and its prompt (`<topic>-prompt-*.md`) into the project's `archive/` folder — the `archive/` directly under the project dir where they live; create it if it doesn't exist.
 3. Deal with `run/` (see *Working artifacts* in the skill): promote anything durable to the project root and commit it; keeping or deleting the rest is the user's call — ask, don't assume.
 4. Settle the project's record artifacts — findings, defects, runbook — by `record-controls.md` **§9** (`CANONICAL:record-controls`), which decides OUTLIVES / HISTORY / ARCHIVED per artifact and gives the banner. Follow it; do not restate it here. Note §9's own warning: this step is the *only* enforcement — no sweep exists for records, so a plan that skips it leaves them live forever.
 
-Until these are done, this section stands as the open marker that the plan isn't closed yet.
+Until the user asks and these are done, this section stands as the open marker that the plan isn't closed yet.
 
 The prompt lifecycle (states, banners, when prompts get archived) is specified once in `shared/skills/prompt-sweep/prmpt-lifecycle.md` — follow it; do not restate its rules here.
 
