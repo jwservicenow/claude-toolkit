@@ -140,16 +140,31 @@ while IFS= read -r f; do
     esac
 done <<< "$staged"
 
-# 7. Plan and prompt files are rsync-backed working scratch, never versioned
-#    (Jim, 2026-08-25). Checked on ADDITIONS only, so the two prompt files already
-#    tracked in claude-toolkit stay editable without crying wolf on every commit.
+# 7. Plan and prompt files: the repo's own .gitignore decides, not this hook
+#    (Jim, 2026-09-07; replaces the blanket block of 2026-08-25). A repo that
+#    ignores them has said they are scratch, so staging one means it was
+#    force-added and that is what gets blocked. A repo that does NOT ignore them
+#    has deliberately opted in — the private workspace tracks all five artifact
+#    types — and the hook stays out of the way.
+#
+#    Deferring keeps the policy in ONE place per repo. The previous form kept a
+#    second copy here, which is why a repo could not change its mind without
+#    editing a guard vendored into every other repo, public ones included.
+#    Additions only, so an already-tracked file never cries wolf. --no-index is
+#    REQUIRED: by hook time the file is in the index, and a plain check-ignore
+#    reports any staged path as not-ignored, so the block would never fire.
 while IFS= read -r f; do
+    [ -n "$f" ] || continue
     case "$(basename "$f")" in
         *-plan-*.md|*-prompt-*.md)
-            echo "BLOCKED: new plan/prompt file staged -> $f"
-            echo "         Plans and prompts stay untracked in every repo; the 14:00"
-            echo "         TrueNAS rsync is their backup. Deliberate exception: --no-verify."
-            fail=1
+            # Not ignored by this repo => deliberately tracked => allow.
+            if git check-ignore -q --no-index "$f" 2>/dev/null; then
+                echo "BLOCKED: plan/prompt file staged despite being gitignored -> $f"
+                echo "         This repo treats plans and prompts as untracked scratch."
+                echo "         It can only have been force-added. Deliberate exception:"
+                echo "         git commit --no-verify"
+                fail=1
+            fi
             ;;
     esac
 done <<< $(git diff --cached --name-only --diff-filter=A)
