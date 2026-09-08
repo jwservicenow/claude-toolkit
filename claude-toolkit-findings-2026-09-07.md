@@ -201,3 +201,53 @@ creation, announced once, replaced it.
 
 Source: this file, 2026-09-07. Threshold and one-file scope are `JIM`'s rulings; the failure
 analysis was derived by tracing the soft-cap and §7.4 rules against a project with no artifacts.
+
+---
+
+## F9 — `VERIFIED` — the third-flush trigger counted only live prompts, so it never fired for long threads
+
+`F8`'s Step 2.55 counted `<topic>-prompt-*.md` "against the cwd." `/prompt-sweep` moves superseded
+prompts into the project's `archive/`, so **the cwd holds only the recent tail of a chain.** A
+thread that had flushed seventeen times read as its first flush, and the step would never have
+fired for exactly the long-running work it exists to catch.
+
+Two independent mechanics, both needed, both missing:
+
+| | Effect if omitted |
+|---|---|
+| Search `archive/` recursively, for prompts **and** the findings file | Long chains count near zero; an archived chain gets a second findings doc |
+| Strip `/prompt-sweep`'s parent-folder prefix before matching the topic | Every archived chain reads as a different topic and counts zero |
+| Strip it **repeatedly** — the prefix stacks on a re-swept chain | A twice-archived chain still counts zero, and splits into a third phantom topic |
+
+Measured on `~/ClaudeOS/personal/projects/homelab`, 2026-09-07. Topic `homelab`: **3** live
+prompts, **4** archived as `homelab-prompt-*`, **13** more as `homelab-homelab-prompt-*` — twenty
+flushes. Live-only counting reads three; prefix-blind counting reads seven. Ten other topics in
+that folder carry 3–19 archived prompts and zero live, and would never have triggered on resume.
+
+The prefix **stacks**: `homelab-homelab-health-dashboard-prompt-*.md` is topic `health-dashboard`,
+archived and later re-swept. Stripping once leaves a phantom topic; stripping in a loop collapses
+65 apparent topics in that folder to the 55 real ones and takes `health-dashboard` from an
+apparent 9 to its true 16. Verified by re-running the dry test after the fix.
+
+**The example command shipped in the fix was itself wrong**, and demonstrates the same trap:
+
+```
+find . -path '*/archive/*' -name '*prompt-*.md' -o -maxdepth 1 -name '*prompt-*.md'   # 15
+find . -maxdepth 1 -name '*prompt-*.md'; find ./archive -name '*prompt-*.md'          # 174
+```
+
+`-maxdepth` after a predicate stops applying globally and silently returns the live files only.
+No error, no warning, a plausible number. Now two separate commands, with the counts recorded so
+nobody re-combines them.
+
+**A third claim made during this work was wrong and is withdrawn** (§6 — the record of what was
+believed matters): `uptime-kuma-planning-prompt-2026-08-12.md` was reported as able to fool
+topic-derivation rule 2, because "planning" contains "plan". It cannot. Rule 2 globs `*-plan-*.md`
+and the file has `-planning-`, so the delimiter does not close. It matches only the `.gitignore`
+blanket `*[Pp][Ll][Aa][Nn]*.md`, which is expected for a prompt. The error came from reading an
+`ls` that used the blanket pattern and attributing the hit to the topic glob. Verified both ways
+with shell pattern matching before withdrawal.
+
+Source: dry run of Step 2.55's conditions against every prompt chain in `homelab/`, 2026-09-07 —
+`JIM` asked for it to be tested there. It found both defects on the first run, one day after
+`F8` shipped.

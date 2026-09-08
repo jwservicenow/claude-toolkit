@@ -94,14 +94,53 @@ Runs between the sweep and the consistency check, and only fires for **ad-hoc th
 that grew out of a one-off question and never had a `/newplan`. The rule is `record-controls.md`
 **§8** (`CANONICAL:record-controls`) — follow it, do not restate it.
 
-**Fire when all three are true**, checked against the cwd after Step 3's topic is derived:
+**Fire when all three are true**, evaluated after Step 3's topic is derived:
 
 1. this session worked **no** `*-plan-*.md` (topic-derivation rule 2 did not match), **and**
-2. **two or more** prior `<topic>-prompt-*.md` already exist — this flush is the third or later,
-   **and**
-3. no `<topic>-findings-*.md` exists yet.
+2. **two or more** prior prompts exist for this topic — this flush is the third or later, **and**
+3. no findings artifact exists for it yet.
 
 Otherwise skip the step entirely and say nothing. Flushes one and two never fire it.
+
+**Counting is the part that goes wrong. Count archived prompts too.** `/prompt-sweep` moves
+superseded prompts into the project's `archive/`, so the cwd holds only the recent tail of a
+chain. Counting live files alone reports a thread that has flushed seventeen times as its first
+flush, and the step then never fires for exactly the long-running work it exists to catch.
+
+Two mechanics, both required:
+
+- **Search `archive/` recursively as well as the cwd**, for prompts *and* for the findings file in
+  check 3. A chain that was archived along with its findings doc must not get a second one.
+- **Strip the archive prefix before matching the topic.** `/prompt-sweep` prefixes each archived
+  file with its parent folder name, so topic `homelab` in project `homelab/` is archived as
+  `homelab-homelab-prompt-*.md`. Drop a leading `<project-dir>-` before comparing, or every
+  archived chain reads as a different topic and counts zero. **Strip it repeatedly, not once —
+  the prefix stacks**: a chain archived, then re-swept later, carries it twice
+  (`homelab-homelab-health-dashboard-prompt-*.md` is topic `health-dashboard`). Loop while the
+  name still starts with `<project-dir>-` and is not itself the project name.
+
+Use `find`, **not** `grep` — `archive/` is gitignored, and the shell's `grep` silently skips
+ignored paths. A count that comes back suspiciously low is this, every time.
+
+```
+find . -maxdepth 1 -name '<topic>-prompt-*.md'          # the live tail
+find ./archive -name '*-prompt-*.md' 2>/dev/null        # the rest, prefix-stripped before matching
+```
+
+Two commands, deliberately. Combining them with `-o` puts `-maxdepth` after a predicate, where it
+stops applying globally and silently returns the live files only — the exact undercount this
+section exists to prevent. Verified against `homelab/` on 2026-09-07: the combined form returned
+15 prompts, the two-command form 174.
+
+Worked example, `~/ClaudeOS/personal/projects/homelab` on 2026-09-07: topic `homelab` totals
+**20** flushes — 3 live, 4 archived as `homelab-prompt-*`, 13 as `homelab-homelab-prompt-*`.
+Live-only counting reads 3; prefix-blind counting reads 7. Across that folder, repeated stripping
+collapses 65 apparent topics into the 55 real ones, and `health-dashboard` — which needs two
+strips — goes from a top count of 9 to its true 16.
+
+A dormant chain never fires this step, whatever its count, because the step only runs during a
+flush of that topic. The count matters at exactly one moment: when a long-archived thread is
+picked back up.
 
 **When it fires**, create `<topic>-findings-YYYY-MM-DD.md` in the cwd, beside the prompts:
 
