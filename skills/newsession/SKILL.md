@@ -122,15 +122,18 @@ about *matching* them, and a project with subfolders needs all three or it count
   the *subfolder* for everything else. Topic `bar` in `foo/baz/` archives as `baz-bar-prompt-*.md`,
   **not** `foo-bar-prompt-*.md`. Stripping only `<project-dir>-` therefore misses every subfolder
   topic and reads the topic as `baz-bar`.
-  **Strip a leading `<dir>-` where `<dir>` is the project directory or the name of any directory
-  that exists inside it, and loop — the prefix stacks**: archived, then re-swept later, it is
-  carried twice (`foo-foo-bar-prompt-*.md` is topic `bar`).
-  **Stop before the last strip eats the topic** — the remainder must still match `*-prompt-*`.
-  `baz-baz-prompt-*.md` strips once to `baz-prompt-*.md`, topic `baz`; a second strip would leave
-  `prompt-*.md` and lose it.
+  **Match toward the topic you are counting; do not normalise blindly.** You already know the
+  topic. Test the filename against `<topic>-prompt-`; if it does not match, strip one leading
+  `<dir>-` (the project directory or any directory inside it) and test again. **Stop at the first
+  match.** The prefix stacks, so this may take several strips — `foo-foo-bar-prompt-*.md` is
+  topic `bar`.
 
-Restricting `<dir>` to directories that actually exist is what stops a topic whose name happens to
-begin with a folder name from being eaten by the loop.
+**Stopping at the first match is the whole point, and blind stripping is wrong.** A topic whose
+name *begins with a folder name* is eaten otherwise: with a directory `baz/`, the archived file
+`baz-baz-qux-prompt-*.md` is topic `baz-qux`, but a loop that strips whenever it can strips twice
+and reads `qux`. Restricting `<dir>` to real directory names does **not** prevent this — the
+collision is between a real directory name and a topic that starts with it. Only the stop
+condition prevents it.
 
 Use `find`, **not** `grep` — `archive/` is gitignored, and the shell's `grep` silently skips
 ignored paths. A count that comes back suspiciously low is this, every time.
