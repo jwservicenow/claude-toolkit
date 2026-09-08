@@ -40,6 +40,41 @@ in **one line** before writing and let the user decide (honor normal change-cont
 destructive-op acks). If nothing clears that bar (the usual case), say nothing and proceed
 straight to Step 3.
 
+## Step 2.5 — Close-out sweep (runs in **both** modes, always)
+
+Runs before the handoff is written, whether or not `full` was passed. The failure it catches is
+mode-independent.
+
+Walk what this session actually did — measured, proved, ruled out, hit, broke, parked, decided —
+and check each item reached its artifact. Write the ones that did not, into the artifact that
+owns them:
+
+| Unrecorded | Goes to |
+|---|---|
+| A measurement, proof or ruling-out a future session would re-derive | findings, next `F#` |
+| A bug, gap, limitation, or work parked with a reason | defects, next `D#` |
+| An operational trap tripped or verified — a wrong turn that cost time | runbook, next `§` |
+| A criterion whose status moved | acceptance |
+
+The spec is `shared/skills/newplan/record-controls.md` (`CANONICAL:record-controls`) — follow it,
+do not restate it. Two of its rules bind here:
+
+- **A commit message is not a record.** A session that committed descriptive messages all day and
+  wrote no `F#` has recorded nothing. Check the artifacts, not the git log.
+- **Every entry names its source.** No code, no number.
+
+**This step writes without asking.** Its authority is the plan's own `## Controls` section, which
+the user approved when the plan was written — the approval is given once, at plan time, not per
+entry. The alternative is flushing the session and losing the work, which is the harm this
+exists to prevent.
+
+**It writes silently.** No narration, no summary, no list of what it wrote, in either mode. A
+bare `/newsession` still outputs `<!-- no output -->` and nothing else; `full` still prints only
+its one line from Step 4. If the sweep finds nothing, it says nothing — which is the expected
+case when the timing rule in the spec is being followed. A sweep that regularly finds a backlog
+means the rule is not being followed and the sweep is being used as the mechanism instead of the
+backstop.
+
 ## Step 3 — Save the handoff to disk
 
 Save the generated handoff prompt as a standalone prompt file — this becomes the project's resume point. Mirror `/newplan`'s naming:

@@ -61,6 +61,17 @@ Ordered list of concrete steps to execute the plan. The **final step is always c
 ## Testing
 How to verify it worked. **Score each criterion separately and never roll results into a single number** — a single score cannot tell you *which* thing failed, so it cannot be acted on, and a plan whose progress is one number is unfalsifiable. If an acceptance-criteria artifact exists, this section names its criteria and reports against them rather than inventing its own bar.
 
+## Controls
+The record obligation for this plan, governed by `shared/skills/newplan/record-controls.md`
+(`CANONICAL:record-controls`) — cite it, do not restate it. Name here only what is specific to
+*this* plan: which artifacts it uses, and any control the topic adds on top of the spec.
+
+Every plan carries this line verbatim so the executing session inherits it:
+
+> **Findings, defects and runbook entries are written when they land, before being reported in
+> chat — never batched.** Chat and commit messages are not records. See
+> `shared/skills/newplan/record-controls.md`.
+
 ## Backout
 How to undo or recover if something goes wrong.
 
@@ -98,6 +109,7 @@ Review the draft silently:
 6. **Goal trace** — Does the Goal Verification section actually test the agreed goal from Step 2, and do the Steps lead to it? If the goal drifted while writing, fix it so top and bottom match.
 
 Fix issues inline. Then show the user the finished plan.
+- **Does the plan carry a `## Controls` section citing `record-controls.md`?** A plan that names findings and defects artifacts but never says when they get written will produce a session that records nothing until asked.
 
 ### Step 6 — Save the File
 
@@ -155,6 +167,13 @@ Executing a plan generates byproducts the plan itself never named: censuses, fin
 | Defect / backlog log | `defects` | Known bugs and parked work — including things deliberately left unfixed, and why. |
 | Runbook | `runbook` | Operational traps, host and service mechanics, recovery steps. |
 | Traceability | often a table inside the acceptance doc | Which criterion each test covers, and its current result. |
+
+**When each one gets written is not optional.** The table above says what each artifact owns;
+`shared/skills/newplan/record-controls.md` says *when* an entry is owed and what does not count as
+having recorded it. That spec is canonical — the plan cites it, never restates it. The rule it
+turns on: an entry is written the moment its content exists, before it is reported in chat, and
+the runbook is the one most often skipped because a trap feels like an embarrassment rather than
+a finding.
 
 **Each artifact owns its content.** Nothing that lives in one gets copied into the plan or the handoff prompt — they cite it (`runbook §1`, `defects D4`, `F81`). Two copies of a block drift the first time one is edited. `/newsession` relies on this: its section-ownership rule cites exactly these artifacts.
 
