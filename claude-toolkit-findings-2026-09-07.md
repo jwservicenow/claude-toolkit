@@ -24,9 +24,12 @@ Each file owns its content; the others cite it and never restate it.
 The roles in this table, and the obligation to write to them as knowledge lands, are **CANONICAL**
 in `skills/newplan/record-controls.md` (`CANONICAL:record-controls`) — cited, never restated.
 
-**No defects artifact and no runbook exist yet.** That is a deliberate gap, not an oversight: no
-`D#`-class or `§n`-class item has needed a home here. The first one that does is the signal to
-create them, per `record-controls.md` §7.4 — not a reason to misfile it on this page.
+**No defects artifact and no runbook exist yet, and this file holds every class for now** —
+findings, parked decisions and traps alike, all numbered `F#`. That follows `record-controls.md`
+§8's one-file rule and its reasoning: an empty defects log reads as *"nothing is parked"* rather
+than *"nobody wrote it down."* An entry that is `D#`- or `§n`-class in nature says so in its own
+first line, so the split is mechanical if this ever earns three files. `JIM` ruled on this
+2026-09-07 when the first parked decision arrived — `F10`.
 
 ---
 
@@ -251,3 +254,49 @@ with shell pattern matching before withdrawal.
 Source: dry run of Step 2.55's conditions against every prompt chain in `homelab/`, 2026-09-07 —
 `JIM` asked for it to be tested there. It found both defects on the first run, one day after
 `F8` shipped.
+
+---
+
+## F10 — `PARKED` (`D#`-class) — archive-prefix stacking is compensated for, not fixed
+
+`/prompt-sweep` Step 5 prefixes every archived file with its immediate parent folder name —
+*"always, every file, **no dedup**."* A file that is archived, returned to the project root, and
+archived again therefore carries the prefix twice.
+
+**It is not hypothetical.** Prefix depth across the 159 archived prompts in
+`~/ClaudeOS/personal/projects/homelab/archive/`, 2026-09-07:
+
+| `homelab-` prefixes | Files |
+|---|---|
+| 0 | 68 |
+| 1 | 64 |
+| 2 | 27 |
+
+There are **no nested `archive/` directories**, so a double sweep is the only path that produces
+the 27 — swept, moved back, swept again. Measured with a prefix-stripping count over
+`archive/*prompt*.md`; the absence of nesting checked with `find . -type d -name archive`.
+
+**The decision: compensate in the consumer, do not change the naming rule.** `/newsession` Step
+2.55 strips the prefix in a loop (`F9`). `/prompt-sweep` is left exactly as it is.
+
+Why, and it is a genuine trade rather than laziness:
+
+- 159 files already sit on disk under the current convention. Changing the rule makes the sweep
+  disagree with its own history, and the archive stops being self-describing.
+- Renaming them to dedup would break any path that points at one — and prompts are cited by path
+  from plans, runbooks and other prompts, none of which are searchable by a bare `grep`, because
+  `archive/` and every `*prompt*.md` are gitignored. The blast radius cannot be measured cheaply,
+  which is itself the argument for not swinging.
+- Stacking is harmless as long as every consumer strips in a loop. Today there is exactly one
+  consumer.
+
+**What would reopen it:** a *second* consumer needing topic matching. At that point the loop-strip
+is duplicated logic in two skills, and the cheaper fix flips to making `/prompt-sweep` idempotent —
+skip the prefix when the filename already starts with it — which fixes new files without touching
+the 159. That is a one-line change guarded by one condition; it is deferred only because nothing
+needs it yet.
+
+Source: `JIM` asked whether `/prompt-sweep` still works after `F8`/`F9`. It does — it globs
+`*-prompt-*.md`, so findings files never enter its scan, are never classified, moved or prefixed.
+The stacking was found while confirming that, and parked on his instruction to record the decision
+rather than act on it.
