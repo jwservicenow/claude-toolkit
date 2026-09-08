@@ -140,7 +140,17 @@ If the owning artifact does not exist, the content stays in the handoff and **th
 
 **The prior prompt is not a template.** Re-derive every block from this session's actual state. A block earns its place by passing the Next-action test on its own — having appeared in the previous prompt is not a reason to keep it, and copying its shape forward is how a handoff grows monotonically: nothing is ever removed because nothing is ever re-examined. Read the prior prompt to know what is superseded, not to know what to write.
 
-**Hard ceiling — 120 lines, and never more than half the plan's line count.** Whichever is smaller. **If the session worked no plan, the ceiling is a flat 120 lines** — the half-the-plan clause simply does not apply, and it never prunes below 120 on its own. This is a hard limit, not a target: prune to fit *before* writing, rather than writing long and trimming after. If real state genuinely will not fit, that is a signal the plan is missing something the handoff is compensating for — put it in the plan and cite it. Traps are capped at those the Next action can actually trip on; **any trap cut for the cap must be written into the runbook first** — or the plan, if the project has no runbook — so the cap never loses one.
+**Soft cap — 120 lines, and never more than half the plan's line count.** Whichever is smaller. **If the session worked no plan, the cap is a flat 120 lines** — the half-the-plan clause simply does not apply, and it never prunes below 120 on its own.
+
+**Soft means the number never wins against a fact.** Aim for it while writing, not by trimming after. When the draft is over:
+
+1. **Cut duplication first** — anything already owned by a live artifact (runbook, defects log, findings, plan, CLAUDE.md). This is free: the content is not lost, and the section-ownership rules above already required it. Most overage is this.
+2. **If it is still over, keep it.** Never delete a fact that lives nowhere else to hit a number. A handoff that resumes correctly at 130 lines beats one that fits at 118 and dropped the path the next session needed.
+3. **Say so.** Add one line as the last line of the file: `Cap: N lines against a soft cap of 120 — over by M. Kept: <what and why>.` In `full` mode, append the same overage to Step 4's single line. A bare `/newsession` still prints nothing — the notice lives in the file, which is where it survives.
+
+Persistent overage is a signal, not a failure: the plan is probably missing something the handoff is compensating for. Put it in the plan and cite it next time.
+
+Traps are capped at those the Next action can actually trip on; **any trap cut for the cap must be written into the runbook first** — or the plan, if the project has no runbook — so the cap never loses one.
 
 **When there is no Next action, the pruning test still applies — in a different form.** Every rule above tests a block by asking *"could the Next action plausibly touch this?"* An exploratory session may legitimately have no Next action, and the test must not simply lapse — that is how a handoff grows unbounded. Substitute: **"would the next session need this to pick the thread back up?"** Same severity, same burden of proof. A block that only records how this session got somewhere fails both forms.
 
@@ -170,7 +180,7 @@ Deferred:
 Topics discussed but intentionally parked. One line each — prevents the next session from re-litigating resolved decisions. **If the project has a defect/backlog log, that log owns these** — carry a pointer and only what the Next action must not reopen. A Deferred block that keeps growing across prompts means the log is missing.
 
 Traps:
-Optional. Only hard-won gotchas that **the Next action itself can trip on** — a false-failure signal, a command that silently returns nothing, a flag that means the opposite of what it looks like. **If the project has a runbook, the runbook owns these** — carry at most 3 lines here and cite the runbook for the rest. With no runbook the cap is 10 lines, and exceeding it is the signal to create one. Never carry a trap forward because the previous prompt had it — re-derive it from this session or drop it.
+Optional. Only hard-won gotchas that **the Next action itself can trip on** — a false-failure signal, a command that silently returns nothing, a flag that means the opposite of what it looks like. **If the project has a runbook, the runbook owns these** — carry at most 3 lines here and cite the runbook for the rest. With no runbook the soft cap is 10 lines, and exceeding it is the signal to create one. Both numbers are soft in the same sense as the line cap — a trap the Next action can genuinely trip on is never dropped to hit them, it is written to the runbook and cited. Never carry a trap forward because the previous prompt had it — re-derive it from this session or drop it.
 
 Key artifacts:
 Only what's needed for the next action — file paths, IPs, sys_ids, commands, URLs. Give the real path for anything in `run/` so the next session doesn't hunt for it at the project root. Include verbatim any lookup tables, slot maps, or ID-to-name mappings needed to interpret next-session output — do not summarize these into prose.
