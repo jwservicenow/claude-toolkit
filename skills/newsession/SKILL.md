@@ -12,14 +12,14 @@ Look at what actually happened in this conversation (this session only — not m
 ## Step 1 — Resolve the optional argument
 
 If `$ARGUMENTS` is empty:
-- Skip to Step 3 (Save) immediately — no pre-flight scan, no display. Skip Step 4 as well: write the file, then end the turn with the literal text `<!-- no output -->` and nothing else. It renders as nothing, so the user sees no output, and the harness gets a non-empty reply so it never asks for one.
+- Run **Step 2.5** (close-out sweep — it is silent, and it is the whole reason a flush is safe), then go straight to Step 3 (Save). No pre-flight scan, no display. Skip Step 4 as well: write the file, then end the turn with the literal text `<!-- no output -->` and nothing else. It renders as nothing, so the user sees no output, and the harness gets a non-empty reply so it never asks for one.
 - Derive `<topic>` by Step 3's ordering (worked-on plan's label, else the current directory's name).
 
 If `$ARGUMENTS` is the literal word `full`:
-- Run Step 2, then Step 3, then Step 4.
+- Run Step 2, then Step 2.5, then Step 3, then Step 4.
 - Derive `<topic>` by Step 3's ordering — `full` takes no focus argument, so rule 1 never applies.
 
-Otherwise, if `$ARGUMENTS` is provided, determine how to treat it (Step 2 still does **not** run — only `full` turns it on; finish with Step 4):
+Otherwise, if `$ARGUMENTS` is provided, determine how to treat it (Step 2 still does **not** run — only `full` turns it on; **Step 2.5 always runs**; finish with Step 4):
 1. If it contains a "/" or ends in a file extension, treat as a file path — read it as a runbook and let its content shape the handoff.
 2. If it's a bare filename (no slash, has extension), locate it: `find ~/ClaudeOS -name "<filename>" -type f 2>/dev/null | head -5` — one match → use it; multiple → list and ask; none → ask for full path.
 3. If it's a short phrase (no slash, no extension, one or more words), treat as a focus instruction — bias the handoff toward that topic/area without filtering out other important context.
@@ -63,10 +63,18 @@ do not restate it. Two of its rules bind here:
   wrote no `F#` has recorded nothing. Check the artifacts, not the git log.
 - **Every entry names its source.** No code, no number.
 
-**This step writes without asking.** Its authority is the plan's own `## Controls` section, which
-the user approved when the plan was written — the approval is given once, at plan time, not per
-entry. The alternative is flushing the session and losing the work, which is the harm this
-exists to prevent.
+**Appends only, and never creates.** The sweep may append to an artifact that already exists —
+that is the artifact's declared purpose and the plan established it. It must **never create** an
+artifact, and never write outside the ones the project already has.
+
+**Authority to write without asking comes from the plan's `## Controls` section.** Plans written
+before that section existed do not have one. In that case the append-only rule above still
+stands and is the whole permission: adding `F15` to a findings doc the plan already owns is not a
+new decision, so it needs no new approval.
+
+**If the owning artifact does not exist**, do not invent it and do not ask mid-flush. Carry the
+item into the handoff's Deferred section naming the artifact it is owed to, so it is visible and
+survives. Creating a new artifact is a decision for the user, not for a flush.
 
 **It writes silently.** No narration, no summary, no list of what it wrote, in either mode. A
 bare `/newsession` still outputs `<!-- no output -->` and nothing else; `full` still prints only
