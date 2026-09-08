@@ -8,8 +8,8 @@ Everything here works inside **Claude Code** (the command-line app). Some tools 
 |------|-------------|
 | [Claude Desktop RAG](https://jwservicenow.github.io/claude-toolkit/docs/servicenow-mirror-desktop-guide.html) **· v3** | Claude Desktop can't read the ServiceNow docsite directly — this fixes it. Wires in a custom MCP fetch server to pull from the [GitHub docs mirror](https://github.com/ServiceNow/ServiceNowDocs#servicenowdocs), then locks it down with Project Instructions that re-enforces docsite-only answers with citable URLs. |
 | [/servicenow_rag](#servicenow_rag) | Claude Code RAG skill — Navigates ServiceNow's official [GitHub docs mirror](https://github.com/ServiceNow/ServiceNowDocs#servicenowdocs) from its published index down to the exact topic file, then supplements with a scoped ServiceNow Community search. Answers are cited to real docs.servicenow.com URLs; it won't invent a doc path, and says so when the docs don't cover something. |
-| [/newsession](#newsession) | Long chat getting slow or pricey? Turn it into a compact handoff you paste into a fresh session — goal, decisions, constraints, next action, written straight to your project folder |
-| [/newplan](#newplan) | Turn a goal into an approved, written plan — interviews you, asks clarifying questions, provides 3–4 ranked approaches with trade-offs, saved as a plan file; every plan ends with a built-in closure step (status DONE + archive) |
+| [/newsession](#newsession) | Long chat getting slow or pricey? Turn it into a compact handoff you paste into a fresh session — goal, decisions, constraints, next action, written straight to your project folder. First sweeps the session for anything you learned but never wrote down |
+| [/newplan](#newplan) | Turn a goal into an approved, written plan — interviews you, asks clarifying questions, provides 3–4 ranked approaches with trade-offs, saved as a plan file, with findings/defects/runbook artifacts set up alongside it |
 | [/security-audit](#security-audit) | Scans the whole codebase for OWASP Top 10 patterns, dependency CVEs, hardcoded secrets, weak auth, and risky config — an audit of everything, not just your pending diff |
 | [/ai-security](#ai-security) | Security review for AI/LLM systems and agents — prompt injection (direct and indirect), agent tool abuse, guardrail resistance, model inversion and data-poisoning exposure, mapped to MITRE ATLAS |
 | [/deps-audit](#deps-audit) | Dependency health check — known vulnerabilities, outdated and unused packages, license compliance. Detects your package manager (npm/yarn/pnpm, pip/poetry, …) and ranks what to fix first |
@@ -80,6 +80,8 @@ If Claude fetches from GitHub before answering, it's working. If it answers imme
 
 Long conversations get slow, lose the thread, and burn tokens. Type `/newsession` and it writes a dense, structured handoff — goal, decisions, constraints, next action — and saves it as a resume file right in your project folder. Paste it into a new chat and pick up exactly where you left off, no replaying history.
 
+First it sweeps silently for anything the session measured, decided or tripped over that never reached a file, and writes it where it belongs — so it doesn't die with the chat.
+
 It doesn't interview you first. Unfinished work goes into the handoff's *Next action* and *Deferred* sections. Previous handoffs are kept and marked *superseded*, never deleted, so you keep a trail — a same-day re-run gets a letter suffix (`…-08-20b.md`, then `…-08-20c.md`) rather than overwriting. Plain `/newsession` writes the file silently and prints nothing; `/newsession full` also flags anything genuinely urgent that would break if the session flushed without it, then prints the path.
 
 Optionally pass a filename and the next session will be shaped around that file:
@@ -90,10 +92,14 @@ Optionally pass a filename and the next session will be shaped around that file:
 **Install**
 
 ```bash
-mkdir -p ~/.claude/skills/newsession
+mkdir -p ~/.claude/skills/newsession ~/.claude/skills/newplan
 curl -o ~/.claude/skills/newsession/SKILL.md \
   https://raw.githubusercontent.com/jwservicenow/claude-toolkit/main/skills/newsession/SKILL.md
+curl -o ~/.claude/skills/newplan/record-controls.md \
+  https://raw.githubusercontent.com/jwservicenow/claude-toolkit/main/skills/newplan/record-controls.md
 ```
+
+Both files are needed. `record-controls.md` is a shared spec — `/newplan` reads it too.
 
 Restart Claude Code. Then type `/newsession`.
 
@@ -101,7 +107,9 @@ Restart Claude Code. Then type `/newsession`.
 
 ### `/newplan`
 
-Type `/newplan` followed by what you want to do. Claude explores your project for context, asks up to four clarifying questions, then lays out three to four approaches ranked by trade-offs. It self-reviews, presents the plan for your approval, and on your OK writes a complete, self-contained plan file into your project folder — ready to hand to a fresh session or a teammate. Every plan also ends with a `## Closure` step, so finishing it means bannering it DONE and moving it to your archive — plans close themselves out instead of lingering.
+Type `/newplan` followed by what you want to do. Claude explores your project for context, asks up to four clarifying questions, then lays out three to four approaches ranked by trade-offs. It self-reviews, presents the plan for your approval, and on your OK writes a complete, self-contained plan file into your project folder — ready to hand to a fresh session or a teammate.
+
+**A plan never closes itself** — closure runs only when you ask for it in words, and the DONE banner names what wasn't achieved as well as what was. The plan also names where the work's output goes (findings, defects, runbook) and when each gets written.
 
 ```
 /newplan migrate our CMDB to CSDM
@@ -114,7 +122,11 @@ Type `/newplan` followed by what you want to do. Claude explores your project fo
 mkdir -p ~/.claude/skills/newplan
 curl -o ~/.claude/skills/newplan/SKILL.md \
   https://raw.githubusercontent.com/jwservicenow/claude-toolkit/main/skills/newplan/SKILL.md
+curl -o ~/.claude/skills/newplan/record-controls.md \
+  https://raw.githubusercontent.com/jwservicenow/claude-toolkit/main/skills/newplan/record-controls.md
 ```
+
+Both files are needed. `record-controls.md` is a shared spec — `/newsession` reads it too.
 
 Restart Claude Code. Then type `/newplan`.
 
