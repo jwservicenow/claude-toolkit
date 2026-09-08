@@ -100,7 +100,7 @@ The last task of every plan, always present. Once the goal above is verified and
 1. Banner the plan header with **`STATUS YYYY-MM-DD — DONE.`** (today's date) — the DONE/SUPERSEDED vocabulary defined in `shared/skills/prompt-sweep/prmpt-lifecycle.md`.
 2. Move both this plan (`<topic>-plan-*.md`) and its prompt (`<topic>-prompt-*.md`) into the project's `archive/` folder — the `archive/` directly under the project dir where they live; create it if it doesn't exist.
 3. Deal with `run/` (see *Working artifacts* in the skill): promote anything durable to the project root and commit it; keeping or deleting the rest is the user's call — ask, don't assume.
-4. Settle the project's artifacts: carry forward anything a successor still needs, then mark superseded findings docs as read-only history so they stop loading at session start. Version-free artifacts — a defect log, a runbook — are **not** archived with the plan; they outlive it. Never archive an artifact another live plan still cites.
+4. Settle the project's record artifacts — findings, defects, runbook — by `record-controls.md` **§9** (`CANONICAL:record-controls`), which decides OUTLIVES / HISTORY / ARCHIVED per artifact and gives the banner. Follow it; do not restate it here. Note §9's own warning: this step is the *only* enforcement — no sweep exists for records, so a plan that skips it leaves them live forever.
 
 Until these are done, this section stands as the open marker that the plan isn't closed yet.
 

@@ -183,3 +183,47 @@ apply. The creation is the one thing a silent flush may say out loud, exactly on
 
 `/newplan` remains the user's call and is a different decision: it is for when the work needs
 steps and acceptance criteria. This rule only gives existing knowledge a home, which needs no plan.
+
+---
+
+## 9. Retirement — what happens to a record artifact when its plan closes
+
+§§1–8 govern how a record is born and what it must contain. Nothing governed what happens to it
+afterwards, and that asymmetry had a consequence: **prompts have a full lifecycle spec
+(`CANONICAL:prompt-lifecycle`) with four states, a precedence order and a monthly sweep as
+backstop; findings, defects and runbooks had one sentence inside `/newplan`'s Closure step.** A
+findings doc that nobody retires simply loads forever, and no tool notices.
+
+**Three outcomes, and the artifact's own name decides which.**
+
+| Outcome | Applies to | What happens |
+|---|---|---|
+| **OUTLIVES** | A **version-free** artifact — `<topic>-defects.md`, `<topic>-runbook.md`, a findings doc named without a date | Stays exactly where it is. **Never** archived with the plan. It describes the project, not one round of work |
+| **HISTORY** | A **dated** artifact whose successor exists — `<topic>-findings-2026-06-01.md` when `…-2026-09-07.md` is live | Banner it, leave it in place. It stops being a live record and becomes citable history |
+| **ARCHIVED** | A dated artifact scoped to **that plan's round only**, which nothing else cites | Moves into the project's `archive/` with the plan and prompt |
+
+**The banner, mirroring `CANONICAL:prompt-lifecycle`'s vocabulary so the two specs read alike:**
+
+```
+STATUS YYYY-MM-DD — HISTORY. Superseded by <successor-filename>. Read-only; cite, do not append.
+```
+
+`HISTORY` rather than `DONE` on purpose. A `DONE` prompt is finished and sweepable; a superseded
+findings doc is still cited by number from live artifacts and must not be swept away behind those
+citations.
+
+**Two checks before anything moves, both mechanical:**
+
+1. **Is it cited by something still live?** `grep -rn --no-ignore-files '<F#|D#|§n from this file>'`
+   across the project. **The `--no-ignore-files` is not optional** — records are gitignored, so a
+   bare `grep` returns zero hits and reads as "nothing cites it." That failure mode looks exactly
+   like a clean result. If anything live cites it, it is HISTORY, never ARCHIVED.
+2. **Is the name dated?** No date means OUTLIVES, and the question ends there.
+
+**Who does this, and the honest gap.** `/newplan`'s Closure step is the **only** enforcement.
+There is no equivalent of `/prompt-sweep` for records — nothing runs monthly and finds a findings
+doc that should have been bannered two plans ago. Until there is, a plan that closes without
+running its own Closure step leaves records live forever, and nothing will catch it.
+
+Recorded 2026-09-07: found while closing a plan, when the closure checks for findings, defects
+and runbooks turned out to trace back to a single sentence.
