@@ -162,3 +162,42 @@ Established by reading Step 3's rules against `.gitignore` line 8 and confirming
 `D#`-class work owed to a defects artifact this repo does not have, per the header above.
 
 Source: this file. The behaviour predates it and was carried in handoff prose until now.
+
+---
+
+## F8 — `VERIFIED` — an ad-hoc thread degrades by generation loss, and nothing signals it
+
+Work that never had a `/newplan` has no artifacts, so on every flush `/newsession` hits two rules
+that resolve against each other:
+
+- §7.4's orphan check finds orphans and **has nowhere to write them**;
+- the soft cap's step 1, *"cut duplication of live artifacts first,"* is **free but empty** —
+  with no artifacts, nothing in the prompt is a duplicate.
+
+So step 2 fires instead — *keep it, never delete a fact that lives nowhere else* — and the prompt
+grows every flush, re-derived each time by a different context window. By the fifth flush it is a
+~170-line file where nothing carries an `F#` and nothing names its source.
+
+**Nothing breaks, and that is why it was never caught.** The handoff resumes correctly at every
+step. What decays is provenance: a number drifts from the code that produced it, and a hedge
+hardens into a confident claim. `JIM` has an existing standing correction about exactly that
+hardening, which is evidence this had already happened rather than a hypothetical.
+
+Three separate places in `/newsession` already declared the condition — *"that is the signal to
+create the artifact,"* *"exceeding it is the signal to create one,"* *"persistent overage is a
+signal"* — and **nothing consumed any of them.** Three declared signals, zero consumers, so none
+ever fired.
+
+Now `record-controls.md` §8 and `/newsession` Step 2.55: on the third flush for a topic with no
+plan, create `<topic>-findings-YYYY-MM-DD.md`, move the knowledge in, cite it. One file holding
+every class, because empty artifacts read as *"nothing was found"* rather than *"nobody wrote
+anything down."*
+
+**A first design was rejected before it shipped: ask the user each time.** `JIM`: *"why nag? Just
+kickoff /newplan."* The nag was defensive reasoning from `F3`, which forbids a silent flush from
+inventing files *in a directory of its choosing* — but by the third flush three prompts already
+sit in that directory, so nothing is being chosen and the guard does not apply. Automatic
+creation, announced once, replaced it.
+
+Source: this file, 2026-09-07. Threshold and one-file scope are `JIM`'s rulings; the failure
+analysis was derived by tracing the soft-cap and §7.4 rules against a project with no artifacts.

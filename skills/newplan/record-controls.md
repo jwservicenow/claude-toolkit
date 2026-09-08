@@ -147,3 +147,39 @@ it, so it dies at the next flush, and it is invisible to everything that cites b
 Found 2026-09-07: the six-area document split and the `--no-ignore-files` grep trap existed only
 in the handoff, and three of four artifacts pointed at a prompt two generations dead. Fixed as
 `F21` and `runbook §3.8`.
+
+---
+
+## 8. Ad-hoc threads — the third-flush rule
+
+Sections 1–7 assume a plan opened the artifacts. Plenty of work never starts that way: a one-off
+question turns into a real effort, `/newsession` runs three, four, five times, and no artifact was
+ever created because no `/newplan` ran.
+
+**Nothing breaks in that case, and that is the problem.** The handoff resumes fine every time. But
+§7.4's orphan check has nowhere to write to, and the soft-cap rule *"cut duplication first"* has
+nothing to cut against, because with no artifacts every fact lives only in the prompt. So rule 2
+fires instead — keep it — and the file grows every flush, rewritten each time by a different
+context window. What decays is provenance: numbers drift from the code that produced them, and
+hedges harden into confident claims. That is generation loss, not a failure, which is exactly why
+nothing ever signals it.
+
+**The rule.** On the **third** `/newsession` for a topic that has no plan, the flush creates
+`<topic>-findings-YYYY-MM-DD.md` beside the prompts, moves the accumulated knowledge into it with
+sources, and cites it from the new handoff. Flushes one and two change nothing — two prompts of
+growth is not yet a project, and creating a file for every passing question is its own clutter.
+
+**One file, and everything goes in it.** Not findings plus defects plus a runbook. An ad-hoc
+thread rarely produces enough of any one class to justify three files, and empty artifacts are
+worse than absent ones — an empty findings doc reads as *"nothing was found"* rather than
+*"nobody wrote anything down."* Number everything `F#`, including bugs and traps, and say so in
+the file's header. If the thread later grows a real artifact set, the `D#`- and `§n`-class entries
+split out then, and §6 keeps both copies pointing at each other.
+
+**It is not asked for, and it is announced once.** By the third flush there is nothing left to
+decide: three prompts already sit in that directory, so the topic and the location are settled and
+the `F3` guard — a silent flush must not invent files *in a directory of its choosing* — does not
+apply. The creation is the one thing a silent flush may say out loud, exactly once per topic.
+
+`/newplan` remains the user's call and is a different decision: it is for when the work needs
+steps and acceptance criteria. This rule only gives existing knowledge a home, which needs no plan.

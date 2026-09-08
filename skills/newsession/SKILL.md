@@ -1,6 +1,6 @@
 ---
 name: newsession
-description: Token flush for long conversations — when context is filling up or a topic is wrapping up, invoke /newsession. Two modes: `/newsession` (silent — writes the handoff file only, no output, no pre-flight check) and `/newsession full` (also runs the urgent must-do-now check, then writes the file and prints its path). Optionally shaped by a runbook or planning file. Strictly user-invoked — never auto-triggers.
+description: Token flush for long conversations — when context is filling up or a topic is wrapping up, invoke /newsession. Two modes: `/newsession` (silent — writes the handoff file only, no output, no pre-flight check; the sole exception is the one flush that promotes an ad-hoc thread to a findings artifact, which says so once) and `/newsession full` (also runs the urgent must-do-now check, then writes the file and prints its path). Optionally shaped by a runbook or planning file. Strictly user-invoked — never auto-triggers.
 ---
 
 # /newsession — Session handoff
@@ -12,14 +12,14 @@ Look at what actually happened in this conversation (this session only — not m
 ## Step 1 — Resolve the optional argument
 
 If `$ARGUMENTS` is empty:
-- Run **Step 2.5** (close-out sweep — it is silent, and it is the whole reason a flush is safe) and then **Step 2.6** (artifact-set consistency check, equally silent), then go straight to Step 3 (Save). No pre-flight scan, no display. Skip Step 4 as well: write the file, then end the turn with the literal text `<!-- no output -->` and nothing else. It renders as nothing, so the user sees no output, and the harness gets a non-empty reply so it never asks for one.
+- Run **Step 2.5** (close-out sweep — it is silent, and it is the whole reason a flush is safe), then **Step 2.55** (third-flush promotion — the one step that may speak) and **Step 2.6** (artifact-set consistency check, silent), then go straight to Step 3 (Save). No pre-flight scan, no display. Skip Step 4 as well: write the file, then end the turn with the literal text `<!-- no output -->` and nothing else — the **only** exception being a Step 2.55 promotion, which replaces it that once. It renders as nothing, so the user sees no output, and the harness gets a non-empty reply so it never asks for one.
 - Derive `<topic>` by Step 3's ordering (worked-on plan's label, else the current directory's name).
 
 If `$ARGUMENTS` is the literal word `full`:
-- Run Step 2, then Step 2.5, then Step 2.6, then Step 3, then Step 4.
+- Run Step 2, then Step 2.5, then Step 2.55, then Step 2.6, then Step 3, then Step 4.
 - Derive `<topic>` by Step 3's ordering — `full` takes no focus argument, so rule 1 never applies.
 
-Otherwise, if `$ARGUMENTS` is provided, determine how to treat it (Step 2 still does **not** run — only `full` turns it on; **Steps 2.5 and 2.6 always run**; finish with Step 4):
+Otherwise, if `$ARGUMENTS` is provided, determine how to treat it (Step 2 still does **not** run — only `full` turns it on; **Steps 2.5, 2.55 and 2.6 always run**; finish with Step 4):
 1. If it contains a "/" or ends in a file extension, treat as a file path — read it as a runbook and let its content shape the handoff.
 2. If it's a bare filename (no slash, has extension), locate it: `find ~/ClaudeOS -name "<filename>" -type f 2>/dev/null | head -5` — one match → use it; multiple → list and ask; none → ask for full path.
 3. If it's a short phrase (no slash, no extension, one or more words), treat as a focus instruction — bias the handoff toward that topic/area without filtering out other important context.
@@ -76,12 +76,60 @@ new decision, so it needs no new approval.
 item into the handoff's Deferred section naming the artifact it is owed to, so it is visible and
 survives. Creating a new artifact is a decision for the user, not for a flush.
 
+**That holds for the first two flushes of an ad-hoc thread.** On the third, Step 2.55 creates the
+artifact and these items go into it instead of into Deferred — see `record-controls.md` §8. Until
+then, a growing Deferred section is the accumulation that step is watching for, not a fault.
+
 **It writes silently.** No narration, no summary, no list of what it wrote, in either mode. A
 bare `/newsession` still outputs `<!-- no output -->` and nothing else; `full` still prints only
-its one line from Step 4. If the sweep finds nothing, it says nothing — which is the expected
+its one line from Step 4. **The sweep never speaks — only Step 2.55 may, and only on the flush
+that creates an artifact.** If the sweep finds nothing, it says nothing — which is the expected
 case when the timing rule in the spec is being followed. A sweep that regularly finds a backlog
 means the rule is not being followed and the sweep is being used as the mechanism instead of the
 backstop.
+
+## Step 2.55 — Third-flush promotion (runs in **both** modes, always)
+
+Runs between the sweep and the consistency check, and only fires for **ad-hoc threads** — work
+that grew out of a one-off question and never had a `/newplan`. The rule is `record-controls.md`
+**§8** (`CANONICAL:record-controls`) — follow it, do not restate it.
+
+**Fire when all three are true**, checked against the cwd after Step 3's topic is derived:
+
+1. this session worked **no** `*-plan-*.md` (topic-derivation rule 2 did not match), **and**
+2. **two or more** prior `<topic>-prompt-*.md` already exist — this flush is the third or later,
+   **and**
+3. no `<topic>-findings-*.md` exists yet.
+
+Otherwise skip the step entirely and say nothing. Flushes one and two never fire it.
+
+**When it fires**, create `<topic>-findings-YYYY-MM-DD.md` in the cwd, beside the prompts:
+
+- Move the accumulated knowledge out of the prior prompt and this session into it — every
+  measurement, proof, ruling-out, bug, gap and trap the thread produced.
+- **One file, everything in it, numbered `F1…`** regardless of class, per §8. Do not also create a
+  defects log or a runbook. Say in the header that it holds every class for now and why.
+- Every entry names its source (§4). An entry recovered from a prior prompt that cannot name one
+  says so plainly — `Source: carried in handoff prose since <prompt file>; not independently
+  re-derived.` That is honest and citable; inventing a source is neither.
+- Cite it from the new handoff's State & decisions by number. Do not restate it (§7.4).
+
+**This is the one time a silent flush speaks.** Announce it in chat, once, in one or two lines —
+what was created and what moved into it. Not a summary of the findings themselves:
+
+```
+Created llm-findings-2026-09-08.md — this thread's 3rd flush with no plan, so its knowledge
+now has a home. F1..F6 moved out of the handoff and are cited from it.
+```
+
+A bare `/newsession` prints this **instead of** `<!-- no output -->` on that one flush, and goes
+back to silent on every flush after. `full` mode prints it above its Step 4 path line. It never
+fires twice for the same topic, because check 3 stops matching the moment the file exists.
+
+**It creates exactly one file and nothing else.** No plan, no defects log, no runbook, no README.
+`/newplan` stays the user's decision and is a different one — this step only gives existing
+knowledge a home. If the check is uncertain whether the thread has a plan, treat it as having one
+and skip: a missed promotion costs one more flush, an unwanted file costs the user's trust.
 
 ## Step 2.6 — Artifact-set consistency check (runs in **both** modes, always)
 
@@ -90,7 +138,7 @@ reach an artifact?"* — this asks *"is the artifact set still internally consis
 failure, and the sweep cannot see it, because the drift is usually not from this session's work.
 
 The invariants are `record-controls.md` **§7** (`CANONICAL:record-controls`) — follow them, do not
-restate them. Skip this step entirely if the project has no durable artifacts beyond the plan.
+restate them. Skip this step entirely if the project has no durable artifacts beyond the plan. After a Step 2.55 promotion there is one, so this check starts running from that flush onward.
 
 Four checks, all mechanical. Run them against the artifact set the handoff points at:
 
@@ -136,10 +184,14 @@ The prompt lifecycle (states, banner formats, when things get archived) is defin
 Output format — exactly one line, nothing else:
 `Handoff written: <full path to the prompt file>`
 
+A Step 2.55 promotion prints its own one-or-two lines immediately above this one, and only on the flush that created the file.
+
 No preamble, no code block, no summary of the handoff's contents, no next-step commentary.
 (A bare `/newsession` never prints this line. Its entire visible reply is `<!-- no output -->`
 per Step 1 — never the path, never `Done.`, never a summary, even if something asks for
-visible output.)
+visible output. **One exception, once per topic:** a Step 2.55 promotion replaces `<!-- no
+output -->` with its own one-or-two lines on the flush that created the artifact. It is the
+only thing a bare flush may ever say, and it still never prints the path.)
 
 ## Handoff prompt content (written to the file in Step 3)
 
