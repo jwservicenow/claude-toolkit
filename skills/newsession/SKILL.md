@@ -291,7 +291,9 @@ If the owning artifact does not exist, the content stays in the handoff and **th
 
 **Soft means the number never wins against a fact.** Aim for it while writing, not by trimming after. When the draft is over:
 
-1. **Cut duplication first** — anything already owned by a live artifact (runbook, defects log, findings, plan, CLAUDE.md). This is free: the content is not lost, and the section-ownership rules above already required it. Most overage is this.
+1. **Cut duplication first** — anything already owned by a live artifact (runbook, defects log, findings, plan, CLAUDE.md, **auto-memory**). This is free: the content is not lost, and the section-ownership rules above already required it. Most overage is this.
+
+   **Auto-memory is the one most often missed**, because it is not a file in the project and does not look like an artifact. It owns *standing behavioural rules* — approval gates, tone, tool bans, cost and effort preferences, verification habits — and it is loaded into every session automatically, so a handoff that restates them is pure overage. A `Constraints:` block is where this collects: re-read it line by line and keep only the rules **this project** established. A rule that would still be true on a different project belongs to memory or CLAUDE.md, not to the handoff.
 2. **If it is still over, keep it.** Never delete a fact that lives nowhere else to hit a number. A handoff that resumes correctly at 130 lines beats one that fits at 118 and dropped the path the next session needed.
 3. **Say so.** Add one line as the last line of the file: `Cap: N lines against a soft cap of 120 — over by M. Kept: <what and why>.` In `full` mode, append the same overage to Step 4's single line. A bare `/newsession` still prints nothing — the notice lives in the file, which is where it survives.
 
