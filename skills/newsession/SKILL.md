@@ -96,7 +96,7 @@ Four checks, all mechanical. Run them against the artifact set the handoff point
 
 | Check | §7 | How |
 |---|---|---|
-| No artifact names a specific prompt version | 7.1 | `grep -l '\-prompt-[0-9-]*[a-z]\.md' <artifacts>` — any hit is stale by definition. Rewrite to the `*` glob |
+| No artifact names a specific prompt version | 7.1 | `grep -l '\-prompt-[0-9-]*[a-z]\.md' <artifacts>` — a hit in a table row or a "read next" line is stale by definition; rewrite to the `*` glob. A filename quoted inside a finding's evidence block is the subject, not a pointer (§7.1) |
 | Every artifact cites the spec | 7.2 | `grep -L 'CANONICAL:record-controls' <artifacts>` — every file listed is missing its header line |
 | Citations run both ways | 7.3 | If the runbook cites `F#`/`D#`, confirm those entries name the owning `§n` back. A runbook with zero inbound `runbook §` references is the signature failure |
 | **Nothing lives only in the handoff** | 7.4 | Read the **prior** prompt block by block. Any number, table, count, trap or rule that carries no `F#`, `D#`, `§n`, `AC#` or path is **orphaned** |

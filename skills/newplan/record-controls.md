@@ -121,6 +121,11 @@ session; a fixed pointer like `…-prompt-2026-09-07c.md` in an artifact is stal
 sends the next session to a dead file. Artifacts refer to `<topic>-prompt-YYYY-MM-DD*.md` and let
 the newest-letter-wins rule resolve it.
 
+*One exception, and only one:* a finding may **quote** a specific prompt filename as evidence —
+that is the subject of the entry, not a pointer to follow. The check distinguishes them by
+position: a name inside a table row or a "read this next" line is a pointer and fails; a name
+inside a finding's evidence block does not.
+
 **7.2 Every artifact cites this spec; none restates it.** One line in each header naming
 `CANONICAL:record-controls`. An artifact that describes its own role in its own words has forked
 the spec, and the fork drifts the first time either side is edited.
