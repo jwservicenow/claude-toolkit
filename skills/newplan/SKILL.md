@@ -56,7 +56,27 @@ The single agreed goal from Step 2 — what we're trying to achieve and why. Sta
 The chosen approach and the reasoning behind it.
 
 ## Steps
-Ordered list of concrete steps to execute the plan. The **final step is always closure** — point it at the `## Closure` section below.
+Ordered list of concrete steps to execute the plan. The **first step is always the record search** and the **final step is always closure** — point the last one at the `## Closure` section below.
+
+**Step 0 is emitted verbatim into every plan, with no exceptions and no judgement about whether this project needs it:**
+
+```
+0. **Run the record search — before any measurement, and again before any number is stated.**
+
+   ~/ClaudeOS/shared/scripts/recall.sh <term> [term...]
+
+   `record-controls` §10.2. This is a step, not advice. The failure it prevents is not forgetting
+   the rule — it is that running a script *feels like* answering the question, so a number gets
+   stated before the records are opened, and a fresh derivation lands somewhere slightly different
+   from the recorded one. Two incompatible answers, both cited, nothing marking which is current.
+
+   Nothing enforces §10 automatically: `/newsession` Step 2.6 and this skill's own self-review
+   check §7 only, and both run at the *end* of work rather than the start. Listing it as Step 0 is
+   what makes it a tracked action.
+```
+
+A brand-new project with no records yet still carries it — `recall.sh` returns `NO PRIOR WORK` in
+under a second, and the step is there for session five, not session one.
 
 ## Testing
 How to verify it worked. **Score each criterion separately and never roll results into a single number** — a single score cannot tell you *which* thing failed, so it cannot be acted on, and a plan whose progress is one number is unfalsifiable. If an acceptance-criteria artifact exists, this section names its criteria and reports against them rather than inventing its own bar.
@@ -133,6 +153,8 @@ Review the draft silently:
 6. **Goal trace** — Does the Goal Verification section actually test the agreed goal from Step 2, and do the Steps lead to it? If the goal drifted while writing, fix it so top and bottom match.
 
 Fix issues inline. Then show the user the finished plan.
+- **Is Step 0 the record search, verbatim?** A plan whose step list starts at "Preflight" has
+  dropped the one step that protects every later number in it.
 - **Does the plan carry a `## Controls` section citing `record-controls.md`?** A plan that names findings and defects artifacts but never says when they get written will produce a session that records nothing until asked.
 - **Do the artifacts this plan opens satisfy `record-controls.md` §7?** Glob handoff pointer, a `CANONICAL:record-controls` citation in each header, runbook declared section-numbered. These are the invariants `/newsession` Step 2.6 verifies — set them now, not after they drift.
 
