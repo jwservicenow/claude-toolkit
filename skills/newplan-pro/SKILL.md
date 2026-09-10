@@ -1,0 +1,256 @@
+---
+name: newplan-pro
+description: Use when the user types /newplan-pro to create a structured plan for a feature, project, or task. Explores context, asks up to 4 clarifying questions, proposes 3-4 approaches, self-reviews, then writes a complete plan doc to the working directory. Strictly user-invoked — never auto-triggers.
+---
+
+# /newplan-pro — Planning Skill
+
+Turn an idea into an approved, written plan through structured dialogue. The deliverable is a markdown plan file saved flat in the working directory.
+
+**Strictly user-invoked.** Only activate when the user types `/newplan-pro`. Never auto-trigger.
+
+## Process (follow in order)
+
+### Step 1 — Explore Project Context
+
+Before asking anything, read what's available in the working directory:
+- README, CLAUDE.md, or any existing docs
+- Existing plan files (`*-plan-*.md`)
+- Any other files that seem relevant to the topic the user described
+
+Do not look for git history or commits.
+
+State what you found in one sentence before moving on. If nothing is relevant, say so and continue.
+
+### Step 2 — Ask Clarifying Questions
+
+Ask up to **4 questions**, one at a time. Stop as soon as you have enough to propose approaches — don't use all 4 for the sake of it.
+
+- Prefer multiple-choice questions over open-ended ones
+- Focus on: **the goal** (mandatory), constraints, success criteria, scope
+- Pin down a single, clearly stated goal and get the user to explicitly agree to it before proposing approaches. This goal is the spine of the plan — everything else hangs off it, and it gets verified at the end.
+- One question per message — wait for the answer before asking the next
+
+### Step 3 — Propose 3–4 Approaches
+
+Present 3–4 distinct approaches. For each:
+- A short name
+- What it involves (2–3 sentences)
+- Key trade-offs
+- Fit for this specific context
+
+End with your recommendation and the reason. Ask the user to pick one before continuing.
+
+### Step 4 — Write the Plan
+
+Once the user picks an approach, write the complete plan at once using this structure:
+
+---
+
+# [Topic] Plan
+
+## Goal
+The single agreed goal from Step 2 — what we're trying to achieve and why. Stated once here, tracked through the steps, verified at the end.
+
+## Approach
+The chosen approach and the reasoning behind it.
+
+## Steps
+Ordered list of concrete steps to execute the plan. The **first step is always the record search** and the **final step is always closure** — point the last one at the `## Closure` section below.
+
+**Step 0 is emitted verbatim into every plan, with no exceptions and no judgement about whether this project needs it:**
+
+```
+0. **Run the record search — before any measurement, and again before any number is stated.**
+
+   <skill-dir>/recall.sh <term> [term...]
+
+   `record-controls` §10.2. This is a step, not advice. The failure it prevents is not forgetting
+   the rule — it is that running a script *feels like* answering the question, so a number gets
+   stated before the records are opened, and a fresh derivation lands somewhere slightly different
+   from the recorded one. Two incompatible answers, both cited, nothing marking which is current.
+
+   Nothing enforces §10 automatically: `/newsession-pro` Step 2.6 and this skill's own self-review
+   check §7 only, and both run at the *end* of work rather than the start. Listing it as Step 0 is
+   what makes it a tracked action.
+```
+
+Resolve `<skill-dir>` to this skill's own directory when emitting the step, and write it that way
+— **never as an absolute path from your own machine**, which breaks the moment the plan is read
+anywhere else. `recall.sh` sits beside `record-controls.md`.
+
+A brand-new project with no records yet still carries it — `recall.sh` returns `NO PRIOR WORK` in
+under a second, and the step is there for session five, not session one.
+
+## Testing
+How to verify it worked. **Score each criterion separately and never roll results into a single number** — a single score cannot tell you *which* thing failed, so it cannot be acted on, and a plan whose progress is one number is unfalsifiable. If an acceptance-criteria artifact exists, this section names its criteria and reports against them rather than inventing its own bar.
+
+## Controls
+The record obligation for this plan, governed by `shared/skills/newplan-pro/record-controls.md`
+(`CANONICAL:record-controls`) — cite it, do not restate it. Name here only what is specific to
+*this* plan: which artifacts it uses, and any control the topic adds on top of the spec.
+
+Every plan carries this line verbatim so the executing session inherits it:
+
+> **Findings, defects and runbook entries are written when they land, before being reported in
+> chat — never batched.** Chat and commit messages are not records. See
+> `shared/skills/newplan-pro/record-controls.md`.
+
+**Set the §7 invariants up at write time — they are cheap to establish and expensive to retrofit.**
+When this plan opens a findings, defects or runbook artifact, give each one a header that:
+
+1. carries the ownership table for the whole set, with the handoff row written as a **glob**
+   (`<topic>-prompt-YYYY-MM-DD*.md`), never a specific letter — §7.1;
+2. cites `CANONICAL:record-controls` in one line instead of describing its own role — §7.2;
+3. says the runbook is section-numbered and is cited as `runbook §n` — §7.3.
+
+`/newsession-pro` Step 2.6 checks these every flush. A plan that skips them hands that check a
+standing failure on day one.
+
+## Backout
+How to undo or recover if something goes wrong.
+
+## Risks
+What could go wrong, how likely, and how bad.
+
+## Open Assumptions
+Things assumed to be true that have not been verified.
+
+## Goal Verification
+The single check that confirms the agreed goal (top of this plan) was actually achieved — not just that the steps ran. State the concrete, observable condition that proves it's done, and who confirms it.
+
+## Closure
+The last task of every plan, always present.
+
+**A plan never closes itself.** Closure runs only when the user asks for it, in words. Verified
+acceptance criteria, a finished step list, an empty backlog — none of these authorise it, and
+neither does a session ending. A plan left open costs nothing; a plan closed early is archived
+out of sight with its work unfinished.
+
+**When the user does ask, the banner states what was achieved and what was not.** If every
+criterion passed, say so. If some did not, name them in the banner itself — not only in the
+findings doc — so the closed plan is honest on its face to anyone who opens it later. A plan may
+legitimately be closed with criteria unmet; what is not legitimate is a banner that hides it.
+
+Once the user has asked and the work is settled:
+1. Banner the plan header with **`STATUS YYYY-MM-DD — DONE.`** (today's date), followed by one
+   line naming any unmet criteria — e.g. `AC1–AC6 unmet: the promotion step never fired.` — the DONE/SUPERSEDED vocabulary defined in `shared/skills/prompt-sweep/prmpt-lifecycle.md`.
+2. Move both this plan (`<topic>-plan-*.md`) and its prompt (`<topic>-prompt-*.md`) into the project's `archive/` folder — the `archive/` directly under the project dir where they live; create it if it doesn't exist.
+3. Deal with `run/` (see *Working artifacts* in the skill): promote anything durable to the project root and commit it; keeping or deleting the rest is the user's call — ask, don't assume.
+4. Settle the project's record artifacts — findings, defects, runbook — by `record-controls.md` **§9** (`CANONICAL:record-controls`), which decides OUTLIVES / HISTORY / ARCHIVED per artifact and gives the banner. Follow it; do not restate it here. Note §9's own warning: this step is the *only* enforcement — no sweep exists for records, so a plan that skips it leaves them live forever.
+
+Until the user asks and these are done, this section stands as the open marker that the plan isn't closed yet.
+
+The prompt lifecycle (states, banners, when prompts get archived) is specified once in `shared/skills/prompt-sweep/prmpt-lifecycle.md` — follow it; do not restate its rules here.
+
+---
+
+### Step 5 — Self-Review (do this before showing the user anything)
+
+Review the draft silently:
+
+1. **TBD scan** — Any incomplete sections, vague steps, or placeholders? Fill or flag them.
+2. **Contradiction check** — Do any sections conflict with each other?
+3. **Assumption verification** — Which assumptions can you confirm from the context you read in Step 1? Mark those confirmed in the plan. Move anything unverified to Open Assumptions.
+4. **Remaining assumptions** — Anything you assumed while writing that the user never confirmed? Add to Open Assumptions.
+5. **Scope check** — Is this focused enough to execute, or does it need to be broken down?
+6. **Goal trace** — Does the Goal Verification section actually test the agreed goal from Step 2, and do the Steps lead to it? If the goal drifted while writing, fix it so top and bottom match.
+
+Fix issues inline. Then show the user the finished plan.
+- **Is Step 0 the record search, verbatim?** A plan whose step list starts at "Preflight" has
+  dropped the one step that protects every later number in it.
+- **Does the plan carry a `## Controls` section citing `record-controls.md`?** A plan that names findings and defects artifacts but never says when they get written will produce a session that records nothing until asked.
+- **Do the artifacts this plan opens satisfy `record-controls.md` §7?** Glob handoff pointer, a `CANONICAL:record-controls` citation in each header, runbook declared section-numbered. These are the invariants `/newsession-pro` Step 2.6 verifies — set them now, not after they drift.
+
+### Step 6 — Save the File
+
+Save the plan to the working directory as:
+
+```
+<topic>-plan-YYYY-MM-DD.md
+```
+
+`<topic>` is a short kebab-case label (e.g. `auth-refactor-plan-2026-06-07.md`). Use today's date.
+
+### Step 7 — Generate the Transition Prompt
+
+Write a companion file alongside the plan:
+
+```
+<topic>-prompt-YYYY-MM-DD.md
+```
+
+The transition prompt should contain:
+- One sentence on the goal and chosen approach
+- The first concrete step to take
+- An instruction to read the full plan file before doing anything: "Full plan is in `<topic>-plan-YYYY-MM-DD.md` — read it before starting."
+
+If this is a **replan** on an existing project (a prior `*-prompt-*.md` already exists for it), **demote the prior prompt to SUPERSEDED** before writing the new one: prepend `STATUS YYYY-MM-DD — SUPERSEDED by <new-prompt-filename>.` (today's date) as its first line. Do not delete it — `/prompt-sweep` archives superseded prompts later, with the user's approval. **Never demote a `keep-loose` REUSABLE prompt** (first line `LIFECYCLE: REUSABLE — keep-loose.`) — skip it entirely when choosing the prior prompt.
+
+Tell the user both filenames, then echo the transition prompt.
+
+**The transition prompt MUST be the last thing you output — always, every run.** Present it under a clear heading (e.g. `## Session prompt — paste to resume`) inside a single fenced code block, so it's clean to copy. Nothing may come after it except the one path line below: no summary of the plan, no recap of what you built, no "want me to start?", no offer to begin the work. If you have closing remarks, they go BEFORE the prompt block.
+
+**Immediately after the fenced block, output exactly one line — the full path to the prompt file, same form as `/newsession-pro`:**
+
+```
+Session prompt written: <full path to the *-prompt-*.md file>
+```
+
+Absolute path, no code block, no commentary after it. That line ends the turn.
+
+### Step 8 — Finish
+
+The deliverables are the two files from Steps 6–7: the plan (`*-plan-*.md`) and the standalone transition prompt (`*-prompt-*.md`). **Do not create a README** — keep the project lean; the plan doc is the self-contained resume point and the prompt file is the paste-to-resume pointer. Leave any existing README untouched.
+
+That's the end — the echoed transition prompt followed by the `Session prompt written: <path>` line is the final output. No handoff, no next steps, nothing after that path line.
+
+## Working artifacts — files created while executing the plan
+
+Executing a plan generates byproducts the plan itself never named: censuses, findings, verification checklists, diffs, scratch notes. Two rules cover all of them.
+
+**The standard set.** Most projects of any size end up needing some of these. Create one the first time its content appears, rather than letting the handoff prompt absorb it — a prompt that keeps growing is almost always a missing artifact, not a formatting problem.
+
+| Artifact | `<kind>` | Owns |
+|---|---|---|
+| Acceptance criteria | `acceptance` | What "done" means. The stopping condition, ratified by the user. |
+| Findings | `findings` | What was learned, proven, or ruled out. Numbered, so it can be cited. |
+| Defect / backlog log | `defects` | Known bugs and parked work — including things deliberately left unfixed, and why. |
+| Runbook | `runbook` | Operational traps, host and service mechanics, recovery steps. |
+| Traceability | often a table inside the acceptance doc | Which criterion each test covers, and its current result. |
+
+**When each one gets written is not optional.** The table above says what each artifact owns;
+`shared/skills/newplan-pro/record-controls.md` says *when* an entry is owed and what does not count as
+having recorded it. That spec is canonical — the plan cites it, never restates it. The rule it
+turns on: an entry is written the moment its content exists, before it is reported in chat, and
+the runbook is the one most often skipped because a trap feels like an embarrassment rather than
+a finding.
+
+**Each artifact owns its content.** Nothing that lives in one gets copied into the plan or the handoff prompt — they cite it (`runbook §1`, `defects D4`, `F81`). Two copies of a block drift the first time one is edited. `/newsession-pro` relies on this: its section-ownership rule cites exactly these artifacts.
+
+**Version-free where it makes sense.** A defect log and a runbook usually describe the project, not one iteration of it — name them without a version so they outlive it, rather than being rebuilt each round.
+
+**Naming** — `<topic>-<kind>-YYYY-MM-DD.md`, same shape as the plan and prompt. `<kind>` says what it is (`census`, `findings`, `goal-verification`). Add a letter suffix for same-day revisions (`…-2026-06-07b.md`).
+
+**Where it goes** — decided by lifespan, not by kind:
+
+| | Durable | Ephemeral |
+|---|---|---|
+| Test | someone reads it in three months with none of this session's context | only meaningful while the plan is running |
+| Lives | project root, version-controlled | `<project>/run/`, ignored wholesale |
+
+Create `run/` on first need, beside `archive/`. In a version-controlled project it gets **one** ignore rule, once — never a new pattern per kind of file, which is how the ignore list rots.
+
+The plan and the prompt are the exception: they stay flat at the project root even though they are session artifacts, because they are the resume pointer and have to be obvious to the next session. Everything else earns its place at the root by passing the durability test.
+
+Write the plan so the executing session inherits this — the Closure section already points at it.
+
+## Rules
+
+- User-invoked only. Never activate automatically.
+- One question at a time. Wait for each answer.
+- Max 4 clarifying questions. Stop earlier if you have what you need.
+- Always propose 3–4 approaches. Not fewer.
+- Always self-review before showing the plan.
+- This skill produces plans, not code. Never write or scaffold implementation.
+- Stop at the saved doc. No handoff to other skills.

@@ -4,12 +4,16 @@ Tools that make Claude smarter for ServiceNow work - contributed by a ServiceNow
 
 Everything here works inside **Claude Code** (the command-line app). Some tools also have a **Claude Desktop** version — noted where applicable.
 
+`/newsession` and `/newplan` come in two tiers you can install side by side and switch between freely — they're separate commands, so installing or trying one never touches the other: **lite** (below, the default, battle-tested) and **advanced** (`-pro` suffix, opt-in, not yet battle-tested).
+
 | Tool | What it does |
 |------|-------------|
 | [Claude Desktop RAG](https://jwservicenow.github.io/claude-toolkit/docs/servicenow-mirror-desktop-guide.html) **· v3** | Claude Desktop can't read the ServiceNow docsite directly — this fixes it. Wires in a custom MCP fetch server to pull from the [GitHub docs mirror](https://github.com/ServiceNow/ServiceNowDocs#servicenowdocs), then locks it down with Project Instructions that re-enforces docsite-only answers with citable URLs. |
 | [/servicenow_rag](#servicenow_rag) | Claude Code RAG skill — Navigates ServiceNow's official [GitHub docs mirror](https://github.com/ServiceNow/ServiceNowDocs#servicenowdocs) from its published index down to the exact topic file, then supplements with a scoped ServiceNow Community search. Answers are cited to real docs.servicenow.com URLs; it won't invent a doc path, and says so when the docs don't cover something. |
-| [/newsession](#newsession) | Long chat getting slow or pricey? Turn it into a compact handoff you paste into a fresh session — goal, decisions, constraints, next action, written straight to your project folder. First sweeps the session for anything you learned but never wrote down |
-| [/newplan](#newplan) | Turn a goal into an approved, written plan — interviews you, asks clarifying questions, provides 3–4 ranked approaches with trade-offs, saved as a plan file, with findings/defects/runbook artifacts set up alongside it. Every plan opens by searching what you already recorded, so long projects stop re-deriving their own findings |
+| [/newsession](#newsession) **· lite, default** | Long chat getting slow or pricey? Turn it into a compact handoff you paste into a fresh session — goal, decisions, constraints, next action, written straight to your project folder |
+| [/newplan](#newplan) **· lite, default** | Turn a goal into an approved, written plan — interviews you, asks clarifying questions, provides 3–4 ranked approaches with trade-offs, saved as a plan file that closes itself into `archive/` when done |
+| [/newsession-pro](#newsession-pro) **· advanced, not yet battle-tested** | Matured `/newsession` — adds a sweep for anything the session measured or decided but never wrote down, filing it into findings/defects/runbook artifacts before the handoff |
+| [/newplan-pro](#newplan-pro) **· advanced, not yet battle-tested** | Matured `/newplan` — opens by searching findings/defects/runbook you already recorded (`recall.sh`), so long projects stop re-deriving their own conclusions, and governs when each record artifact gets written |
 | [/security-audit](#security-audit) | Scans the whole codebase for OWASP Top 10 patterns, dependency CVEs, hardcoded secrets, weak auth, and risky config — an audit of everything, not just your pending diff |
 | [/ai-security](#ai-security) | Security review for AI/LLM systems and agents — prompt injection (direct and indirect), agent tool abuse, guardrail resistance, model inversion and data-poisoning exposure, mapped to MITRE ATLAS |
 | [/deps-audit](#deps-audit) | Dependency health check — known vulnerabilities, outdated and unused packages, license compliance. Detects your package manager (npm/yarn/pnpm, pip/poetry, …) and ranks what to fix first |
@@ -78,9 +82,9 @@ If Claude fetches from GitHub before answering, it's working. If it answers imme
 
 ### `/newsession`
 
-Long conversations get slow, lose the thread, and burn tokens. Type `/newsession` and it writes a dense, structured handoff — goal, decisions, constraints, next action — and saves it as a resume file right in your project folder. Paste it into a new chat and pick up exactly where you left off, no replaying history.
+**Lite tier — the default.** For the matured version with a record-controls sweep, see [`/newsession-pro`](#newsession-pro) below.
 
-First it sweeps silently for anything the session measured, decided or tripped over that never reached a file, and writes it where it belongs — so it doesn't die with the chat.
+Long conversations get slow, lose the thread, and burn tokens. Type `/newsession` and it writes a dense, structured handoff — goal, decisions, constraints, next action — and saves it as a resume file right in your project folder. Paste it into a new chat and pick up exactly where you left off, no replaying history.
 
 It doesn't interview you first. Unfinished work goes into the handoff's *Next action* and *Deferred* sections. Previous handoffs are kept and marked *superseded*, never deleted, so you keep a trail — a same-day re-run gets a letter suffix (`…-08-20b.md`, then `…-08-20c.md`) rather than overwriting. Plain `/newsession` writes the file silently and prints nothing; `/newsession full` also flags anything genuinely urgent that would break if the session flushed without it, then prints the path.
 
@@ -92,18 +96,10 @@ Optionally pass a filename and the next session will be shaped around that file:
 **Install**
 
 ```bash
-mkdir -p ~/.claude/skills/newsession ~/.claude/skills/newplan
+mkdir -p ~/.claude/skills/newsession
 curl -o ~/.claude/skills/newsession/SKILL.md \
   https://raw.githubusercontent.com/jwservicenow/claude-toolkit/main/skills/newsession/SKILL.md
-curl -o ~/.claude/skills/newplan/record-controls.md \
-  https://raw.githubusercontent.com/jwservicenow/claude-toolkit/main/skills/newplan/record-controls.md
-curl -o ~/.claude/skills/newplan/recall.sh \
-  https://raw.githubusercontent.com/jwservicenow/claude-toolkit/main/skills/newplan/recall.sh
-chmod +x ~/.claude/skills/newplan/recall.sh
 ```
-
-All three files are needed. `record-controls.md` is a shared spec — `/newplan` reads it too — and
-`recall.sh` is the search the spec tells sessions to run before investigating anything.
 
 Restart Claude Code. Then type `/newsession`.
 
@@ -111,11 +107,9 @@ Restart Claude Code. Then type `/newsession`.
 
 ### `/newplan`
 
-Type `/newplan` followed by what you want to do. Claude explores your project for context, asks up to four clarifying questions, then lays out three to four approaches ranked by trade-offs. It self-reviews, presents the plan for your approval, and on your OK writes a complete, self-contained plan file into your project folder — ready to hand to a fresh session or a teammate.
+**Lite tier — the default.** For the matured version with the record-search Step 0, see [`/newplan-pro`](#newplan-pro) below.
 
-Every plan starts with the same Step 0: search the findings, defects and runbook you already have, before measuring anything. On a long project the expensive failure isn't forgetting a fact — it's re-deriving one you already recorded and landing on a slightly different answer, so two contradictory entries end up filed and cited with nothing marking which is current. `recall.sh` prints the matching entries in about a second.
-
-**A plan never closes itself** — closure runs only when you ask for it in words, and the DONE banner names what wasn't achieved as well as what was. The plan also names where the work's output goes (findings, defects, runbook) and when each gets written.
+Type `/newplan` followed by what you want to do. Claude explores your project for context, asks up to four clarifying questions, then lays out three to four approaches ranked by trade-offs. It self-reviews, presents the plan for your approval, and on your OK writes a complete, self-contained plan file into your project folder — ready to hand to a fresh session or a teammate. Every plan also ends with a `## Closure` step, so finishing it means bannering it DONE and moving it to your archive — plans close themselves out instead of lingering.
 
 ```
 /newplan migrate our CMDB to CSDM
@@ -128,17 +122,39 @@ Every plan starts with the same Step 0: search the findings, defects and runbook
 mkdir -p ~/.claude/skills/newplan
 curl -o ~/.claude/skills/newplan/SKILL.md \
   https://raw.githubusercontent.com/jwservicenow/claude-toolkit/main/skills/newplan/SKILL.md
-curl -o ~/.claude/skills/newplan/record-controls.md \
-  https://raw.githubusercontent.com/jwservicenow/claude-toolkit/main/skills/newplan/record-controls.md
-curl -o ~/.claude/skills/newplan/recall.sh \
-  https://raw.githubusercontent.com/jwservicenow/claude-toolkit/main/skills/newplan/recall.sh
-chmod +x ~/.claude/skills/newplan/recall.sh
 ```
 
-All three files are needed. `record-controls.md` is a shared spec — `/newsession` reads it too — and
-`recall.sh` is the search that spec tells sessions to run before investigating anything.
-
 Restart Claude Code. Then type `/newplan`.
+
+---
+
+<a id="newsession-pro"></a><a id="newplan-pro"></a>
+### `/newsession-pro` · `/newplan-pro`
+
+**Advanced tier — opt-in, not yet battle-tested.** This is the matured 2026-09 version of `/newsession` and `/newplan`, built 2026-09-06..10. The lite tier above stays the default; install this alongside it and switch per task, or drop back mid-session — separate commands, so nothing is overwritten either way.
+
+`/newplan-pro` opens with a Step 0 that searches the findings, defects and runbook you already have, before measuring anything — on a long project the expensive failure isn't forgetting a fact, it's re-deriving one you already recorded and landing on a slightly different answer. `recall.sh` prints the matching entries in about a second. `/newplan-pro` also names where each plan's output goes (findings, defects, runbook) and when it gets written, and a plan never closes itself — closure runs only when you ask for it in words.
+
+`/newsession-pro` adds the matching sweep on the way out: before every handoff it checks for anything the session measured, decided, or tripped over that never reached a file, and writes it where it belongs, so it doesn't die with the chat.
+
+Both read the same shared spec, `record-controls.md`, and both need `recall.sh` — install all four files together so neither command is left half-wired:
+
+**Install**
+
+```bash
+mkdir -p ~/.claude/skills/newsession-pro ~/.claude/skills/newplan-pro
+curl -o ~/.claude/skills/newsession-pro/SKILL.md \
+  https://raw.githubusercontent.com/jwservicenow/claude-toolkit/main/skills/newsession-pro/SKILL.md
+curl -o ~/.claude/skills/newplan-pro/SKILL.md \
+  https://raw.githubusercontent.com/jwservicenow/claude-toolkit/main/skills/newplan-pro/SKILL.md
+curl -o ~/.claude/skills/newplan-pro/record-controls.md \
+  https://raw.githubusercontent.com/jwservicenow/claude-toolkit/main/skills/newplan-pro/record-controls.md
+curl -o ~/.claude/skills/newplan-pro/recall.sh \
+  https://raw.githubusercontent.com/jwservicenow/claude-toolkit/main/skills/newplan-pro/recall.sh
+chmod +x ~/.claude/skills/newplan-pro/recall.sh
+```
+
+Restart Claude Code. Then type `/newplan-pro` or `/newsession-pro`.
 
 ---
 
