@@ -273,3 +273,48 @@ and the search has to be mandatory rather than remembered.
 
 Search on the **symptom**, not the diagnosis you currently favour. The prior entry was written by
 someone who did not yet know the answer either, so it is filed under what was observed.
+
+### 10.1 The command
+
+"Grep the record set" was left to each session to improvise, and improvisation is where this rule
+fails. Use the script:
+
+```
+~/ClaudeOS/shared/scripts/recall.sh <term> [term...]     # add --all for archive/ and .bak files
+```
+
+It searches every `*findings*`, `*defects*`, `*runbook*`, `*plan*` and `*acceptance*` markdown in
+the working directory and prints the **entry headers** that match, so the output is a reading list
+rather than a wall of lines.
+
+It uses `command grep` deliberately. The shell's `grep` is a `ugrep` wrapper carrying
+`--ignore-files`, and record artifacts are gitignored by design — so the obvious search returns
+zero hits from exactly the files this rule is about, with exit 0 and no warning.
+
+### 10.2 The gate
+
+**No measurement, no estimate, no count, and no size stated in chat until `recall.sh` has been run
+for the topic.** Running a script feels like answering the question; it is not, and by the time the
+records get opened a number has already been produced and said out loud. The gate is there because
+the intention to check has repeatedly not survived contact with an interesting question.
+
+A `NO PRIOR WORK` result is a valid outcome and takes seconds. A non-empty result is a stop: read
+the entries before deriving anything. If a fresh measurement then contradicts a found entry, that
+is a correction under §6 with the old entry bannered — never a new entry that quietly disagrees.
+
+### 10.3 Why the gate and not the rule
+
+§10 has existed and been correct the whole time. It was still skipped three times inside ninety
+minutes in a single session on a long-running project — the same prior finding re-derived twice,
+then a second one — producing a multi-day effort estimate for a task that had already been scoped,
+already run, and already stopped early for yielding almost nothing. Every one of those was caught
+by the user rather than by the process, on a project where they had corrected the same behaviour
+repeatedly.
+
+Nothing was lost. The findings, defects and runbook were complete, current and correct on disk, and
+one search surfaced every relevant entry in under a second. They were not consulted, because
+measuring came first each time.
+
+That is the whole lesson: **a rule that depends on remembering to follow it will be skipped exactly
+when the question is interesting enough to skip it.** §10.1 gives it a command and §10.2 gives it a
+gate, so following it costs less than improvising around it.
