@@ -209,8 +209,13 @@ Four checks, all mechanical. Run them against the artifact set the handoff point
 | Every artifact cites the spec | 7.2 | `grep -L 'CANONICAL:record-controls' <artifacts>` — every file listed is missing its header line |
 | Citations run both ways | 7.3 | If the runbook cites `F#`/`D#`, confirm those entries name the owning `§n` back. A runbook with zero inbound `runbook §` references is the signature failure |
 | **Nothing lives only in the handoff** | 7.4 | Read the **prior** prompt block by block. Any number, table, count, trap or rule that carries no `F#`, `D#`, `§n`, `AC#` or path is **orphaned** |
+| A superseded claim survives nowhere | 7.5 | For each entry corrected since the last flush, `grep -rn --no-ignore-files '<the old claim>' <artifacts>` across findings, defects, runbook, plan **and every prompt including superseded ones**. Any hit that still reads as current must be fixed or bannered. Instruction-bearing files — runbook, plan, handoff — are where this bites; the findings file is usually already right |
 
-**7.4 is the one that matters**, and it is the only one needing judgement. For each orphan, write
+**7.4 and 7.5 are the two that matter.** 7.4 is the only one needing judgement; 7.5 is
+mechanical but easy to skip because the findings file usually looks correct on its own — the stale
+copy is somewhere else. Check the runbook and the superseded prompts specifically.
+
+**7.4 continued:** For each orphan, write
 it into the artifact that owns it by the Step 2.5 table, then cite it from the new handoff instead
 of carrying it. An orphan is not a formatting problem — it is a missing `F#` sitting in a pointer
 file, and it dies at this flush if it is not written now.

@@ -108,6 +108,16 @@ When a later finding corrects an earlier one, **both stay**. Amend the old entry
 new one. A finding that is silently rewritten destroys the record of what was believed and when,
 which is usually the thing that explains a later mistake.
 
+**Amending the old entry is not enough — a correction is not done until it has propagated.** The
+rule above governs finding → finding, inside the record set. A wrong belief rarely stays there. By
+the time it is disproven it has usually been copied into the documents that *give instructions* —
+the runbook, the plan, the handoff — and those are what the next session reads and acts on. A
+correction that lands only in the findings file leaves the instruction intact, so the next session
+does the disproven thing while the artifact set technically contains the truth.
+
+So a correcting entry carries a **propagation list**: every artifact it searched and every place it
+fixed. If the search was clean, it says so. Section 7.5 is how that is checked.
+
 ---
 
 ## 7. Set-level invariants — what a consistent artifact set looks like
@@ -147,6 +157,21 @@ it, so it dies at the next flush, and it is invisible to everything that cites b
 Found 2026-09-07: the six-area document split and the `--no-ignore-files` grep trap existed only
 in the handoff, and three of four artifacts pointed at a prompt two generations dead. Fixed as
 `F21` and `runbook §3.8`.
+
+**7.5 A superseded claim survives nowhere in the set.** When an entry is corrected, grep the
+*whole* set for the old claim — findings, defects, runbook, plan, and every prompt, superseded ones
+included — and fix or banner each hit. The correcting entry names what it corrected. Clean grep, or
+it is not finished.
+
+> Superseded prompts matter more than they look. They are read-only, so nobody edits them, and a
+> future session skim-reading one for context takes its instructions at face value. Banner them at
+> the top rather than trusting the status line to be noticed.
+
+Found 2026-09-09: a tool's own docstring claimed it produced clean output. That claim was recorded
+as verified, then repeated in a defect entry, a runbook trap section, a stage table and two prompt
+files. Three successive findings corrected the *conclusion* without touching any of them, so for a
+week the instruction-bearing documents named the tool that caused the corruption as the tool that
+fixed it. Every check that had been run was a prefix check; nothing validated to end-of-file.
 
 ---
 
@@ -227,3 +252,24 @@ running its own Closure step leaves records live forever, and nothing will catch
 
 Recorded 2026-09-07: found while closing a plan, when the closure checks for findings, defects
 and runbooks turned out to trace back to a single sentence.
+
+---
+
+## 10. Search before you investigate
+
+Before starting work on a symptom, grep the record set for it. Findings, defects, runbook, plan.
+This costs one command and it is the only thing that stops the same problem being solved twice.
+
+**The failure it prevents is not a duplicated entry — it is a contradictory one.** A session that
+does not find the prior work does not re-read the old answer; it re-derives from scratch, and a
+fresh derivation lands somewhere slightly different. Two sessions then leave two incompatible
+answers to one question, both recorded, both cited, with nothing marking which is current.
+
+This rule earns its place because a split artifact set makes it necessary. When everything lived in
+one document, "have we seen this?" was answered by reading that document. Once a discovery has three
+plausible homes — is it a finding, a defect, or a runbook trap? — a session that greps the wrong one
+concludes the problem is new. The split is worth keeping; it just moves the cost onto this search,
+and the search has to be mandatory rather than remembered.
+
+Search on the **symptom**, not the diagnosis you currently favour. The prior entry was written by
+someone who did not yet know the answer either, so it is filed under what was observed.
