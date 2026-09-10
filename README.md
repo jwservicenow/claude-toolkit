@@ -137,12 +137,12 @@ Restart Claude Code. Then type `/newplan`.
 
 `/newsession-pro` adds the matching sweep on the way out: before every handoff it checks for anything the session measured, decided, or tripped over that never reached a file, and writes it where it belongs, so it doesn't die with the chat.
 
-Both read the same shared spec, `record-controls.md`, and both need `recall.sh` — install all four files together so neither command is left half-wired:
+Both read the same shared spec, `record-controls.md`, both need `recall.sh`, and both cite the prompt-lifecycle spec that ships with `/prompt-sweep` — install all five files together so neither command is left half-wired:
 
 **Install**
 
 ```bash
-mkdir -p ~/.claude/skills/newsession-pro ~/.claude/skills/newplan-pro
+mkdir -p ~/.claude/skills/newsession-pro ~/.claude/skills/newplan-pro ~/.claude/skills/prompt-sweep
 curl -o ~/.claude/skills/newsession-pro/SKILL.md \
   https://raw.githubusercontent.com/jwservicenow/claude-toolkit/main/skills/newsession-pro/SKILL.md
 curl -o ~/.claude/skills/newplan-pro/SKILL.md \
@@ -151,6 +151,8 @@ curl -o ~/.claude/skills/newplan-pro/record-controls.md \
   https://raw.githubusercontent.com/jwservicenow/claude-toolkit/main/skills/newplan-pro/record-controls.md
 curl -o ~/.claude/skills/newplan-pro/recall.sh \
   https://raw.githubusercontent.com/jwservicenow/claude-toolkit/main/skills/newplan-pro/recall.sh
+curl -o ~/.claude/skills/prompt-sweep/prmpt-lifecycle.md \
+  https://raw.githubusercontent.com/jwservicenow/claude-toolkit/main/skills/prompt-sweep/prmpt-lifecycle.md
 chmod +x ~/.claude/skills/newplan-pro/recall.sh
 ```
 

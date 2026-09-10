@@ -1,7 +1,7 @@
 <!-- CANONICAL:record-controls -->
 # Plan design controls — the record obligation
 
-**Cited, never copied.** `/newplan` writes this into every plan by reference; `/newsession`
+**Cited, never copied.** `/newplan-pro` writes this into every plan by reference; `/newsession-pro`
 enforces it at close-out. If a rule here needs to change, change it here.
 
 ---
@@ -123,7 +123,7 @@ fixed. If the search was clean, it says so. Section 7.5 is how that is checked.
 ## 7. Set-level invariants — what a consistent artifact set looks like
 
 Sections 1–6 govern one entry at a time. These govern the **set**, and they are the rules
-`/newsession`'s Step 2.6 check enforces. Each is mechanical on purpose — a session should be able
+`/newsession-pro`'s Step 2.6 check enforces. Each is mechanical on purpose — a session should be able
 to verify it with `grep`, not judgement.
 
 **7.1 The handoff names artifacts by glob, never by version.** A prompt is superseded every
@@ -178,8 +178,8 @@ fixed it. Every check that had been run was a prefix check; nothing validated to
 ## 8. Ad-hoc threads — the third-flush rule
 
 Sections 1–7 assume a plan opened the artifacts. Plenty of work never starts that way: a one-off
-question turns into a real effort, `/newsession` runs three, four, five times, and no artifact was
-ever created because no `/newplan` ran.
+question turns into a real effort, `/newsession-pro` runs three, four, five times, and no artifact was
+ever created because no `/newplan-pro` ran.
 
 **Nothing breaks in that case, and that is the problem.** The handoff resumes fine every time. But
 §7.4's orphan check has nowhere to write to, and the soft-cap rule *"cut duplication first"* has
@@ -189,7 +189,7 @@ context window. What decays is provenance: numbers drift from the code that prod
 hedges harden into confident claims. That is generation loss, not a failure, which is exactly why
 nothing ever signals it.
 
-**The rule.** On the **third** `/newsession` for a topic that has no plan, the flush creates
+**The rule.** On the **third** `/newsession-pro` for a topic that has no plan, the flush creates
 `<topic>-findings-YYYY-MM-DD.md` beside the prompts, moves the accumulated knowledge into it with
 sources, and cites it from the new handoff. Flushes one and two change nothing — two prompts of
 growth is not yet a project, and creating a file for every passing question is its own clutter.
@@ -206,7 +206,7 @@ decide: three prompts already sit in that directory, so the topic and the locati
 the `F3` guard — a silent flush must not invent files *in a directory of its choosing* — does not
 apply. The creation is the one thing a silent flush may say out loud, exactly once per topic.
 
-`/newplan` remains the user's call and is a different decision: it is for when the work needs
+`/newplan-pro` remains the user's call and is a different decision: it is for when the work needs
 steps and acceptance criteria. This rule only gives existing knowledge a home, which needs no plan.
 
 ---
@@ -216,7 +216,7 @@ steps and acceptance criteria. This rule only gives existing knowledge a home, w
 §§1–8 govern how a record is born and what it must contain. Nothing governed what happens to it
 afterwards, and that asymmetry had a consequence: **prompts have a full lifecycle spec
 (`CANONICAL:prompt-lifecycle`) with four states, a precedence order and a monthly sweep as
-backstop; findings, defects and runbooks had one sentence inside `/newplan`'s Closure step.** A
+backstop; findings, defects and runbooks had one sentence inside `/newplan-pro`'s Closure step.** A
 findings doc that nobody retires simply loads forever, and no tool notices.
 
 **Three outcomes, and the artifact's own name decides which.**
@@ -245,7 +245,7 @@ citations.
    like a clean result. If anything live cites it, it is HISTORY, never ARCHIVED.
 2. **Is the name dated?** No date means OUTLIVES, and the question ends there.
 
-**Who does this, and the honest gap.** `/newplan`'s Closure step is the **only** enforcement.
+**Who does this, and the honest gap.** `/newplan-pro`'s Closure step is the **only** enforcement.
 There is no equivalent of `/prompt-sweep` for records — nothing runs monthly and finds a findings
 doc that should have been bannered two plans ago. Until there is, a plan that closes without
 running its own Closure step leaves records live forever, and nothing will catch it.
