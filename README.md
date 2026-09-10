@@ -9,7 +9,7 @@ Everything here works inside **Claude Code** (the command-line app). Some tools 
 | [Claude Desktop RAG](https://jwservicenow.github.io/claude-toolkit/docs/servicenow-mirror-desktop-guide.html) **· v3** | Claude Desktop can't read the ServiceNow docsite directly — this fixes it. Wires in a custom MCP fetch server to pull from the [GitHub docs mirror](https://github.com/ServiceNow/ServiceNowDocs#servicenowdocs), then locks it down with Project Instructions that re-enforces docsite-only answers with citable URLs. |
 | [/servicenow_rag](#servicenow_rag) | Claude Code RAG skill — Navigates ServiceNow's official [GitHub docs mirror](https://github.com/ServiceNow/ServiceNowDocs#servicenowdocs) from its published index down to the exact topic file, then supplements with a scoped ServiceNow Community search. Answers are cited to real docs.servicenow.com URLs; it won't invent a doc path, and says so when the docs don't cover something. |
 | [/newsession](#newsession) | Long chat getting slow or pricey? Turn it into a compact handoff you paste into a fresh session — goal, decisions, constraints, next action, written straight to your project folder. First sweeps the session for anything you learned but never wrote down |
-| [/newplan](#newplan) | Turn a goal into an approved, written plan — interviews you, asks clarifying questions, provides 3–4 ranked approaches with trade-offs, saved as a plan file, with findings/defects/runbook artifacts set up alongside it |
+| [/newplan](#newplan) | Turn a goal into an approved, written plan — interviews you, asks clarifying questions, provides 3–4 ranked approaches with trade-offs, saved as a plan file, with findings/defects/runbook artifacts set up alongside it. Every plan opens by searching what you already recorded, so long projects stop re-deriving their own findings |
 | [/security-audit](#security-audit) | Scans the whole codebase for OWASP Top 10 patterns, dependency CVEs, hardcoded secrets, weak auth, and risky config — an audit of everything, not just your pending diff |
 | [/ai-security](#ai-security) | Security review for AI/LLM systems and agents — prompt injection (direct and indirect), agent tool abuse, guardrail resistance, model inversion and data-poisoning exposure, mapped to MITRE ATLAS |
 | [/deps-audit](#deps-audit) | Dependency health check — known vulnerabilities, outdated and unused packages, license compliance. Detects your package manager (npm/yarn/pnpm, pip/poetry, …) and ranks what to fix first |
@@ -97,9 +97,13 @@ curl -o ~/.claude/skills/newsession/SKILL.md \
   https://raw.githubusercontent.com/jwservicenow/claude-toolkit/main/skills/newsession/SKILL.md
 curl -o ~/.claude/skills/newplan/record-controls.md \
   https://raw.githubusercontent.com/jwservicenow/claude-toolkit/main/skills/newplan/record-controls.md
+curl -o ~/.claude/skills/newplan/recall.sh \
+  https://raw.githubusercontent.com/jwservicenow/claude-toolkit/main/skills/newplan/recall.sh
+chmod +x ~/.claude/skills/newplan/recall.sh
 ```
 
-Both files are needed. `record-controls.md` is a shared spec — `/newplan` reads it too.
+All three files are needed. `record-controls.md` is a shared spec — `/newplan` reads it too — and
+`recall.sh` is the search the spec tells sessions to run before investigating anything.
 
 Restart Claude Code. Then type `/newsession`.
 
@@ -108,6 +112,8 @@ Restart Claude Code. Then type `/newsession`.
 ### `/newplan`
 
 Type `/newplan` followed by what you want to do. Claude explores your project for context, asks up to four clarifying questions, then lays out three to four approaches ranked by trade-offs. It self-reviews, presents the plan for your approval, and on your OK writes a complete, self-contained plan file into your project folder — ready to hand to a fresh session or a teammate.
+
+Every plan starts with the same Step 0: search the findings, defects and runbook you already have, before measuring anything. On a long project the expensive failure isn't forgetting a fact — it's re-deriving one you already recorded and landing on a slightly different answer, so two contradictory entries end up filed and cited with nothing marking which is current. `recall.sh` prints the matching entries in about a second.
 
 **A plan never closes itself** — closure runs only when you ask for it in words, and the DONE banner names what wasn't achieved as well as what was. The plan also names where the work's output goes (findings, defects, runbook) and when each gets written.
 
@@ -124,9 +130,13 @@ curl -o ~/.claude/skills/newplan/SKILL.md \
   https://raw.githubusercontent.com/jwservicenow/claude-toolkit/main/skills/newplan/SKILL.md
 curl -o ~/.claude/skills/newplan/record-controls.md \
   https://raw.githubusercontent.com/jwservicenow/claude-toolkit/main/skills/newplan/record-controls.md
+curl -o ~/.claude/skills/newplan/recall.sh \
+  https://raw.githubusercontent.com/jwservicenow/claude-toolkit/main/skills/newplan/recall.sh
+chmod +x ~/.claude/skills/newplan/recall.sh
 ```
 
-Both files are needed. `record-controls.md` is a shared spec — `/newsession` reads it too.
+All three files are needed. `record-controls.md` is a shared spec — `/newsession` reads it too — and
+`recall.sh` is the search that spec tells sessions to run before investigating anything.
 
 Restart Claude Code. Then type `/newplan`.
 

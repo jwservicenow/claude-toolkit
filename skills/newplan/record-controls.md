@@ -280,8 +280,13 @@ someone who did not yet know the answer either, so it is filed under what was ob
 fails. Use the script:
 
 ```
-~/ClaudeOS/shared/scripts/recall.sh <term> [term...]     # add --all for archive/ and .bak files
+<skill-dir>/recall.sh <term> [term...]     # add --all for archive/ and .bak files
 ```
+
+`recall.sh` ships **beside this spec**, so it installs wherever `record-controls.md` does.
+`<skill-dir>` is the directory holding this file — the same convention the other skills in this
+toolkit use for their scripts. Do not write an absolute path from your own machine; it breaks the
+moment the plan is read anywhere else.
 
 It searches every `*findings*`, `*defects*`, `*runbook*`, `*plan*` and `*acceptance*` markdown in
 the working directory and prints the **entry headers** that match, so the output is a reading list

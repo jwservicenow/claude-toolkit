@@ -63,7 +63,7 @@ Ordered list of concrete steps to execute the plan. The **first step is always t
 ```
 0. **Run the record search — before any measurement, and again before any number is stated.**
 
-   ~/ClaudeOS/shared/scripts/recall.sh <term> [term...]
+   <skill-dir>/recall.sh <term> [term...]
 
    `record-controls` §10.2. This is a step, not advice. The failure it prevents is not forgetting
    the rule — it is that running a script *feels like* answering the question, so a number gets
@@ -74,6 +74,10 @@ Ordered list of concrete steps to execute the plan. The **first step is always t
    check §7 only, and both run at the *end* of work rather than the start. Listing it as Step 0 is
    what makes it a tracked action.
 ```
+
+Resolve `<skill-dir>` to this skill's own directory when emitting the step, and write it that way
+— **never as an absolute path from your own machine**, which breaks the moment the plan is read
+anywhere else. `recall.sh` sits beside `record-controls.md`.
 
 A brand-new project with no records yet still carries it — `recall.sh` returns `NO PRIOR WORK` in
 under a second, and the step is there for session five, not session one.
