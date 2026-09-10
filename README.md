@@ -202,6 +202,8 @@ Housekeeping for anyone using `/newsession` regularly. Handoff files accumulate 
 
 It won't touch a prompt that's still active, won't move anything between unrelated projects, and never deletes.
 
+It works out its own boundary from where you run it — the nearest folder holding a `projects/` directory, or your git repo root, whichever is more specific — and stays inside it. So if you keep separate work and personal trees, a sweep in one never reaches into the other. It tells you the boundary it picked before it touches anything.
+
 **Install**
 
 ```bash

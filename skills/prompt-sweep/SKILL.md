@@ -1,6 +1,6 @@
 ---
 name: prompt-sweep
-description: On-demand monthly backstop that finds retired prompt files (`*-prompt-*.md`) and, with per-file or approve-all consent, archives the SUPERSEDED and DONE ones into each project's own `archive/`. Never touches ACTIVE or REUSABLE prompts, never crosses the work/personal line, never deletes. Strictly user-invoked — never auto-triggers.
+description: On-demand monthly backstop that finds retired prompt files (`*-prompt-*.md`) and, with per-file or approve-all consent, archives the SUPERSEDED and DONE ones into each project's own `archive/`. Never touches ACTIVE or REUSABLE prompts, never crosses out of the scope it resolved, never deletes. Strictly user-invoked — never auto-triggers.
 ---
 
 # /prompt-sweep — Prompt lifecycle backstop
@@ -15,19 +15,32 @@ The lifecycle states, banner formats, division of labor, and scope guardrail are
 once in the canonical spec: **`shared/skills/prompt-sweep/prmpt-lifecycle.md`**. Read it
 before running. This skill does not restate those rules — it applies them.
 
-## Step 1 — Resolve the branch (hard scope)
+## Step 1 — Resolve the scope (hard boundary)
 
-Determine which branch the cwd sits in — `~/ClaudeOS/work` **or** `~/ClaudeOS/personal`
-— and operate on that branch only. If the cwd is inside `~/ClaudeOS/shared`, the branch
-is **shared** (the flat root, its own `archive/`). **Never cross the work/personal line
-in one run.** If the branch can't be determined, stop and ask.
+Resolve it from the cwd — never assume a layout, and never hardcode directory names.
+Take whichever of these is **deeper**:
+
+1. the nearest ancestor directory containing a `projects/` directory, or
+2. the enclosing git repository root — `git rev-parse --show-toplevel`
+
+If neither exists, the scope is the cwd. **Operate on that one scope only and never cross into a
+sibling scope in a single run.** If the result is ambiguous, stop and ask.
+
+Deeper wins because it is the more specific boundary — a workspace holding several independent
+trees inside one repository resolves to the individual tree, which is the separation that must not
+be crossed. Full rationale: `prmpt-lifecycle.md` § Scope guardrail.
+
+State the resolved scope in one line before scanning, so the user can correct it before anything
+moves.
 
 ## Step 2 — Scan for prompt files
 
-Within the resolved branch, find every `*-prompt-*.md`:
-- Each `projects/*/` directory (recursively — projects may nest subfolders like `homelab/tv/`).
-- The flat branch root and, for shared, the `shared/` root itself.
+Within the resolved scope, find every `*-prompt-*.md`:
+- Each `projects/*/` directory, recursively — projects may nest subfolders.
+- The scope's own flat root.
 - Skip anything already inside an `archive/` folder.
+- Never ascend above the resolved scope, and never descend into a nested repository — that is a
+  scope of its own and gets its own run.
 
 ## Step 3 — Classify each file (per the spec)
 
@@ -96,7 +109,7 @@ override each recommendation. Then, per file:
 - **mark REUSABLE** → stamp the `LIFECYCLE: REUSABLE — keep-loose.` marker; leave in place.
 - **keep ACTIVE** → leave untouched.
 
-For every move: ensure the destination `archive/` exists (the project's own, or `shared/archive/`);
+For every move: ensure the destination `archive/` exists (the project's own, or the scope root's);
 create if missing. **Move** (not copy, not delete). If a plan file (`<same-topic>-plan-*.md`) sits
 beside a swept prompt and is itself DONE, offer to move it too — same approval.
 
@@ -104,12 +117,12 @@ Never move or stamp a file the user didn't approve. Report what moved/stamped an
 
 ## Step 6 — Done
 
-State the final tally (moved N, left M active/reusable). No handoff, no README, no next steps.
+State the resolved scope and the final tally (moved N, left M active/reusable). No handoff, no README, no next steps.
 
 ## Rules
 
 - User-invoked only. Never auto-trigger.
-- One branch per run — never cross the work/personal line.
+- One resolved scope per run — never cross into a sibling scope, never ascend above it.
 - ACTIVE and REUSABLE are never candidates.
 - Move, never delete. Every move is approval-gated.
 - Rules live in `prmpt-lifecycle.md` — link to it, never restate it.

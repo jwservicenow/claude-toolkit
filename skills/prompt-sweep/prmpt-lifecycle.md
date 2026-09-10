@@ -111,12 +111,28 @@ two consecutive sweeps before it is raised, so genuinely slow-burning work is ne
 
 ## Scope guardrail (hard rule)
 
-- `/prompt-sweep` operates on **exactly one branch** — the one whose tree contains the cwd
-  (work **or** personal). It **never crosses the work/personal line** in a single run.
-- In-scope locations: that branch's `projects/*/` (each project archives into its **own**
-  `projects/<name>/archive/`) **plus** the flat `shared/` root (archives into `shared/archive/`).
-- A file only ever moves into **its own** project's (or `shared/`'s) `archive/` — never another
-  project's, never across the branch line.
+`/prompt-sweep` operates on **exactly one scope per run** and never crosses into a sibling scope.
+The scope is *resolved from the cwd*, never assumed:
+
+**Resolution — take whichever of these is DEEPER:**
+1. the nearest ancestor directory that contains a `projects/` directory, or
+2. the enclosing git repository root (`git rev-parse --show-toplevel`).
+
+If neither exists, the scope is the cwd itself. If the result is ambiguous, stop and ask.
+
+Deeper wins because it is the more specific boundary. A workspace that keeps several independent
+trees under one repository — a work tree and a personal tree, say — resolves to the individual
+tree rather than the repository, which is exactly the separation that must not be crossed. A
+single-project repository has no `projects/` directory and resolves to the repository root, which
+is also correct.
+
+- In-scope locations: the scope's `projects/*/` (each project archives into its **own**
+  `projects/<name>/archive/`) **plus** the scope's flat root (archives into its own `archive/`).
+- A file only ever moves into **its own** project's archive, or the scope root's — never another
+  project's, and never outside the resolved scope.
+
+The rule is about *separation*, not about any particular directory name. Never hardcode the names
+of a specific machine's trees here or in the skill.
 
 ## Archive naming (prefix on move — hard rule)
 
