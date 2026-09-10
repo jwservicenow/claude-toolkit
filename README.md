@@ -4,7 +4,7 @@ Tools that make Claude smarter for ServiceNow work - contributed by a ServiceNow
 
 Everything here works inside **Claude Code** (the command-line app). Some tools also have a **Claude Desktop** version — noted where applicable.
 
-`/newsession` and `/newplan` come in two tiers you can install side by side and switch between freely — they're separate commands, so installing or trying one never touches the other: **lite** (below, the default, battle-tested) and **advanced** (`-pro` suffix, opt-in, not yet battle-tested).
+`/newsession` and `/newplan` come in two tiers you can install side by side and switch between freely — they're separate commands, so installing or trying one never touches the other: **lite** (below, the default, battle-tested) and **advanced** (`-pro` suffix, opt-in).
 
 | Tool | What it does |
 |------|-------------|
@@ -12,8 +12,8 @@ Everything here works inside **Claude Code** (the command-line app). Some tools 
 | [/servicenow_rag](#servicenow_rag) | Claude Code RAG skill — Navigates ServiceNow's official [GitHub docs mirror](https://github.com/ServiceNow/ServiceNowDocs#servicenowdocs) from its published index down to the exact topic file, then supplements with a scoped ServiceNow Community search. Answers are cited to real docs.servicenow.com URLs; it won't invent a doc path, and says so when the docs don't cover something. |
 | [/newsession](#newsession) **· lite, default** | Long chat getting slow or pricey? Turn it into a compact handoff you paste into a fresh session — goal, decisions, constraints, next action, written straight to your project folder |
 | [/newplan](#newplan) **· lite, default** | Turn a goal into an approved, written plan — interviews you, asks clarifying questions, provides 3–4 ranked approaches with trade-offs, saved as a plan file that closes itself into `archive/` when done |
-| [/newsession-pro](#newsession-pro) **· advanced, not yet battle-tested** | Matured `/newsession` — adds a sweep for anything the session measured or decided but never wrote down, filing it into findings/defects/runbook artifacts before the handoff |
-| [/newplan-pro](#newplan-pro) **· advanced, not yet battle-tested** | Matured `/newplan` — opens by searching findings/defects/runbook you already recorded (`recall.sh`), so long projects stop re-deriving their own conclusions, and governs when each record artifact gets written |
+| [/newsession-pro](#newsession-pro) **· advanced** | Matured `/newsession` — adds a sweep for anything the session measured or decided but never wrote down, filing it into findings/defects/runbook artifacts before the handoff |
+| [/newplan-pro](#newplan-pro) **· advanced** | Matured `/newplan` — opens by searching findings/defects/runbook you already recorded (`recall.sh`), so long projects stop re-deriving their own conclusions, and governs when each record artifact gets written |
 | [/security-audit](#security-audit) | Scans the whole codebase for OWASP Top 10 patterns, dependency CVEs, hardcoded secrets, weak auth, and risky config — an audit of everything, not just your pending diff |
 | [/ai-security](#ai-security) | Security review for AI/LLM systems and agents — prompt injection (direct and indirect), agent tool abuse, guardrail resistance, model inversion and data-poisoning exposure, mapped to MITRE ATLAS |
 | [/deps-audit](#deps-audit) | Dependency health check — known vulnerabilities, outdated and unused packages, license compliance. Detects your package manager (npm/yarn/pnpm, pip/poetry, …) and ranks what to fix first |
@@ -131,7 +131,7 @@ Restart Claude Code. Then type `/newplan`.
 <a id="newsession-pro"></a><a id="newplan-pro"></a>
 ### `/newsession-pro` · `/newplan-pro`
 
-**Advanced tier — opt-in, not yet battle-tested.** This is the matured 2026-09 version of `/newsession` and `/newplan`, built 2026-09-06..10. The lite tier above stays the default; install this alongside it and switch per task, or drop back mid-session — separate commands, so nothing is overwritten either way.
+**Advanced tier — opt-in.** This is the matured 2026-09 version of `/newsession` and `/newplan`, built 2026-09-06..10. The lite tier above stays the default; install this alongside it and switch per task, or drop back mid-session — separate commands, so nothing is overwritten either way.
 
 `/newplan-pro` opens with a Step 0 that searches the findings, defects and runbook you already have, before measuring anything — on a long project the expensive failure isn't forgetting a fact, it's re-deriving one you already recorded and landing on a slightly different answer. `recall.sh` prints the matching entries in about a second. `/newplan-pro` also names where each plan's output goes (findings, defects, runbook) and when it gets written, and a plan never closes itself — closure runs only when you ask for it in words.
 
