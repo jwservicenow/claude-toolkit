@@ -58,20 +58,40 @@ The chosen approach and the reasoning behind it.
 ## Steps
 Ordered list of concrete steps to execute the plan. The **final step is always closure** — point it at the `## Closure` section below.
 
-## Testing
-How to verify it worked.
+## Record
+Findings, defects, traps, decisions and tools — one line each, replacing any separate findings/defects/runbook file. Every row carries a **type** and a **state**:
+
+```
+F  SETTLED     one-line finding, cites its source                                      (YYYY-MM-DD)
+D  OPEN        one-line defect, cites its source                                       (YYYY-MM-DD)
+T  SETTLED     one-line operational trap                                               (YYYY-MM-DD)
+K              one-line decision — decisions carry no state                            (YYYY-MM-DD)
+Tools:  name.sh (one-line purpose)
+```
+
+Types: `F` finding, `D` defect, `T` trap, `K` decision. States: `OPEN`, `SETTLED`, `SUPERSEDED`.
+The block above shows one of each type as a format example, not a quota — include only rows the
+work actually earned, and leave a type out entirely when there's nothing to record for it. A new
+plan usually starts with just the decisions that produced it.
+
+**The rule, in full:** when something changes, **edit the row in place.** If a conclusion is
+overturned, mark the old row `SUPERSEDED → <the row that replaces it>` and keep it. **Never add a
+second row on the same subject.** This is the whole anti-amnesia mechanism — one editable row per
+subject removes the append order a fresh, confident, wrong answer would otherwise win on.
+
+**Record before you report.** A row is written when it lands, before it's described in chat —
+never batched to session end.
+
+## Risks & assumptions
+What could go wrong (likelihood, severity, handling) and what's believed true but unverified.
+
+## Verification
+How to verify it worked, plus the single check that confirms the agreed goal (top of this plan)
+was actually achieved — not just that the steps ran. State the concrete, observable condition
+that proves it's done, and who confirms it.
 
 ## Backout
 How to undo or recover if something goes wrong.
-
-## Risks
-What could go wrong, how likely, and how bad.
-
-## Open Assumptions
-Things assumed to be true that have not been verified.
-
-## Goal Verification
-The single check that confirms the agreed goal (top of this plan) was actually achieved — not just that the steps ran. State the concrete, observable condition that proves it's done, and who confirms it.
 
 ## Closure
 The last task of every plan, always present. Once the goal above is verified and the work is done:
@@ -91,10 +111,11 @@ Review the draft silently:
 
 1. **TBD scan** — Any incomplete sections, vague steps, or placeholders? Fill or flag them.
 2. **Contradiction check** — Do any sections conflict with each other?
-3. **Assumption verification** — Which assumptions can you confirm from the context you read in Step 1? Mark those confirmed in the plan. Move anything unverified to Open Assumptions.
-4. **Remaining assumptions** — Anything you assumed while writing that the user never confirmed? Add to Open Assumptions.
+3. **Assumption verification** — Which assumptions can you confirm from the context you read in Step 1? Mark those confirmed in the plan. Move anything unverified to `## Risks & assumptions`.
+4. **Remaining assumptions** — Anything you assumed while writing that the user never confirmed? Add to `## Risks & assumptions`.
 5. **Scope check** — Is this focused enough to execute, or does it need to be broken down?
-6. **Goal trace** — Does the Goal Verification section actually test the agreed goal from Step 2, and do the Steps lead to it? If the goal drifted while writing, fix it so top and bottom match.
+6. **Goal trace** — Does `## Verification` actually test the agreed goal from Step 2, and do the Steps lead to it? If the goal drifted while writing, fix it so top and bottom match.
+7. **Record check** — Does `## Record` exist with the type/state row format and the edit-in-place rule, and no reference to `record-controls.md` or separate findings/defects/runbook files?
 
 Fix issues inline. Then show the user the finished plan.
 

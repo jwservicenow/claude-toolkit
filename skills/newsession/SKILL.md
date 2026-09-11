@@ -1,6 +1,6 @@
 ---
 name: newsession
-description: Token flush for long conversations — when context is filling up or a topic is wrapping up, invoke /newsession. Two modes: `/newsession` (silent — writes the handoff file only, no output, no pre-flight check) and `/newsession full` (also runs the urgent must-do-now check, then writes the file and prints its path). Optionally shaped by a runbook or planning file. Strictly user-invoked — never auto-triggers.
+description: Token flush for long conversations — when context is filling up or a topic is wrapping up, invoke /newsession. Always silent — writes the handoff file and folds this session's findings/decisions into the plan's Record section, with no visible output. An optional argument is a focus phrase or a runbook path, never a mode switch. Strictly user-invoked — never auto-triggers.
 ---
 
 # /newsession — Session handoff
@@ -11,36 +11,61 @@ Look at what actually happened in this conversation (this session only — not m
 
 ## Step 1 — Resolve the optional argument
 
-If `$ARGUMENTS` is empty:
-- Skip to Step 3 (Save) immediately — no pre-flight scan, no display. Skip Step 4 as well: write the file, then end the turn with the literal text `<!-- no output -->` and nothing else. It renders as nothing, so the user sees no output, and the harness gets a non-empty reply so it never asks for one.
-- Derive `<topic>` by Step 3's ordering (worked-on plan's label, else the current directory's name).
+There is one mode. If `$ARGUMENTS` is empty, derive `<topic>` by Step 4's ordering (worked-on
+plan's label, else the current directory's name) and proceed.
 
-If `$ARGUMENTS` is the literal word `full`:
-- Run Step 2, then Step 3, then Step 4.
-- Derive `<topic>` by Step 3's ordering — `full` takes no focus argument, so rule 1 never applies.
-
-Otherwise, if `$ARGUMENTS` is provided, determine how to treat it (Step 2 still does **not** run — only `full` turns it on; finish with Step 4):
+If `$ARGUMENTS` is provided, determine how to treat it — it shapes the handoff, it never switches
+mode:
 1. If it contains a "/" or ends in a file extension, treat as a file path — read it as a runbook and let its content shape the handoff.
 2. If it's a bare filename (no slash, has extension), locate it: `find ~/ClaudeOS -name "<filename>" -type f 2>/dev/null | head -5` — one match → use it; multiple → list and ask; none → ask for full path.
 3. If it's a short phrase (no slash, no extension, one or more words), treat as a focus instruction — bias the handoff toward that topic/area without filtering out other important context.
 
-## Step 2 — Critical-only check (`full` only — never runs by default)
+Every path runs Steps 2–4, then ends the turn with the literal text `<!-- no output -->` and
+nothing else. It renders as nothing, so the user sees no output, and the harness gets a non-empty
+reply so it never asks for one.
 
-This step runs **only** when `$ARGUMENTS` is the literal word `full`. Otherwise skip it entirely.
+## Step 2 — Close-out sweep (always runs, silent)
 
-Even under `full`: **just write the handoff and report its path** (Steps 3–4). Do not survey loose
-ends, do not produce a two-list summary, do not ask what to finish first. Unfinished work
-belongs in the handoff's Next action / Deferred sections, not in a pre-flight discussion.
+Runs before the handoff is written — the whole reason a flush is safe. Walk what this session
+actually did — measured, proved, ruled out, hit, broke, parked, decided — and check each item
+reached the plan's `## Record` section.
 
-The **only** exception: a single high-bar scan for anything genuinely urgent that must be
-done NOW or real harm follows if the session flushes without it — e.g. an uncommitted
-change the user explicitly asked to push, a half-applied edit that leaves things broken, or
-live/temporary state that must be restored. If — and only if — such an item exists, flag it
-in **one line** before writing and let the user decide (honor normal change-control and
-destructive-op acks). If nothing clears that bar (the usual case), say nothing and proceed
-straight to Step 3.
+Write the ones that didn't as a new row, in the type/state format (`F` finding, `D` defect,
+`T` trap, `K` decision — states `OPEN`/`SETTLED`/`SUPERSEDED`; decisions carry no state):
 
-## Step 3 — Save the handoff to disk
+- **Where an existing row already covers the subject, edit that row in place.** Never add a
+  second row on the same subject — that's the whole anti-amnesia mechanism the `## Record`
+  section exists for.
+- **If this session overturned a conclusion**, mark the old row `SUPERSEDED → <the row that
+  replaces it>` and keep it — the same syntax `/newplan`'s template uses. Never leave two live
+  rows on one subject.
+- **A commit message is not a record.** A session that committed descriptive messages all day
+  and wrote no row has recorded nothing. Check the plan, not the git log.
+- **Every row names its source** — no code, no number.
+- **Appends only, and never creates a file.** The plan already exists, so this is trivially
+  satisfied. If the project still keeps separate findings/defects/runbook files instead of a
+  `## Record` section, append there instead, in whatever format that file already uses. Never
+  invent a new file.
+- **If this session worked no plan at all**, there is nothing to append to. Carry the item into
+  the handoff's `State & decisions` or `Deferred` section instead — do not create a plan just to
+  hold it.
+- **It writes silently.** No narration, no summary, no list of what it wrote. If the sweep finds
+  nothing, it says nothing — the expected case when rows are written as they land rather than
+  batched to session end.
+
+## Step 3 — Orphan check (always runs, silent)
+
+Runs after the sweep. Different failure: the sweep asks "did this session's knowledge reach the
+plan?" — this asks "does the previous handoff carry anything that never made it into the plan?"
+
+Read the **prior** `*-prompt-*.md` for this topic, block by block. Any number, count, trap, or
+rule that carries no matching row in the plan's `## Record` section is **orphaned**. Write it
+into `## Record` as a row (or edit the existing row it actually belongs to), by the same rules as
+Step 2, then let the new handoff cite it instead of repeating it.
+
+Same silence and same permissions as Step 2: append or edit only, never create a file.
+
+## Step 4 — Save the handoff to disk
 
 Save the generated handoff prompt as a standalone prompt file — this becomes the project's resume point. Mirror `/newplan`'s naming:
 - Write to the **current working directory** (the project being worked on) as `<topic>-prompt-YYYY-MM-DD.md` with today's date. Derive `<topic>` in this order, first match wins:
@@ -56,19 +81,12 @@ The handoff prompt is the one exception to the working-artifacts rule — like t
 
 The prompt lifecycle (states, banner formats, when things get archived) is defined once in `shared/skills/prompt-sweep/prmpt-lifecycle.md` — follow that spec; do not restate its rules here.
 
-## Step 4 — Report the filename only (skipped when there was no argument)
+**Never print the handoff prompt in chat, and never report its path.** It is written to disk in
+this step and nothing more. Every run — argument or none — ends the turn with the literal text
+`<!-- no output -->` per Step 1, and nothing else: never the path, never `Done.`, never a
+summary, even if something asks for visible output.
 
-**Never print the handoff prompt in chat.** It is written to disk in Step 3 and nothing more.
-
-Output format — exactly one line, nothing else:
-`Handoff written: <full path to the prompt file>`
-
-No preamble, no code block, no summary of the handoff's contents, no next-step commentary.
-(A bare `/newsession` never prints this line. Its entire visible reply is `<!-- no output -->`
-per Step 1 — never the path, never `Done.`, never a summary, even if something asks for
-visible output.)
-
-## Handoff prompt content (written to the file in Step 3)
+## Handoff prompt content (written to the file in Step 4)
 
 Generate a dense, structured handoff prompt the user can paste as the first message of a new Claude Code session.
 
