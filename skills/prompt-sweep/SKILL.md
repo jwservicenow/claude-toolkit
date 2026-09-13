@@ -34,6 +34,8 @@ moves.
 Within the resolved scope, find every `*-prompt-*.md`:
 - Each `projects/*/` directory, recursively — projects may nest subfolders.
 - The scope's own flat root.
+- Files directly inside `projects/` itself, outside any project folder — scanned so they can be
+  flagged, never moved (Step 4; `prmpt-lifecycle.md` § Scope guardrail).
 - Skip anything already inside an `archive/` folder.
 - Never ascend above the resolved scope, and never descend into a folder that has its own
   `projects/` directory — that is a scope of its own and gets its own run.
@@ -67,13 +69,15 @@ Show **two** tables.
 | # | File (path) | State | → Destination archive/ |
 |---|---|---|---|
 
-**B. Needs your call** (unbannered and not confidently ACTIVE, or ACTIVE but dormant >60 days):
+**B. Needs your call** (unbannered and not confidently ACTIVE, or ACTIVE but dormant >60 days, or
+loose in `projects/` in any state but REUSABLE — a loose file never goes in Table A):
 
 | # | File (path) | Recommended | Why |
 |---|---|---|---|
 
 Recommended is one of: **keep ACTIVE** (leave in place) · **mark REUSABLE** (`keep-loose`) ·
-**archive DONE** / **archive SUPERSEDED by <file>**.
+**archive DONE** / **archive SUPERSEDED by <file>** · **move into `projects/<name>/`** (loose files
+only — name the folder it belongs in).
 
 **Read each Table B file in full before assigning its Recommended — always. Never infer a
 disposition from the filename, the absence of a banner, or the memory index; those are what
@@ -104,6 +108,8 @@ override each recommendation. Then, per file:
   prefixing the filename per the spec's **Archive naming** rule (immediate parent folder, always, every file, no dedup).
 - **mark REUSABLE** → stamp the `LIFECYCLE: REUSABLE — keep-loose.` marker; leave in place.
 - **keep ACTIVE** → leave untouched.
+- **move into `projects/<name>/`** → leave untouched; the user moves it, and a later run sweeps it
+  from its folder.
 
 For every move: ensure the destination `archive/` exists (the project's own, or the scope root's);
 create if missing. **Move** (not copy, not delete). If a plan file (`<same-topic>-plan-*.md`) sits

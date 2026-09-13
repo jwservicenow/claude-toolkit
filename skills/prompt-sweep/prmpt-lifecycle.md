@@ -131,6 +131,9 @@ single project with no `projects/` directory resolves to the cwd, which is also 
   `projects/<name>/archive/`) **plus** the scope's flat root (archives into its own `archive/`).
 - A file only ever moves into **its own** project's archive, or the scope root's — never another
   project's, and never outside the resolved scope.
+- A file sitting directly in `projects/`, outside any project folder, has no project archive. It is
+  scanned and always surfaced for a decision — move it into its own project folder — but the sweep
+  never moves it. A REUSABLE loose file is left in place like any other.
 
 The rule is about *separation*, not about any particular directory name. Never hardcode the names
 of a specific machine's trees here or in the skill.
