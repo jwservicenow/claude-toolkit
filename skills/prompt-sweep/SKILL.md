@@ -12,7 +12,7 @@ retired prompt files out of project roots. It **proposes**, the user **approves*
 **Strictly user-invoked.** Only activate when the user types `/prompt-sweep`. Never auto-trigger.
 
 The lifecycle states, banner formats, division of labor, and scope guardrail are defined
-once in the canonical spec: **`shared/skills/prompt-sweep/prmpt-lifecycle.md`**. Read it
+once in the canonical spec: **`prmpt-lifecycle.md`**, in this skill's own folder. Read it
 before running. This skill does not restate those rules — it applies them.
 
 ## Step 1 — Resolve the scope (hard boundary)

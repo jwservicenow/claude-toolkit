@@ -31,7 +31,7 @@ mirror-testing/
   SUMMARY.md                             cross-bundle rollup
   RESWEEP-2026-06-25.md                  post-republish before/after verification
   model-thinking-sweep-writeup-*.html    model x thinking-effort benchmark
-  TEST-PLAN-TEMPLATE.md                  blank scaffold for a new bundle
+  TEST-SCRIPT-TEMPLATE.md                blank scaffold for a new bundle
 ```
 
 Each bundle folder follows the same convention:
@@ -51,7 +51,7 @@ Findings use a fixed vocabulary so results are comparable across bundles:
 | `missing-xref` | Expected cross-bundle link absent or unverifiable |
 | `no-canonical-url` | `canonical_url` front-matter missing on a populated page |
 
-The full blank scaffold lives in [`TEST-PLAN-TEMPLATE.md`](TEST-PLAN-TEMPLATE.md).
+The full blank scaffold lives in [`TEST-SCRIPT-TEMPLATE.md`](TEST-SCRIPT-TEMPLATE.md).
 
 ## How to run
 
@@ -66,5 +66,5 @@ Tests target the `australia` branch (current GA) by default; substitute another 
 ## Adding a new bundle (e.g. a new ServiceNow docs bundle)
 
 1. Create `mirror-testing/<bundle>/`.
-2. Copy `TEST-PLAN-TEMPLATE.md` to `<bundle>/test-results-<date>.md` and fill it in.
+2. Copy `TEST-SCRIPT-TEMPLATE.md` to `<bundle>/test-results-<date>.md` and fill it in.
 3. Add a `recommendations-<date>.md` (and optional `.html`) summarizing findings by impact.

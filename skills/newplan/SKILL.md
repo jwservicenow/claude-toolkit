@@ -106,13 +106,13 @@ The last task of every plan, always present. **A plan never closes itself** — 
 
 When the user asks:
 Closing is one confirmation: show the unmet list, then do the steps below. Unmet items go on the unmet line as they stand — never resolve, fix or research them first unless the user picks one.
-1. Prepend **`STATUS YYYY-MM-DD — DONE.`** (today's date) to the plan as a new first line — the existing title moves down one line — with one line under it naming anything unmet. Prepend the same `STATUS` line to the newest `<topic>-prompt-*.md` — banner only; the unmet line goes in the plan only. Older prompts in the chain keep their `SUPERSEDED` banners. The DONE/SUPERSEDED vocabulary is defined in `shared/skills/prompt-sweep/prmpt-lifecycle.md`.
+1. Prepend **`STATUS YYYY-MM-DD — DONE.`** (today's date) to the plan as a new first line — the existing title moves down one line — with one line under it naming anything unmet. Prepend the same `STATUS` line to the newest `<topic>-prompt-*.md` — banner only; the unmet line goes in the plan only. Older prompts in the chain keep their `SUPERSEDED` banners. The DONE/SUPERSEDED vocabulary is defined in `prompt-sweep/prmpt-lifecycle.md` in the skills folder.
 2. Move this plan and **every** `<topic>-prompt-*.md` for this topic into the project's `archive/` folder — the `archive/` directly under the project dir where they live; create it if it doesn't exist. Name them per that spec's archive-naming rule. The user's request to close is the approval for these moves.
 3. Deal with `run/` (see *Working artifacts* in the skill): promote anything durable to the project root, and commit it if the project uses version control; keeping or deleting the rest is the user's call — ask, don't assume.
 
 Until the user asks and these are done, this section stands as the open marker that the plan isn't closed yet.
 
-The prompt lifecycle (states, banners, when prompts get archived) is specified once in `shared/skills/prompt-sweep/prmpt-lifecycle.md` — follow it; do not restate its rules here.
+The prompt lifecycle (states, banners, when prompts get archived) is specified once in `prompt-sweep/prmpt-lifecycle.md` in the skills folder — follow it; do not restate its rules here.
 
 ---
 
@@ -142,7 +142,7 @@ Save the plan to the working directory as:
 
 Picking an approach in Step 3 is the user's approval to write the plan and prompt — save without asking again.
 
-**On a replan** (Step 2), after saving the new plan, prepend `STATUS YYYY-MM-DD — SUPERSEDED by <new-plan-filename>.` (today's date) to the replaced plan as a new first line — the existing title moves down one line — and move it into the `archive/` directly under the project dir; create it if it doesn't exist. Name it per the archive-naming rule in `shared/skills/prompt-sweep/prmpt-lifecycle.md`.
+**On a replan** (Step 2), after saving the new plan, prepend `STATUS YYYY-MM-DD — SUPERSEDED by <new-plan-filename>.` (today's date) to the replaced plan as a new first line — the existing title moves down one line — and move it into the `archive/` directly under the project dir; create it if it doesn't exist. Name it per the archive-naming rule in `prompt-sweep/prmpt-lifecycle.md` in the skills folder.
 
 ### Step 7 — Generate the Transition Prompt
 
@@ -163,7 +163,7 @@ Tell the user both filenames and give a short summary of the plan — the goal, 
 
 **The transition prompt MUST be the last thing you output — always, every run.** Present it under a clear heading (e.g. `## Session prompt — paste to resume`) inside a single fenced code block, so it's clean to copy. Nothing may come after it except the one path line below: no summary of the plan, no recap of what you built, no "want me to start?", no offer to begin the work. If you have closing remarks, they go BEFORE the prompt block.
 
-**Immediately after the fenced block, output exactly one line — the full path to the prompt file, same form as `/newsession`:**
+**Immediately after the fenced block, output exactly one line — the full path to the prompt file:**
 
 ```
 Session prompt written: <full path to the *-prompt-*.md file>

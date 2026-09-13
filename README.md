@@ -9,7 +9,7 @@ Everything here works inside **Claude Code** (the command-line app). Some tools 
 | [Claude Desktop RAG](https://jwservicenow.github.io/claude-toolkit/docs/servicenow-mirror-desktop-guide.html) **· v3** | Claude Desktop can't read the ServiceNow docsite directly — this fixes it. Wires in a custom MCP fetch server to pull from the [GitHub docs mirror](https://github.com/ServiceNow/ServiceNowDocs#servicenowdocs), then locks it down with Project Instructions that re-enforces docsite-only answers with citable URLs. |
 | [/servicenow_rag](#servicenow_rag) | Claude Code RAG skill — Navigates ServiceNow's official [GitHub docs mirror](https://github.com/ServiceNow/ServiceNowDocs#servicenowdocs) from its published index down to the exact topic file, then supplements with a scoped ServiceNow Community search. Answers are cited to real docs.servicenow.com URLs; it won't invent a doc path, and says so when the docs don't cover something. |
 | [/newsession](#newsession) | Long chat getting slow or pricey? Turn it into a compact handoff you paste into a fresh session — goal, decisions, constraints, next action, written straight to your project folder |
-| [/newplan](#newplan) | Turn a goal into an approved, written plan — interviews you, asks clarifying questions, provides 3–4 ranked approaches with trade-offs, saved as a plan file that closes itself into `archive/` when done |
+| [/newplan](#newplan) | Turn a goal into an approved, written plan — interviews you, asks clarifying questions, provides 3–4 ranked approaches with trade-offs, saved as a plan file that moves into `archive/` when you close it |
 | [/security-audit](#security-audit) | Scans the whole codebase for OWASP Top 10 patterns, dependency CVEs, hardcoded secrets, weak auth, and risky config — an audit of everything, not just your pending diff |
 | [/ai-security](#ai-security) | Security review for AI/LLM systems and agents — prompt injection (direct and indirect), agent tool abuse, guardrail resistance, model inversion and data-poisoning exposure, mapped to MITRE ATLAS |
 | [/deps-audit](#deps-audit) | Dependency health check — known vulnerabilities, outdated and unused packages, license compliance. Detects your package manager (npm/yarn/pnpm, pip/poetry, …) and ranks what to fix first |
@@ -90,9 +90,11 @@ Optionally pass a filename and the next session will be shaped around that file:
 **Install**
 
 ```bash
-mkdir -p ~/.claude/skills/newsession
+mkdir -p ~/.claude/skills/newsession ~/.claude/skills/prompt-sweep
 curl -o ~/.claude/skills/newsession/SKILL.md \
   https://raw.githubusercontent.com/jwservicenow/claude-toolkit/main/skills/newsession/SKILL.md
+curl -o ~/.claude/skills/prompt-sweep/prmpt-lifecycle.md \
+  https://raw.githubusercontent.com/jwservicenow/claude-toolkit/main/skills/prompt-sweep/prmpt-lifecycle.md
 ```
 
 Restart Claude Code. Then type `/newsession`.
@@ -101,7 +103,7 @@ Restart Claude Code. Then type `/newsession`.
 
 ### `/newplan`
 
-Type `/newplan` followed by what you want to do. Claude explores your project for context, asks up to four clarifying questions, then lays out three to four approaches ranked by trade-offs. It self-reviews, presents the plan for your approval, and on your OK writes a complete, self-contained plan file into your project folder — ready to hand to a fresh session or a teammate. The plan carries its own `## Record` section (findings, defects, traps, decisions — one editable row per subject, never a second row on the same subject) so nothing gets re-derived later. Every plan also ends with a `## Closure` step, so finishing it means bannering it DONE and moving it to your archive — plans close themselves out instead of lingering.
+Type `/newplan` followed by what you want to do. Claude explores your project for context, asks up to four clarifying questions, then lays out three to four approaches ranked by trade-offs. It self-reviews, and once you pick an approach it writes a complete, self-contained plan file into your project folder and shows you a short summary — ready to hand to a fresh session or a teammate. The plan carries its own `## Record` section (findings, defects, traps, decisions — one editable row per subject, never a second row on the same subject) so nothing gets re-derived later. Every plan also ends with a `## Closure` step. When you say it's done, closing is one confirmation — it banners the plan DONE, notes anything unmet, and moves it to your archive.
 
 ```
 /newplan migrate our CMDB to CSDM
@@ -111,9 +113,11 @@ Type `/newplan` followed by what you want to do. Claude explores your project fo
 **Install**
 
 ```bash
-mkdir -p ~/.claude/skills/newplan
+mkdir -p ~/.claude/skills/newplan ~/.claude/skills/prompt-sweep
 curl -o ~/.claude/skills/newplan/SKILL.md \
   https://raw.githubusercontent.com/jwservicenow/claude-toolkit/main/skills/newplan/SKILL.md
+curl -o ~/.claude/skills/prompt-sweep/prmpt-lifecycle.md \
+  https://raw.githubusercontent.com/jwservicenow/claude-toolkit/main/skills/prompt-sweep/prmpt-lifecycle.md
 ```
 
 Restart Claude Code. Then type `/newplan`.
@@ -189,7 +193,7 @@ Housekeeping for anyone using `/newsession` regularly. Handoff files accumulate 
 
 It won't touch a prompt that's still active, won't move anything between unrelated projects, and never deletes.
 
-It works out its own boundary from where you run it — the nearest folder holding a `projects/` directory, or your git repo root, whichever is more specific — and stays inside it. So if you keep separate work and personal trees, a sweep in one never reaches into the other. It tells you the boundary it picked before it touches anything.
+It works out its own boundary from where you run it — the nearest folder holding a `projects/` directory, or the folder you're in if there isn't one — and stays inside it. So if you keep separate work and personal trees, a sweep in one never reaches into the other. It tells you the boundary it picked before it touches anything.
 
 **Install**
 
