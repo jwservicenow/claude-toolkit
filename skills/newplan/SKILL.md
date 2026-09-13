@@ -105,6 +105,7 @@ How to undo or recover if something goes wrong.
 The last task of every plan, always present. **A plan never closes itself** — closure runs only when the user asks for it in words. A finished step list does not authorise it, and neither does a session ending. A plan may close with criteria unmet; a banner that hides it may not.
 
 When the user asks:
+Closing is one confirmation: show the unmet list, then do the steps below. Unmet items go on the unmet line as they stand — never resolve, fix or research them first unless the user picks one.
 1. Prepend **`STATUS YYYY-MM-DD — DONE.`** (today's date) to the plan as a new first line — the existing title moves down one line — with one line under it naming anything unmet. Prepend the same `STATUS` line to the newest `<topic>-prompt-*.md` — banner only; the unmet line goes in the plan only. Older prompts in the chain keep their `SUPERSEDED` banners. The DONE/SUPERSEDED vocabulary is defined in `shared/skills/prompt-sweep/prmpt-lifecycle.md`.
 2. Move this plan and **every** `<topic>-prompt-*.md` for this topic into the project's `archive/` folder — the `archive/` directly under the project dir where they live; create it if it doesn't exist. Name them per that spec's archive-naming rule. The user's request to close is the approval for these moves.
 3. Deal with `run/` (see *Working artifacts* in the skill): promote anything durable to the project root, and commit it if the project uses version control; keeping or deleting the rest is the user's call — ask, don't assume.
