@@ -18,17 +18,13 @@ before running. This skill does not restate those rules — it applies them.
 ## Step 1 — Resolve the scope (hard boundary)
 
 Resolve it from the cwd — never assume a layout, and never hardcode directory names.
-Take whichever of these is **deeper**:
+The scope is the **nearest** directory — the cwd itself or its closest ancestor — that contains a
+`projects/` directory. If none exists, the scope is the cwd. **Operate on that one scope only and
+never cross into a sibling scope in a single run.** If the result is ambiguous, stop and ask.
 
-1. the nearest ancestor directory containing a `projects/` directory, or
-2. the enclosing git repository root — `git rev-parse --show-toplevel`
-
-If neither exists, the scope is the cwd. **Operate on that one scope only and never cross into a
-sibling scope in a single run.** If the result is ambiguous, stop and ask.
-
-Deeper wins because it is the more specific boundary — a workspace holding several independent
-trees inside one repository resolves to the individual tree, which is the separation that must not
-be crossed. Full rationale: `prmpt-lifecycle.md` § Scope guardrail.
+Nearest wins because it is the most specific boundary — a workspace holding several independent
+trees, each with its own `projects/`, resolves to the individual tree, which is the separation that
+must not be crossed. Full rationale: `prmpt-lifecycle.md` § Scope guardrail.
 
 State the resolved scope in one line before scanning, so the user can correct it before anything
 moves.
@@ -39,8 +35,8 @@ Within the resolved scope, find every `*-prompt-*.md`:
 - Each `projects/*/` directory, recursively — projects may nest subfolders.
 - The scope's own flat root.
 - Skip anything already inside an `archive/` folder.
-- Never ascend above the resolved scope, and never descend into a nested repository — that is a
-  scope of its own and gets its own run.
+- Never ascend above the resolved scope, and never descend into a folder that has its own
+  `projects/` directory — that is a scope of its own and gets its own run.
 
 ## Step 3 — Classify each file (per the spec)
 
@@ -53,12 +49,12 @@ For each prompt file, assign a state using `prmpt-lifecycle.md` precedence
   Sweep candidate. **Compare only within a topic** — a newer prompt for a *different* topic
   never supersedes this one, however old it is. A project may hold several live topics at once,
   and treating the project's newest as the only survivor retires real work.
-- **ACTIVE** — no banner AND the live resume pointer of an open topic. Never swept. If its date
+- **ACTIVE** — no banner AND the live resume pointer of an open topic (defined in `prmpt-lifecycle.md`). Never swept. If its date
   is **more than 60 days old** it is **dormant** — still never swept, but surfaced in Step 4's
   "needs your call" list alongside LEGACY (see `prmpt-lifecycle.md` § Dormant topics).
 - **LEGACY** — no banner and no `keep-loose` marker, and **not** confidently ACTIVE per the
-  line above (predates the system, retired without stamping, or a lone prompt in a flat root
-  with no open plan). **Do not assume ACTIVE and skip it** — surface it for a decision (Step 4).
+  line above (predates the system, retired without stamping, or its plan is DONE/SUPERSEDED
+  but the prompt was never stamped). **Do not assume ACTIVE and skip it** — surface it for a decision (Step 4).
 
 Only **DONE** and **SUPERSEDED** are direct sweep candidates. **LEGACY is always asked about.**
 

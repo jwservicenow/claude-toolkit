@@ -10,7 +10,7 @@ A "prompt file" is a `<topic>-prompt-YYYY-MM-DD.md` paste-to-resume handoff writ
 **newest = highest date, then highest letter suffix** (`…-08-03c.md` beats `…-08-03b.md` beats
 `…-08-03.md`).
 
-## The four states
+## The states
 
 | State | Definition | Swept? |
 |---|---|---|
@@ -22,12 +22,16 @@ A "prompt file" is a `<topic>-prompt-YYYY-MM-DD.md` paste-to-resume handoff writ
 
 Precedence when a file could match more than one: **REUSABLE > ACTIVE > DONE > SUPERSEDED.**
 A `keep-loose` file is REUSABLE even if it is also the newest; a banner never overrides
-`keep-loose`.
+`keep-loose`. LEGACY is what's left when none of the others match — it never competes with them.
 
 **A project holds one ACTIVE prompt per open topic, not one overall.** A project with three
 live workstreams legitimately has three ACTIVE prompts. Never infer that one topic's prompt
 retired another topic's just because it is newer — that inference is what silently retires
 live work. Only a same-topic successor supersedes.
+
+**Open topic:** a topic is open unless its plan carries a DONE or SUPERSEDED banner. A topic with
+no plan is open — its newest unbannered prompt is ACTIVE, and the 60-day dormancy rule
+(§ Dormant topics) catches abandoned ones.
 
 **LEGACY is not a resting state.** An unbannered prompt is only genuinely ACTIVE when it is
 the live resume pointer of an open topic; otherwise `/prompt-sweep` cannot know,
@@ -52,8 +56,8 @@ vocabulary is shared between plans and prompts.
 
 | Tool | Trigger | Action |
 |---|---|---|
-| **`/newplan`** | Closure of a plan | Stamps its OWN plan+prompt pair `DONE`, moves both to the project's `archive/`. |
-| **`/newplan`** | Replan on an existing project | Demotes the prior prompt to `SUPERSEDED` (banner) before writing the new pair. |
+| **`/newplan`** | Closure of a plan — only when the user asks | Stamps its OWN plan and newest prompt `DONE`, moves the plan and the topic's whole prompt chain to the project's `archive/`. |
+| **`/newplan`** | Replan on an existing project | Demotes the prior prompt to `SUPERSEDED` (banner) before writing the new pair; stamps the replaced plan `SUPERSEDED` and moves it to the project's `archive/`. |
 | **`/newsession`** | Refresh (new prompt written) | Stamps the prior **same-topic** prompt `SUPERSEDED` before writing the new one. Never touches another topic's prompt, however old. |
 | **`/prompt-sweep`** | The user runs it (~monthly) | Backstop. Finds SUPERSEDED/DONE prompts, proposes moves, and — with the user's approval — archives them. Catches whatever the other two missed. |
 
@@ -75,9 +79,9 @@ same day: `<topic>-prompt-YYYY-MM-DD[b|c|…].md`. **A prompt file is never over
   existing prompt to reuse its name: a same-day handoff holds real work, and the later prompt
   is a continuation of it, not a correction. Letters, not numbers, so the suffix can never be
   mistaken for part of the date.
-- **Same day, different topic** (a different `$ARGUMENTS` focus, a different cwd, or a
-  different plan worked): different `<topic>` → different filename → both coexist, no suffix
-  needed.
+- **Same day, different topic** (a different cwd, or a different plan worked): different
+  `<topic>` → different filename → both coexist, no suffix needed. A `/newsession` focus phrase
+  never changes the topic.
 
 Net: within a topic, the newest file — highest date, then highest letter — is that topic's
 resume pointer; every earlier one survives with a `SUPERSEDED` banner until `/prompt-sweep`
@@ -114,17 +118,14 @@ two consecutive sweeps before it is raised, so genuinely slow-burning work is ne
 `/prompt-sweep` operates on **exactly one scope per run** and never crosses into a sibling scope.
 The scope is *resolved from the cwd*, never assumed:
 
-**Resolution — take whichever of these is DEEPER:**
-1. the nearest ancestor directory that contains a `projects/` directory, or
-2. the enclosing git repository root (`git rev-parse --show-toplevel`).
+**Resolution:** the nearest directory — the cwd itself or its closest ancestor — that contains a
+`projects/` directory. If none exists, the scope is the cwd itself. If the result is ambiguous,
+stop and ask. No version-control tool is consulted.
 
-If neither exists, the scope is the cwd itself. If the result is ambiguous, stop and ask.
-
-Deeper wins because it is the more specific boundary. A workspace that keeps several independent
-trees under one repository — a work tree and a personal tree, say — resolves to the individual
-tree rather than the repository, which is exactly the separation that must not be crossed. A
-single-project repository has no `projects/` directory and resolves to the repository root, which
-is also correct.
+Nearest wins because it is the most specific boundary. A workspace that keeps several independent
+trees side by side — a work tree and a personal tree, say, each with its own `projects/` —
+resolves to the individual tree, which is exactly the separation that must not be crossed. A
+single project with no `projects/` directory resolves to the cwd, which is also correct.
 
 - In-scope locations: the scope's `projects/*/` (each project archives into its **own**
   `projects/<name>/archive/`) **plus** the scope's flat root (archives into its own `archive/`).
@@ -137,19 +138,20 @@ of a specific machine's trees here or in the skill.
 ## Archive naming (prefix on move — hard rule)
 
 Archives are flat, but source files come from a project root **and** its subfolders (e.g.
-`homelab/`, `homelab/dimm/`, `homelab/hl-agents/`), all landing in the same `archive/`. To keep
-origin legible, on move **every** file gets its **immediate parent folder name** prepended —
-prompts and plans alike:
+`app/`, `app/api/`, `app/web/`), all landing in the same `archive/`. To keep origin legible, on
+move **every** file gets its **immediate parent folder name** prepended — prompts and plans alike:
 
 - **Always prefix; no exceptions, no dedup.** Even project-root files get the project-folder name;
   even a file whose name already starts with its folder gets it again. Doubling is expected, not a bug.
-- **Immediate parent only**, not the full path: `homelab/dimm/x` → `dimm-x`, never `homelab-dimm-x`.
+- **Immediate parent only**, not the full path: `app/api/x` → `api-x`, never `app-api-x`.
+- **Names inside archived files keep their pre-move form** — `SUPERSEDED by …` banners and "Full
+  plan is in …" pointers are never rewritten. To find the file, add the same parent-folder prefix.
 
-Examples (all → `homelab/archive/`):
-- `homelab/dimm/doc-update-procedure-prompt-2026-06-28.md` → `dimm-doc-update-procedure-prompt-2026-06-28.md`
-- `homelab/hl-agents/hl-agents-prompt-2026-06-16.md` → `hl-agents-hl-agents-prompt-2026-06-16.md` *(doubled — correct)*
-- `homelab/cu130-130-prompt-2026-06-16.md` *(project root)* → `homelab-cu130-130-prompt-2026-06-16.md`
-- `llm/llm-layer8-prompt-2026-06-28.md` *(project root)* → `llm-llm-layer8-prompt-2026-06-28.md` *(doubled — correct)*
+Examples (all → `app/archive/`):
+- `app/api/auth-refactor-prompt-2026-06-28.md` → `api-auth-refactor-prompt-2026-06-28.md`
+- `app/web/web-prompt-2026-06-16.md` → `web-web-prompt-2026-06-16.md` *(doubled — correct)*
+- `app/db-migration-prompt-2026-06-16.md` *(project root)* → `app-db-migration-prompt-2026-06-16.md`
+- `app/app-release-prompt-2026-06-28.md` *(project root)* → `app-app-release-prompt-2026-06-28.md` *(doubled — correct)*
 
 The archive-folder **location** may consolidate later (subfolders don't yet own their own
 `archive/`); this naming rule keeps names consistent regardless of where the folders land.
