@@ -84,7 +84,7 @@ Save the generated handoff prompt as a standalone prompt file — this becomes t
 
 Write only the contents of the handoff prompt (no intro line, no fences) to the file with the Write tool. Do **not** create or modify a README or a `.last-newsession.md`.
 
-The handoff prompt is the one exception to the working-artifacts rule — like the plan it points at, it stays flat in the project directory because it is the resume pointer. **Any other file this session created goes by `/newplan`'s *Working artifacts* section** (`newplan/SKILL.md` in the skills folder): `<topic>-<kind>-YYYY-MM-DD.md`, durable at the project root, ephemeral in `<project>/run/`. Do not restate that rule in the handoff — cite the artifacts by path and let the convention do the rest.
+The handoff prompt is the one exception to the working-artifacts rule — like the plan it points at, it stays flat in the project directory because it is the resume pointer. **Any other file this session created**: `<topic>-<kind>-YYYY-MM-DD.md`. Durable (someone could read it in three months with none of this session's context) → project root; ephemeral → `<project>/run/`. Full rule: `/newplan`'s *Working artifacts* section, if installed. Do not restate that rule in the handoff — cite the artifacts by path.
 
 The prompt lifecycle (states, banner formats, when things get archived) is defined once in `prompt-sweep/prmpt-lifecycle.md` in the skills folder — follow that spec; do not restate its rules here.
 
