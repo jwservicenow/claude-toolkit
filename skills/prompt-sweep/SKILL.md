@@ -52,7 +52,7 @@ For each prompt file, assign a state using `prmpt-lifecycle.md` precedence
   never supersedes this one, however old it is. A project may hold several live topics at once,
   and treating the project's newest as the only survivor retires real work.
 - **ACTIVE** — no banner AND the live resume pointer of an open topic (defined in `prmpt-lifecycle.md`). Never swept. If its date
-  is **more than 60 days old** it is **dormant** — still never swept, but surfaced in Step 4's
+  is **more than 30 days old** it is **dormant** — still never swept, but surfaced in Step 4's
   "needs your call" list alongside LEGACY (see `prmpt-lifecycle.md` § Dormant topics).
 - **LEGACY** — no banner and no `keep-loose` marker, and **not** confidently ACTIVE per the
   line above (predates the system, retired without stamping, or its plan is DONE/SUPERSEDED
@@ -69,7 +69,7 @@ Show **two** tables.
 | # | File (path) | State | → Destination archive/ |
 |---|---|---|---|
 
-**B. Needs your call** (unbannered and not confidently ACTIVE, or ACTIVE but dormant >60 days, or
+**B. Needs your call** (unbannered and not confidently ACTIVE, or ACTIVE but dormant >30 days, or
 loose in `projects/` in any state but REUSABLE — a loose file never goes in Table A):
 
 | # | File (path) | Recommended | Why |
@@ -96,7 +96,7 @@ read is only for Table B, whose ambiguity is exactly what the read resolves.)
 A hold/defer note discovered in a different file does not, by itself, pull a SUPERSEDED file
 into Table B — quote it from that file's own text before it counts.
 
-Below both, list what is being **left in place** with no question and why (ACTIVE within 60 days
+Below both, list what is being **left in place** with no question and why (ACTIVE within 30 days
 on an open topic; REUSABLE = keep-loose). If both tables are empty, say
 "Nothing to sweep — all prompts are ACTIVE or REUSABLE." and stop.
 

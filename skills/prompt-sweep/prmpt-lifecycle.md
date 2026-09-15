@@ -30,7 +30,7 @@ retired another topic's just because it is newer — that inference is what sile
 live work. Only a same-topic successor supersedes.
 
 **Open topic:** a topic is open unless its plan carries a DONE or SUPERSEDED banner. A topic with
-no plan is open — its newest unbannered prompt is ACTIVE, and the 60-day dormancy rule
+no plan is open — its newest unbannered prompt is ACTIVE, and the 30-day dormancy rule
 (§ Dormant topics) catches abandoned ones. `/newsession` writes no prompt when the plan it worked
 is DONE, so closing a plan never leaves a fresh ACTIVE prompt behind.
 
@@ -113,15 +113,16 @@ Topic-scoped ACTIVE has one failure mode: an abandoned topic's last prompt is ne
 because no successor is ever written. Without a rule it stays ACTIVE forever and quietly pads
 the project's "what am I working on" list.
 
-So: an ACTIVE prompt whose date is **more than 60 days old** is **dormant**. `/prompt-sweep`
+So: an ACTIVE prompt whose date is **more than 30 days old** is **dormant**. `/prompt-sweep`
 **surfaces** it for a per-file decision — exactly the LEGACY treatment, in the same "needs your
 call" section — with the options **keep ACTIVE** (work is genuinely still open), **mark DONE**
 (stamp the banner, then sweep it), or **mark REUSABLE**. Dormancy is a prompt to ask, never a
 licence to act: **this does not make ACTIVE sweepable**, and the non-negotiable below stands
 unchanged.
 
-60 days, not 30, because `/prompt-sweep` runs about monthly — a topic must sit untouched across
-two consecutive sweeps before it is raised, so genuinely slow-burning work is never nagged.
+30 days, matching `/prompt-sweep`'s roughly monthly run — a topic untouched since the last sweep
+is raised at the next one. Slow-burning work does get asked about; answering **keep ACTIVE** leaves
+it in place.
 
 ## Scope guardrail (hard rule)
 
