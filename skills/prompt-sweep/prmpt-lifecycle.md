@@ -171,7 +171,8 @@ The archive-folder **location** may consolidate later (subfolders don't yet own 
 
 ## Non-negotiables
 
-- **Nothing moves without the user's approval** — per-file or approve-all.
+- **Nothing moves without the user's approval** — per-file or approve-all. For `/newplan`
+  Closure, the user's request to close is that approval.
 - **ACTIVE and REUSABLE are never swept**, ever.
 - **Move, never delete** — recovery is always `archive/ → back`.
 - **Link, never restate** — other skills reference this file; they do not copy these rules.

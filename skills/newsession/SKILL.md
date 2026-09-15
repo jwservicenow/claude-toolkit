@@ -48,6 +48,10 @@ Write the ones that didn't as a new row, in the type/state format (`F` finding, 
 `T` trap, `K` decision — states `OPEN`/`SETTLED`/`SUPERSEDED`; decisions carry no state unless
 overturned):
 
+- **Row layout: match the plan's existing rows.** If it has none, use one line per row — type,
+  state padded to a column, the text with its source, the date at the end. A `K` row leaves the
+  state blank:
+  `F  SETTLED     clean build takes 42 s, source: time make                    (2026-09-14)`
 - **Where an existing row already covers the subject, edit that row in place.** Never add a
   second row on the same subject — that's the whole anti-amnesia mechanism the `## Record`
   section exists for.
