@@ -9,18 +9,31 @@ Look at what actually happened in this conversation (this session only — not m
 
 **Strictly user-invoked.** Only activate when the user types `/newsession`. Never auto-trigger.
 
+## Definitions — used by every step
+
+- **Starting directory** — the directory the session was launched in, never wherever a shell `cd`
+  has since left things.
+- **Worked plan** — the `*-plan-*.md` this session actually worked on, wherever it lives. A plan
+  merely present or glanced at does not count. Several → prefer those with no `STATUS …` first
+  line, then break the tie **deterministically**: (a) highest date in the filename; (b) still
+  tied → most recently modified on disk (`ls -t`); (c) still tied → there is no worked plan.
+  Never pick between same-date plans by judgment — an arbitrary pick is what mis-files a handoff.
+- **Closed topic** — every plan this session worked on now starts with `STATUS … — DONE.`
+  (closed this session, whether still in place or already in `archive/`). Skip Steps 2–4, write
+  nothing, and end the turn with `<!-- no output -->`. A closed topic has nothing to resume, and
+  its unmet items already sit on the plan's unmet line.
+
 ## Step 1 — Resolve the optional argument
 
-There is one mode. If `$ARGUMENTS` is empty, derive `<topic>` by Step 4's ordering (worked-on
-plan's label, else the current directory's name) and proceed.
+There is one mode. If `$ARGUMENTS` is empty, derive `<topic>` per Step 4 and proceed.
 
 If `$ARGUMENTS` is provided, determine how to treat it — it shapes the handoff, it never switches
 mode. First match wins:
-1. **It names an existing file** (as given, or relative to the current directory) → read it as a runbook and let its content shape the handoff.
-2. **It ends in a file extension but didn't resolve** → search for its filename in the current directory and its subfolders: `find . -name "<filename>" -type f 2>/dev/null | head -5`. One match → use it as the runbook. None or several → ask the user (list the matches, or ask for the full path).
+1. **It names an existing file** (as given, or relative to the starting directory) → read it as a runbook and let its content shape the handoff.
+2. **It ends in a file extension but didn't resolve** → search for its filename in the starting directory and its subfolders: `find . -name "<filename>" -type f 2>/dev/null | head -5`. One match → use it as the runbook. None or several → ask the user (list the matches, or ask for the full path).
 3. **Anything else** is a focus phrase — bias the handoff toward that topic/area without filtering out other important context. A focus phrase never changes the topic or the filename (Step 4).
 
-Every path runs Steps 2–4, then ends the turn with the literal text `<!-- no output -->` and
+Every path runs Steps 2–4 (except a closed topic — see Definitions), then ends the turn with the literal text `<!-- no output -->` and
 nothing else. It renders as nothing, so the user sees no output, and the harness gets a non-empty
 reply so it never asks for one. **The one exception to silence** is rule 2's question, asked
 before anything is written.
@@ -29,7 +42,7 @@ before anything is written.
 
 Runs before the handoff is written — the whole reason a flush is safe. Walk what this session
 actually did — measured, proved, ruled out, hit, broke, parked, decided — and check each item
-reached the plan's `## Record` section.
+reached the worked plan's `## Record` section.
 
 Write the ones that didn't as a new row, in the type/state format (`F` finding, `D` defect,
 `T` trap, `K` decision — states `OPEN`/`SETTLED`/`SUPERSEDED`; decisions carry no state unless
@@ -47,10 +60,11 @@ overturned):
 - **A row's date is the day its content last changed** — set it on a new row, update it on an edit.
 - **A script or tool this session created or changed goes on the Record's `Tools:` line** (name +
   one-line purpose), not as a row.
-- **Edits the plan's Record only, and never creates a file.** If the project still keeps separate
-  findings/defects/runbook files instead of a `## Record` section, write there instead, in
-  whatever format that file already uses. Never invent a new file.
-- **If this session worked no plan at all**, there is nothing to append to. Carry the item into
+- **Writes only the worked plan's `## Record`, and never creates a file.** If the worked plan has
+  no `## Record` section, add one to that plan in the format above — an edit, not a new file.
+  Never write a row into any other file, any file whose first line is a `STATUS …` banner, or
+  anything under an `archive/` folder.
+- **If there is no worked plan**, there is nothing to append to. Carry the item into
   the handoff's `State & decisions` or `Deferred` section instead — do not create a plan just to
   hold it.
 - **It writes silently.** No narration, no summary, no list of what it wrote. If the sweep finds
@@ -63,7 +77,7 @@ Runs after the sweep. Different failure: the sweep asks "did this session's know
 plan?" — this asks "does the previous handoff carry anything that never made it into the plan?"
 
 Read the **prior** `*-prompt-*.md` for this topic, block by block. Any number, count, trap,
-rule, or tool that carries no matching entry in the plan's `## Record` section is **orphaned**.
+rule, or tool that carries no matching entry in the worked plan's `## Record` section is **orphaned**.
 Write it into `## Record` as a row (or edit the existing row it actually belongs to), by the same
 rules as Step 2, then let the new handoff cite it instead of repeating it. Type it by what it is,
 not where it came from: a measurement or count → `F`; a gotcha → `T`; a rule the user set → `K`;
@@ -71,15 +85,16 @@ an unresolved problem → `D`; a tool → the `Tools:` line. **An orphaned row t
 of the prompt it came from** (the date in that prompt's filename) and cites that prompt file as
 its source.
 
-Same silence and same permissions as Step 2: edit the Record only, never create a file.
+Same silence and same limits as Step 2: the worked plan's Record only — never a new file, a
+bannered file, or anything under `archive/`.
 
 ## Step 4 — Save the handoff to disk
 
 Save the generated handoff prompt as a standalone prompt file — this becomes the project's resume point. Mirror `/newplan`'s naming:
-- Write to the **current working directory** (the project being worked on) as `<topic>-prompt-YYYY-MM-DD.md` with today's date. Derive `<topic>` in this order, first match wins — the argument never names it:
-  1. The label of the `*-plan-*.md` in the cwd that **this session actually worked on** — strip the `-plan-YYYY-MM-DD.md` suffix (and any letter suffix) and reuse the label verbatim, so the pair matches (`vuln-mitigation-plan-2026-08-03.md` → `vuln-mitigation-prompt-2026-08-03.md`). If none was worked on this session, skip to 2 — do not adopt a plan's label just because the file is present. If several were worked, break the tie **deterministically, in this order**: (a) highest date in the filename; (b) still tied → most recently modified on disk (`ls -t`); (c) still tied → skip to 2 and use the directory name. Never pick between same-date plans by judgment — an arbitrary pick is what mis-files a handoff.
-  2. The current directory's name.
-- If the cwd is a folder that holds several projects rather than a project dir, write the file there as the fallback.
+- Write as `<topic>-prompt-YYYY-MM-DD.md` with today's date, **beside the worked plan** (its directory); no worked plan → the **starting directory**. The argument never names the topic:
+  1. **Worked plan** → its label: strip the `-plan-YYYY-MM-DD.md` suffix (and any letter suffix) and reuse the label verbatim, so the pair matches (`vuln-mitigation-plan-2026-08-03.md` → `vuln-mitigation-prompt-2026-08-03.md`).
+  2. **No worked plan** → the name of the directory the file is written in.
+- If that directory is a `projects/` folder (it holds project folders, not a project), write one level up instead — in the directory that contains `projects/` — and name the topic after that directory.
 - The newest `*-prompt-*.md` for a topic is its resume pointer — **newest = highest date, then highest letter suffix** (`…-08-03c.md` beats `…-08-03b.md` beats `…-08-03.md`). Before writing the new prompt, **demote the prior prompt for the same `<topic>` to SUPERSEDED**: prepend the banner `STATUS YYYY-MM-DD — SUPERSEDED by <new-prompt-filename>.` (today's date) as its first line. Do **not** delete it — `/prompt-sweep` archives superseded prompts later, with the user's approval. **Never demote a `keep-loose` REUSABLE prompt** (first line `LIFECYCLE: REUSABLE — keep-loose.`) — skip it entirely when choosing the prior prompt.
 
 Write only the contents of the handoff prompt (no intro line, no fences) to the file with the Write tool. Do **not** create or modify a README or a `.last-newsession.md`.

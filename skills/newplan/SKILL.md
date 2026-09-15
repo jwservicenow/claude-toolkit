@@ -15,7 +15,7 @@ Turn an idea into an approved, written plan through structured dialogue. The del
 
 Before asking anything, read what's available in the working directory:
 - README, CLAUDE.md, or any existing docs
-- Existing plan files (`*-plan-*.md`) — note any **live** one (first line carries no `DONE` or `SUPERSEDED` banner)
+- Existing plan files (`*-plan-*.md`) — note any **live** one (first line carries no `STATUS …` banner)
 - Any other files that seem relevant to the topic the user described
 
 Do not look for git history or commits.
@@ -60,7 +60,7 @@ The chosen approach and the reasoning behind it.
 Ordered list of concrete steps to execute the plan. The **final step is always closure**, which runs only when the user asks for it — point it at the `## Closure` section below.
 
 ## Record
-Findings, defects, traps, decisions and tools — one line each. It replaces **running logs** — any file that keeps growing, such as a findings log, defect list or runbook. **Finished reports** (written once, read as a whole) stay as their own files, and a Record row cites each by path. Every row carries a **type** and a **state**:
+Findings, defects, traps, decisions and tools — one line each. It replaces **running logs** — any file that keeps growing, such as a findings log or defect list, whatever the file is called. Two kinds of file stay separate, and a Record row cites each by path: **finished reports** (written once, read as a whole) and **reference docs** such as runbooks and procedures (edited in place, read when doing the task). Every row carries a **type** and a **state**:
 
 ```
 F  SETTLED     one-line finding, cites its source                                      (YYYY-MM-DD)
@@ -106,8 +106,8 @@ The last task of every plan, always present. **A plan never closes itself** — 
 
 When the user asks:
 Closing is one confirmation: show the unmet list, then do the steps below. Unmet items go on the unmet line as they stand — never resolve, fix or research them first unless the user picks one.
-1. Prepend **`STATUS YYYY-MM-DD — DONE.`** (today's date) to the plan as a new first line — the existing title moves down one line — with one line under it naming anything unmet. Prepend the same `STATUS` line to the newest `<topic>-prompt-*.md` — banner only; the unmet line goes in the plan only. Older prompts in the chain keep their `SUPERSEDED` banners. The DONE/SUPERSEDED vocabulary is defined in `prompt-sweep/prmpt-lifecycle.md` in the skills folder.
-2. Move this plan and **every** `<topic>-prompt-*.md` for this topic into the project's `archive/` folder — the `archive/` directly under the project dir where they live; create it if it doesn't exist. Name them per that spec's archive-naming rule. The user's request to close is the approval for these moves.
+1. Prepend **`STATUS YYYY-MM-DD — DONE.`** (today's date) to the plan as a new first line — the existing title moves down one line — with one line under it naming anything unmet. Prepend the same `STATUS` line to the newest `<topic>-prompt-*.md` — banner only; the unmet line goes in the plan only. Older prompts in the chain keep their `SUPERSEDED` banners. The `STATUS` banner vocabulary is defined in `prompt-sweep/prmpt-lifecycle.md` in the skills folder.
+2. Move into the project's `archive/` folder — the `archive/` directly under the project dir where the plan lives; create it if it doesn't exist — this plan, **every** `<topic>-prompt-*.md` for this topic, any `<plan-filename>.bak*` copies, and any file in the project dir or its subfolders whose first line is `STATUS … — FOLDED into <this plan's filename>.` Skip anything already inside an `archive/` folder. Name them per that spec's archive-naming rule. The user's request to close is the approval for these moves.
 3. Deal with `run/` (see *Working artifacts* in the skill): promote anything durable to the project root, and commit it if the project uses version control; keeping or deleting the rest is the user's call — ask, don't assume.
 
 Until the user asks and these are done, this section stands as the open marker that the plan isn't closed yet.
@@ -126,7 +126,7 @@ Review the draft silently:
 4. **Remaining assumptions** — Anything you assumed while writing that the user never confirmed? Add to `## Risks & assumptions`.
 5. **Scope check** — Is this focused enough to execute, or does it need to be broken down?
 6. **Goal trace** — Does `## Verification` actually test the agreed goal from Step 2, and do the Steps lead to it? If the goal drifted while writing, fix it so top and bottom match.
-7. **Record check** — Does `## Record` exist with the type/state row format and the edit-in-place rule, and no reference to `record-controls.md` or separate findings/defects/runbook logs?
+7. **Record check** — Does `## Record` exist with the type/state row format and the edit-in-place rule, and no reference to `record-controls.md` or separate findings/defects logs?
 
 Fix issues inline. Do not paste the plan into chat — Step 7 shows a short summary instead.
 

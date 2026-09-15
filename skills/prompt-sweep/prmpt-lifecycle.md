@@ -31,7 +31,8 @@ live work. Only a same-topic successor supersedes.
 
 **Open topic:** a topic is open unless its plan carries a DONE or SUPERSEDED banner. A topic with
 no plan is open — its newest unbannered prompt is ACTIVE, and the 60-day dormancy rule
-(§ Dormant topics) catches abandoned ones.
+(§ Dormant topics) catches abandoned ones. `/newsession` writes no prompt when the plan it worked
+is DONE, so closing a plan never leaves a fresh ACTIVE prompt behind.
 
 **LEGACY is not a resting state.** An unbannered prompt is only genuinely ACTIVE when it is
 the live resume pointer of an open topic; otherwise `/prompt-sweep` cannot know,
@@ -42,11 +43,20 @@ sweep). This is what stops retired-but-unstamped prompts from hiding as ACTIVE f
 ## Banner & marker formats
 
 Banners go at the **very top** of the prompt file, first line, so any tool sees them without
-parsing the body. Date is the day the state changed (US Mountain Time).
+parsing the body. Date is the day the state changed, in the user's local time.
 
 - **DONE:**  `STATUS YYYY-MM-DD — DONE.`
 - **SUPERSEDED:**  `STATUS YYYY-MM-DD — SUPERSEDED by <newer-prompt-filename>.`
 - **REUSABLE:**  `LIFECYCLE: REUSABLE — keep-loose.`  (this is the `keep-loose` tag; presence of this line = never sweep)
+
+Two more `STATUS` banners mark **record files** — findings logs, defect lists, instructions — not
+prompts. `/prompt-sweep` never classifies them.
+
+- **FOLDED:**  `STATUS YYYY-MM-DD — FOLDED into <plan-filename>.`  (content now lives in that plan's `## Record`; `/newplan` Closure archives it with the plan)
+- **RETIRED:**  `STATUS YYYY-MM-DD — RETIRED. <reason>`
+
+**Any file whose first line is a `STATUS …` banner is closed.** No skill adds content to it —
+it may only be moved to `archive/`.
 
 A file with none of these lines and that is the newest prompt for its topic = **ACTIVE**.
 `STATUS …` mirrors the plan-header banner `/newplan` already stamps at Closure, so the
