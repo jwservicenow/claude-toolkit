@@ -169,6 +169,21 @@ while IFS= read -r f; do
     esac
 done <<< $(git diff --cached --name-only --diff-filter=A)
 
+# 8. No new README at a project or branch-folder root (Jim, 2026-09-20). The map
+#    of ~/ClaudeOS is the generated INDEX.md; hand-kept READMEs went stale. Deeper
+#    READMEs (roles, fixtures, vendored packages) are allowed. Additions only, so
+#    the existing ones still commit while they are retired. Self-skips in repos
+#    without personal/ or work/ paths.
+while IFS= read -r f; do
+    [ -n "$f" ] || continue
+    if [[ "$f" =~ ^(personal|work)/(projects/)?[^/]+/[Rr][Ee][Aa][Dd][Mm][Ee](\.[A-Za-z0-9]+)?$ ]]; then
+        echo "BLOCKED: new README at a project/branch-folder root -> $f"
+        echo "         The map is ~/ClaudeOS/INDEX.md (generated). Put project facts in"
+        echo "         its plan's ## Record or its newest prompt instead."
+        fail=1
+    fi
+done <<< $(git diff --cached --name-only --diff-filter=A)
+
 if [ "$fail" -ne 0 ]; then
     echo ""
     echo "pre-commit: commit refused. Nothing was committed."
