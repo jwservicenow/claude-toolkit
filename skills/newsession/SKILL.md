@@ -64,8 +64,14 @@ overturned):
 - **A row's date is the day its content last changed** — set it on a new row, update it on an edit.
 - **A script or tool this session created or changed goes on the Record's `Tools:` line** (name +
   one-line purpose), not as a row.
-- **Writes only the worked plan's `## Record`, and never creates a file.** If the worked plan has
-  no `## Record` section, add one to that plan in the format above — an edit, not a new file.
+- **Step markers.** Bring every `## Steps` marker in the worked plan up to date with what this
+  session did: `[x]` done, `[~]` in progress plus one clause on where it stopped, `[ ]` not started,
+  `[-]` dropped plus its reason; set the date on any marker that changed. If the plan's steps carry
+  no markers yet, add them — an edit, not a new file. Markers are progress only; what the session
+  learned goes in rows.
+- **Writes only the worked plan's `## Record` and `## Steps` markers, and never creates a file.**
+  If the worked plan has no `## Record` section, add one to that plan in the format above — an edit,
+  not a new file.
   Never write a row into any other file, any file whose first line is a `STATUS …` banner, or
   anything under an `archive/` folder.
 - **If there is no worked plan**, there is nothing to append to. Carry the item into
@@ -138,7 +144,7 @@ Goal:
 One sentence — what this work is trying to accomplish.
 
 State & decisions:
-Locked decisions, technical configs, architecture choices, and current status of work done. Present tense — where things stand now, not a diary of how they got there. No re-litigation needed.
+Locked decisions, technical configs, architecture choices, and current status of work done. Present tense — where things stand now, not a diary of how they got there. No re-litigation needed. When there's a worked plan, its `## Steps` markers are the progress record — cite the current step (`plan step 4 [~]`) rather than restating which steps are done.
 
 Constraints:
 Active rules or guardrails agreed to this session. One line each.
@@ -158,4 +164,4 @@ Only what's needed for the next action — file paths, IPs, sys_ids, commands, U
 Resume instruction:
 Max 2 lines: the file to read first, and the first move. Nothing else — do not restate State & decisions, do not list what not to re-derive, do not re-flag Deferred items. Those sections already carry themselves.
 
-If this run's argument was a runbook, add a footer line: `Read [path] first.` If the runbook describes infrastructure or operational targets (hosts, customer instances, production systems), also add: `Change control: state the action and wait for acknowledgement before proceeding.` A runbook from an earlier flush brings no footer: its path carries forward under Key artifacts if the Next action still needs it, and the change-control line carries forward under Constraints whenever the Next action still targets that infrastructure.
+If this run's argument was a runbook, add a footer line: `Read [path] first.` If the runbook describes infrastructure or operational targets (hosts, customer instances, production systems), also add: `Change control: state the action and the target's current known state before proceeding; follow the project's CLAUDE.md for any acknowledgement gate.` A runbook from an earlier flush brings no footer: its path carries forward under Key artifacts if the Next action still needs it, and the change-control line carries forward under Constraints whenever the Next action still targets that infrastructure.

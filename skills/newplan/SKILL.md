@@ -15,7 +15,7 @@ Turn an idea into an approved, written plan through structured dialogue. The del
 
 Before asking anything, read what's available in the working directory:
 - README, CLAUDE.md, or any existing docs
-- Existing plan files (`*-plan-*.md`) — note any **live** one (first line carries no `STATUS …` banner)
+- Existing plan files (`*-plan-*.md`) — note any **live** one (first line carries no `STATUS …` banner). For a live plan, also read its newest `<topic>-prompt-*.md` (highest date, then highest letter suffix) and its `## Steps` markers — together they say where the work actually stands, which the replan question in Step 2 needs
 - Any other files that seem relevant to the topic the user described
 
 Do not look for git history or commits.
@@ -58,6 +58,17 @@ The chosen approach and the reasoning behind it.
 
 ## Steps
 Ordered list of concrete steps to execute the plan. The **final step is always closure**, which runs only when the user asks for it — point it at the `## Closure` section below.
+
+Every step starts with a progress marker, so the plan alone shows where the work stands:
+
+```
+1. [x] Step done                                        (YYYY-MM-DD)
+2. [~] Step in progress — one clause on where it stopped (YYYY-MM-DD)
+3. [ ] Step not started
+4. [-] Step dropped — reason, or the K row that dropped it (YYYY-MM-DD)
+```
+
+A new plan starts with every step `[ ]`. **Update the marker the moment a step's state changes** — same rule as Record rows, never batched to session end. A marker is progress only; anything learned while doing the step goes in `## Record`.
 
 ## Record
 Findings, defects, traps, decisions and tools — one line each. It replaces **running logs** — any file that keeps growing, such as a findings log or defect list, whatever the file is called. Two kinds of file stay separate, and a Record row cites each by path: **finished reports** (written once, read as a whole) and **reference docs** such as runbooks and procedures (edited in place, read when doing the task). Every row carries a **type** and a **state**:
@@ -127,6 +138,7 @@ Review the draft silently:
 5. **Scope check** — Is this focused enough to execute, or does it need to be broken down?
 6. **Goal trace** — Does `## Verification` actually test the agreed goal from Step 2, and do the Steps lead to it? If the goal drifted while writing, fix it so top and bottom match.
 7. **Record check** — Does `## Record` exist with the type/state row format and the edit-in-place rule, and no reference to `record-controls.md` or separate findings/defects logs?
+8. **Marker check** — Does every step in `## Steps` start with a progress marker (`[ ]` on a new plan)?
 
 Fix issues inline. Do not paste the plan into chat — Step 7 shows a short summary instead.
 
