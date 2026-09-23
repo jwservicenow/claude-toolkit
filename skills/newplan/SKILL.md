@@ -93,6 +93,17 @@ produced the replan.
 
 A row's date is the day its content last changed — set it on a new row, update it on every edit.
 
+**Row cap — about 250 characters per row, source citation included.** A row holds the conclusion
+and where it came from, not the evidence. Detail over the cap goes, in order: (1) into the row's
+cited source, which usually holds it already — a results file, script, commit or report; (2) into a
+finished report, only when the session produced a real deliverable. Never an overflow or detail
+log that keeps growing — that's the running log this section replaces.
+
+**Resume read.** A fresh session reads the plan with `bash ~/ClaudeOS/shared/skills/newplan/plan-read.sh <plan>`:
+every section in full, and every OPEN, trap and decision row, but not settled findings/defects or
+superseded rows. Those stay in the file; `grep -n '<term>' <plan>` for them before acting on
+anything they might cover.
+
 **The rule, in full:** when something changes, **edit the row in place.** If a conclusion is
 overturned, mark the old row `SUPERSEDED → <type> "<opening words of the replacing row>"` and keep it. **Never add a
 second row on the same subject.** This is the whole anti-amnesia mechanism — one editable row per
@@ -137,7 +148,7 @@ Review the draft silently:
 4. **Remaining assumptions** — Anything you assumed while writing that the user never confirmed? Add to `## Risks & assumptions`.
 5. **Scope check** — Is this focused enough to execute, or does it need to be broken down?
 6. **Goal trace** — Does `## Verification` actually test the agreed goal from Step 2, and do the Steps lead to it? If the goal drifted while writing, fix it so top and bottom match.
-7. **Record check** — Does `## Record` exist with the type/state row format and the edit-in-place rule, and no reference to `record-controls.md` or separate findings/defects logs?
+7. **Record check** — Does `## Record` exist with the type/state row format and the edit-in-place rule, and no reference to `record-controls.md` or separate findings/defects logs? Is every row within the ~250-character cap?
 8. **Marker check** — Does every step in `## Steps` start with a progress marker (`[ ]` on a new plan)?
 
 Fix issues inline. Do not paste the plan into chat — Step 7 shows a short summary instead.
@@ -167,7 +178,7 @@ Write a companion file alongside the plan:
 The transition prompt should contain:
 - One sentence on the goal and chosen approach
 - The first concrete step to take
-- An instruction to read the full plan file before doing anything: "Full plan is in `<topic>-plan-YYYY-MM-DD.md` — read it before starting."
+- An instruction to read the plan before doing anything: "Full plan is in `<topic>-plan-YYYY-MM-DD.md` — read it with `bash ~/ClaudeOS/shared/skills/newplan/plan-read.sh <path>` before starting."
 
 Same-day name clash → next unused letter, as in Step 6. If this is a **replan** (Step 2), or a prior `<topic>-prompt-*.md` already exists for this topic, **demote the prior prompt to SUPERSEDED** (on a replan, the replaced plan's newest prompt) before writing the new one: prepend `STATUS YYYY-MM-DD — SUPERSEDED by <new-prompt-filename>.` (today's date) as its first line. Do not delete it — `/prompt-sweep` archives superseded prompts later, with the user's approval. **Never demote a `keep-loose` REUSABLE prompt** (first line `LIFECYCLE: REUSABLE — keep-loose.`) — skip it entirely when choosing the prior prompt.
 

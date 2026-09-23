@@ -61,6 +61,10 @@ overturned):
 - **A commit message or chat summary is not a record.** A session that described its work all
   day and wrote no row has recorded nothing. Check the plan.
 - **Every row cites its source** (a file, command, commit or measurement). No source, no row.
+- **Row cap — about 250 characters**, per `/newplan`'s Record rules. Every row this sweep writes
+  or edits must fit. When it edits a row already over the cap, it trims that row too: keep the
+  conclusion and the source, and confirm any cut detail already lives in the cited source (or a
+  finished report) before cutting it. Rows the sweep doesn't otherwise touch stay as they are.
 - **A row's date is the day its content last changed** — set it on a new row, update it on an edit.
 - **A script or tool this session created or changed goes on the Record's `Tools:` line** (name +
   one-line purpose), not as a row.
@@ -162,6 +166,6 @@ Key artifacts:
 Only what's needed for the next action — file paths, IPs, sys_ids, commands, URLs. Give the real path for anything in `run/` so the next session doesn't hunt for it at the project root. Include verbatim any lookup tables, slot maps, or ID-to-name mappings needed to interpret next-session output — do not summarize these into prose.
 
 Resume instruction:
-Max 2 lines: the file to read first, and the first move. Nothing else — do not restate State & decisions, do not list what not to re-derive, do not re-flag Deferred items. Those sections already carry themselves.
+Max 2 lines: the file to read first, and the first move. When the file is a plan, name the reader: `bash ~/ClaudeOS/shared/skills/newplan/plan-read.sh <plan>` — it hides settled and superseded Record rows, which stay grep-able. Nothing else — do not restate State & decisions, do not list what not to re-derive, do not re-flag Deferred items. Those sections already carry themselves.
 
 If this run's argument was a runbook, add a footer line: `Read [path] first.` If the runbook describes infrastructure or operational targets (hosts, customer instances, production systems), also add: `Change control: state the action and the target's current known state before proceeding; follow the project's CLAUDE.md for any acknowledgement gate.` A runbook from an earlier flush brings no footer: its path carries forward under Key artifacts if the Next action still needs it, and the change-control line carries forward under Constraints whenever the Next action still targets that infrastructure.
