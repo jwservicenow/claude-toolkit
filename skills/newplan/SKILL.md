@@ -102,7 +102,8 @@ log that keeps growing — that's the running log this section replaces.
 **Resume read.** A fresh session reads the plan with `bash ~/ClaudeOS/shared/skills/newplan/plan-read.sh <plan>`:
 every section in full, and every OPEN, trap and decision row, but not settled findings/defects or
 superseded rows. Those stay in the file; `grep -n '<term>' <plan>` for them before acting on
-anything they might cover.
+anything they might cover. The script's path is `~/ClaudeOS/shared/skills/newplan/plan-read.sh`
+where that exists, else `~/.claude/skills/newplan/plan-read.sh` — write whichever exists into the prompt.
 
 **The rule, in full:** when something changes, **edit the row in place.** If a conclusion is
 overturned, mark the old row `SUPERSEDED → <type> "<opening words of the replacing row>"` and keep it. **Never add a
@@ -178,7 +179,7 @@ Write a companion file alongside the plan:
 The transition prompt should contain:
 - One sentence on the goal and chosen approach
 - The first concrete step to take
-- An instruction to read the plan before doing anything: "Full plan is in `<topic>-plan-YYYY-MM-DD.md` — read it with `bash ~/ClaudeOS/shared/skills/newplan/plan-read.sh <path>` before starting."
+- An instruction to read the plan before doing anything: "Full plan is in `<topic>-plan-YYYY-MM-DD.md` — read it with `bash <plan-read.sh path> <path>` before starting." (path per Resume read)
 
 Same-day name clash → next unused letter, as in Step 6. If this is a **replan** (Step 2), or a prior `<topic>-prompt-*.md` already exists for this topic, **demote the prior prompt to SUPERSEDED** (on a replan, the replaced plan's newest prompt) before writing the new one: prepend `STATUS YYYY-MM-DD — SUPERSEDED by <new-prompt-filename>.` (today's date) as its first line. Do not delete it — `/prompt-sweep` archives superseded prompts later, with the user's approval. **Never demote a `keep-loose` REUSABLE prompt** (first line `LIFECYCLE: REUSABLE — keep-loose.`) — skip it entirely when choosing the prior prompt.
 

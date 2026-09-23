@@ -90,7 +90,9 @@ Optionally pass a filename and the next session will be shaped around that file:
 **Install**
 
 ```bash
-mkdir -p ~/.claude/skills/newsession ~/.claude/skills/prompt-sweep
+mkdir -p ~/.claude/skills/newsession ~/.claude/skills/newplan ~/.claude/skills/prompt-sweep
+curl -o ~/.claude/skills/newplan/plan-read.sh \
+  https://raw.githubusercontent.com/jwservicenow/claude-toolkit/main/skills/newplan/plan-read.sh
 curl -o ~/.claude/skills/newsession/SKILL.md \
   https://raw.githubusercontent.com/jwservicenow/claude-toolkit/main/skills/newsession/SKILL.md
 curl -o ~/.claude/skills/prompt-sweep/prmpt-lifecycle.md \
@@ -116,6 +118,8 @@ Type `/newplan` followed by what you want to do. Claude explores your project fo
 mkdir -p ~/.claude/skills/newplan ~/.claude/skills/prompt-sweep
 curl -o ~/.claude/skills/newplan/SKILL.md \
   https://raw.githubusercontent.com/jwservicenow/claude-toolkit/main/skills/newplan/SKILL.md
+curl -o ~/.claude/skills/newplan/plan-read.sh \
+  https://raw.githubusercontent.com/jwservicenow/claude-toolkit/main/skills/newplan/plan-read.sh
 curl -o ~/.claude/skills/prompt-sweep/prmpt-lifecycle.md \
   https://raw.githubusercontent.com/jwservicenow/claude-toolkit/main/skills/prompt-sweep/prmpt-lifecycle.md
 ```
