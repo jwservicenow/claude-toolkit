@@ -18,6 +18,14 @@ with `mcp__fetch__fetch` at an offset before concluding anything. Never fall bac
 `mcp__fetch__fetch` is unavailable, say so and stop rather than routing around it.
 `WebSearch` stays the correct tool for the SEARCH FALLBACK LADDER in Step 4.
 
+SUPPORT KB TOOL — Step 5's KB-resolution pass uses `mcp__claude_ai_Now_Support_MCP__search_kb`
+directly, a structured-data MCP tool, not `mcp__fetch__fetch`. None of the offset/pagination
+rules above (OFFSET-JUMP, INDEX PAGING CAP, FILE SIZE BOUND, MINIMUM WINDOW) apply to it — it
+takes a `query` or a KB `number` and returns matching articles whole, with no `start_index` or
+`max_length` concept. Call it by `number` whenever a KB number has surfaced; call it by `query`
+only on an explicit user ask for a KB. It is a repository lookup, not a search engine — see Step
+5 for why a free-text `query` is not run against every question.
+
 VERBOSE FLAG — if `$ARGUMENTS` begins with `--verbose ` or `-v `, strip that token and treat
 the remainder as the question; for this response only, narrate the retrieval route as you go
 (read counts, offsets, which rule you're applying). Without the flag, ANSWER HYGIENE below
@@ -78,6 +86,19 @@ came from, not of how confident you are and not of how many index reads preceded
 happens to return 200 was still unsanctioned, satisfying the INDEX FLOOR does not make a
 search-derived path fetchable, and no number of missed index reads ever promotes one. If the
 only path you hold has an unsanctioned origin, you have not located the file — say so.
+
+TRUSTED SOURCE RANKING — trust order, highest first: (1) the docs mirror, (2) Support KB, (3)
+ServiceNow Community. This is citation precedence, not run order. Present every relevant Mirror
+result; present at least one Community result if the search finds one, otherwise say "no
+on-domain results"; present every KB Step 5 actually resolves, or say none applied. When sources
+disagree, the higher-ranked source wins and the answer says which source it preferred and why.
+
+EXECUTION ORDER — Mirror (Steps 1-3) and Community (Step 4) both run on every question. Support
+KB (Step 5) does NOT run independently per question — it is a citation resolver, not a search
+engine, and it runs LAST, after Mirror and Community are both done, only for KB numbers that
+surfaced along the way or that the user explicitly asked for. Running `search_kb` with a
+free-text `query` on every question was tried and dropped (tested 2026-10-02): it returns noise
+from internal/TOI knowledge bases that have nothing to do with the question.
 
 Steps:
 1. Fetch the publication index:
@@ -718,7 +739,7 @@ Steps:
    ask for the URL — do not fabricate a path. A 404 is never proof the topic is absent; it
    usually means the path was wrong or the file moved.
 
-4. Supplement with Community using WebSearch:
+4. Query Community (second to run — present at least one relevant result if found) using WebSearch:
    Query: site:community.servicenow.com <topic keywords>
    Fetch the top 1-2 results that look relevant (articles/forum posts, not search pages).
    Community covers operational behavior, gotchas, and real-world implications that docs omit.
@@ -765,7 +786,38 @@ Steps:
    back to on-domain — an unscoped web search is out of bounds no matter what you discard
    afterward.
 
-5. Cite using canonical_url from the file's YAML frontmatter.
+5. Resolve any KB references (last — after Mirror and Community are both done):
+   Support KB is a repository you look articles up IN, not a search engine you run against every
+   question. Call `mcp__claude_ai_Now_Support_MCP__search_kb` with `number` for every KB number
+   that surfaced while working Steps 1-4 — a citation on a mirror page, a KB number named in a
+   community post, or a KB number the user's own question names. Pull that KB's real content and
+   cite it; a bare number is not a citation.
+
+   If the user's question itself asks for a KB — by number, or asking whether one exists on a
+   topic — honor that directly, by `number` if given or by `query` if not, even when no number
+   surfaced organically in Steps 1-4. This is the only case where a `query` call is appropriate.
+   A `query` call run against every question, independent of any surfaced number or explicit ask,
+   returns noise from internal/TOI knowledge bases that have nothing to do with the question —
+   confirmed in testing 2026-10-02, which is why this is no longer an independent per-question
+   source (see TRUSTED SOURCE RANKING above).
+
+   KEYWORD RESULT FILTER — a `query` call returns no knowledge-base/category field to filter on;
+   verified live 2026-10-02, the raw response carries only `number`, `title`, `snippet`, `body`,
+   `url`. "Support and Troubleshooting" vs "TOI for TSE" is a portal-side facet this tool cannot
+   see, so approximate it by title instead: EXCLUDE any result whose title has an internal/TOI
+   shape — contains "TOI ", " SR - ", "Architecture Document", "Troubleshooting Instructions" as
+   a document-type label, or a version stamp like "v9.0"/"v1.2.3" — these are internal engineering
+   Transfer-of-Information docs, not customer-facing Support content, and they are what polluted
+   every `query` result in testing. From what remains, present at most 3, in the order the tool
+   returned them; extend to 5 only if more than 3 are genuinely on-topic. If nothing survives the
+   exclusion, say "No Support KB articles matched" rather than citing a weak one to fill a slot.
+   This filter applies only to a `query` call — a `number` lookup returns exactly one article and
+   needs no filtering.
+
+   If no KB number surfaced in Steps 1-4 and the user didn't ask for one, this step produces
+   nothing — say so in the Support KB section rather than running a speculative query call.
+
+6. Cite using canonical_url from the file's YAML frontmatter.
    UNESCAPE IT FIRST — `canonical_url` escapes underscores for markdown, emitting e.g.
    `.../r\_MIDServerSystemRequirements.html`. Strip the backslashes before citing; a citation
    carrying `\_` is broken. Pair it with `last_updated` from the same frontmatter so the
@@ -783,7 +835,7 @@ Steps:
      "not retrieved this pass."
    - POINTERS STILL GET A LIVE LINK — naming a pointer as bare text is a defect. Render
      it as a markdown link whose ANCHOR TEXT is the `.md` basename and whose href is that
-     path's derived canonical URL, using the same derivation as Step 5 above (take the raw
+     path's derived canonical URL, using the same derivation as Step 6 above (take the raw
      path after `markdown/`, prepend https://www.servicenow.com/docs/r/ , strip .md,
      append .html). Example:
      [installed-with-model-management.md](https://www.servicenow.com/docs/r/it-asset-management/asset-management/installed-with-model-management.html)
@@ -796,16 +848,14 @@ Steps:
    check that a cited fact actually appears in fetched bytes, so double-check your own
    citations against what you fetched before answering, especially on truncated reads.
 
-Fallback if mirror doesn't have it:
-- Now Support KB — ~90% trusted, cite KB number
-- ServiceNow Community — ~80% trusted, flag as community-sourced
-  Search: site:servicenow.com/community <topic keywords>
-- Third-party — flag as unverified
-
-If retrieval fails entirely: say so and stop. Do not answer from memory.
+If the mirror fetch fails entirely: say so in the Official Mirror section and still run Community
+— do not answer the mirror portion from memory. Support KB still resolves any KB number that
+surfaced before the failure or that the user explicitly asked for.
 
 Response format (every time):
 ## Official Mirror
 [findings, canonical docs.servicenow.com URLs]
+## Support KB
+[every KB actually resolved in Step 5, each cited by KB number, OR "No KB number surfaced or was requested this pass"]
 ## Community Sources
 [each finding + full community post URL + "peer-authored" flag, OR "no on-domain results"]
