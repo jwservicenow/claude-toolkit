@@ -156,6 +156,9 @@ Active rules or guardrails agreed to this session. One line each.
 Next action:
 Single most immediate thing to do. Enough context to execute without re-reading history. If a verification or test result is pending, include the pass/fail criteria and what each outcome means — not just the command to run.
 
+Running state:
+Only if something this session started is still running when it ends — a background shell or task, a dev server, a remote job (GPU run, benchmark, cron-less loop). One line each: what it is, its shell/task ID or PID, the host, where its output goes, and how to stop it. Omit if nothing is running. Never include a credential, even one the process uses.
+
 Awaiting:
 Only if the session ends blocked on user input. One sentence — what's blocked and what input is needed.
 
