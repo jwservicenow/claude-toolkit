@@ -1,13 +1,19 @@
-# Connecting Claude Code your PDI — Platform-Native MCP Path
+# Connecting Claude Code to your PDI — Platform-Native MCP Path
 
 **What you'll end up with:** Claude Code connected to your ServiceNow instance using the
 platform's own built-in connector — no Python script on your laptop, no passwords in plain-text
-files. You can search the CMDB, manage incidents, investigate alerts, and check MID Server health
-by typing in plain English.
+files. You can search the CMDB, manage incidents and investigate alerts by typing in plain English.
+(MID Servers, Discovery and agents are not covered by the native servers — see Known issues.)
 
 **Who this is for:** This guide has two parts: a ServiceNow administrator sets up the instance
 side (Part 2), and the Claude Code user wires up their machine (Part 3). Both steps can be done
 by the same person.
+
+> **Status — 2026-10-06.** The OAuth client settings, server list, URLs and tool counts in this
+> guide were re-read from a live Australia-release instance on 2026-10-06. Earlier versions
+> described a public PKCE client with no secret, and three servers with 17 tools; that is not
+> what the working setup looks like today. The click-paths and button names in Part 2 date from
+> June 2026 and have not been re-walked since — confirm them on screen.
 
 **How this compares to the DIY Table-API guide:**
 
@@ -15,9 +21,9 @@ by the same person.
 |---|---|---|
 | Something to install on your laptop? | Yes — a Python script | No — runs inside ServiceNow |
 | Credentials stored where? | Plain-text `.env` file | macOS Keychain only |
-| How it logs in | Shared OAuth secret | You approve in a browser — no secret |
+| How it logs in | Shared OAuth secret | You approve in a browser; the OAuth client secret is kept in the macOS Keychain |
 | Actions recorded as | One fixed service account | Your own ServiceNow login |
-| Tools available | 2 generic table-read tools | 17 purpose-built tools (CMDB, ITSM, ITOM) |
+| Tools available | 2 generic table-read tools | 36 purpose-built tools across five servers (CMDB, ITSM, ITOM and two general ones) |
 | Instance requirement | Any instance, any release | Australia / Zurich Patch 9+ with Now Assist |
 
 **How long it takes:** 15–25 minutes if the ServiceNow apps are already installed. Add 20–30
@@ -38,7 +44,7 @@ these requirements, the DIY Table-API guide works on any release.
 | A ServiceNow instance on Australia / Zurich Patch 9+ | Your ServiceNow admin |
 | MCP Server apps installed on the instance | Part 2, Step 1 |
 | An OAuth client created on the instance | Part 2, Step 3 |
-| The client ID from that OAuth record (32 characters) | Part 2, Step 3 |
+| The client ID (32 characters) and client secret from that OAuth record | Part 2, Step 3 |
 | Your ServiceNow login credentials | Used during first-time browser approval (Part 3) |
 
 ---
@@ -62,7 +68,7 @@ Return here after completing Step 5 of that guide.
 
 > **Role:** ServiceNow administrator. These steps happen inside your ServiceNow instance, not on
 > your laptop. If you are not a ServiceNow admin, ask one to complete Part 2 and hand you the
-> client ID and server URLs (Step 4) before you begin Part 3.
+> client ID, client secret and server URLs (Steps 3–4) before you begin Part 3.
 
 ---
 
@@ -88,19 +94,22 @@ In your ServiceNow instance:
 
 | App | What it provides |
 |---|---|
-| **MCP Server Console** | The base framework — install this first; all others depend on it |
-| **Now Assist for CMDB** | CMDB search, CI creation, CI class guidance |
-| **Alert Assist** | Alert triage, investigation, service reliability, SLO tools |
-| **ITSM MCP Server** | Incident management, user lookup, assignment group lookup |
+| **MCP Server Console** (`sn_mcp_server`; the instance lists it as "Model Context Protocol Server") | The base framework — install this first; all others depend on it. Also supplies two general-purpose servers |
+| **CMDB MCP Server** (`sn_cmdb_mcp_server`) | CMDB search, CI creation, application-service lookups |
+| **ITOM MCP Server** (`sn_itom_mcp_server`) | Alert triage, investigation, service reliability, SLO tools |
+| **ITSM MCP Server** (`sn_itsm_mcp_server`) | Incident and request management, user lookup, assignment group lookup |
 
 > **Source note for app names:** `MCP Server Console` (`sn_mcp_server`) is confirmed in
 > official ServiceNow documentation ([Australia release][docs-mcp-client];
-> [cross-instance setup community guide][cross-instance]). The domain app names — Now Assist for
-> CMDB (`sn_cmdb_gen_ai`), Alert Assist (`sn_alert_gen_ai`), and ITSM MCP Server
-> (`sn_itsm_mcp_server`) — are the scoped application identifiers observed on a live
-> Australia-release PDI (`empjwells2.service-now.com`) as of 2026-06-05. Their exact Store
-> display names were not independently confirmed in retrievable documentation at the time of
-> writing. Verify the names match what appears in your instance's Store listing.
+> [cross-instance setup community guide][cross-instance]). The three domain apps are the
+> application names recorded against each registry row on a live Australia-release PDI
+> (`empjwells2.service-now.com`), read 2026-10-06 — CMDB MCP Server 1.0.1, ITOM MCP Server 1.0.1,
+> ITSM MCP Server 3.2.3. Their Store listing names were not independently confirmed; verify them
+> against your instance's Store.
+>
+> **An older CMDB server may also be in the registry** —
+> `sn_cmdb_gen_ai.now_assist_cmdb_mcp_server`, which ships with the Now Assist (Otto) for CMDB
+> plugin. A Store update marked it deprecated in September 2026. Use the CMDB MCP Server app.
 
 When each app installs, it automatically creates a row in the MCP server registry and registers
 its tools. You do not need to define any tools manually in the MCP Server Console for these
@@ -110,7 +119,7 @@ built-in suites.
 
 ## Step 2 — Verify and Activate the Registry Rows
 
-Each app creates one row in the internal server registry. These rows must be in **Active** status
+Each app creates one or more rows in the internal server registry. These rows must be in **Active** status
 before Claude Code can connect to them.
 
 1. In the Application Navigator (the filter box, top-left), type:
@@ -123,11 +132,16 @@ before Claude Code can connect to them.
 
 | Registry row name | Expected status |
 |---|---|
-| `sn_cmdb_gen_ai.now_assist_cmdb_mcp_server` | Active |
-| `sn_alert_gen_ai.aiops_mcp_server` | Active |
+| `sn_cmdb_mcp_server.cmdb_mcp_server` | Active |
+| `sn_genai.itom_mcp_server` | Active |
 | `sn_itsm_mcp_server.itsm_default` | Active |
+| `sn_mcp_server.default` | Active |
+| `sn_mcp_server.moveworks_default` | Active |
 
-3. If a row shows **Draft** or **Inactive**, open it and click **Activate**.
+3. If a row shows **Draft** or **Inactive**, open it and click **Activate**. A server installed
+   from the Store arrives as Draft. On the reference instance the CMDB MCP Server was activated
+   from the MCP Server Console's server list, with the application scope set to that server's
+   own app (September 2026).
 
 > **Known issue — "Activate" button fails in some patch levels:** The Activate button calls an
 > internal method (`McpServerUtils.publishTools()`) that may not exist in certain versions.
@@ -147,19 +161,25 @@ before Claude Code can connect to them.
 > related list, and confirm each tool shows **Enabled = true**. If not, select all rows → right-
 > click → Update → set `Enabled` to `true`.
 >
-> *This REST workaround was confirmed on `empjwells2` (Australia release); UI button behavior
-> may vary on your instance.*
+> *This REST workaround was used on `empjwells2` in June 2026, before that instance was rebuilt.
+> It has not been re-tested since — treat it as a fallback. Writing registry or tool rows may
+> need the `sn_mcp_server.admin` and `sn_mcp_server.tools_admin` roles, not just `admin`.*
 
 ---
 
 ## Step 3 — Create the OAuth Client
 
-Claude Code authenticates using **OAuth 2.0 with PKCE** (Proof Key for Code Exchange). This
-means: instead of storing a password or shared secret on your laptop, Claude Code opens a
-browser window and you personally approve the connection — just like "Log in with Google." No
-secret is ever stored in a file.
+Claude Code authenticates using the **OAuth 2.0 authorization code flow with a confidential
+client**. Claude Code opens a browser window and you personally approve the connection — just
+like "Log in with Google." The client also has a **client secret**: Claude Code asks for it once
+when you add a server and keeps it in the macOS Keychain, never in a file.
 
-You create one OAuth client in ServiceNow, and all four MCP servers share it.
+> **Changed from earlier versions of this guide.** They described a public client with PKCE and
+> no secret. The setup verified working on 2026-10-06 is a confidential client with PKCE off. A
+> server added without the secret appears to sign in — the browser says the authentication
+> succeeded — and then fails at the token exchange.
+
+You create one OAuth client in ServiceNow, and all five MCP servers share it.
 
 ### Create the Application Registry record
 
@@ -169,21 +189,23 @@ You create one OAuth client in ServiceNow, and all four MCP servers share it.
 
 | Field | Value | Notes |
 |---|---|---|
-| Name | `Claude Code MCP Client` | Any descriptive name |
+| Name | `Claude Code` | Any descriptive name |
 | Client ID | *(auto-generated — copy after saving)* | 32-character hex string |
-| **Public client** | ✅ checked | Means no client secret is required or stored |
-| **Use PKCE** | ✅ checked | Enables the proof-key flow |
-| Code challenge method | `S256` | The only option; SHA-256 hash |
-| Default grant type | `authorization_code` | See note below — not client_credentials |
-| Redirect URL | `http://localhost:33418/callback,http://127.0.0.1:33418/callback` | Both entries, comma-separated, no spaces |
+| Client Secret | *(auto-generated — copy after saving)* | Required. Hand it over securely — never by chat or email |
+| **Public client** | ☐ unchecked | This is a confidential client — the secret is required |
+| **Use PKCE** | ☐ unchecked | Off on the verified record |
+| Code challenge method | *(ignore)* | `S256` may be shown; it does nothing while Use PKCE is off |
+| Inbound grant type | Authorization Code | See note below — not client_credentials |
+| Redirect URL | `http://localhost:33418/callback` | Must match the callback port used in Part 3 exactly |
 | Access token lifespan | `1800` | 30 minutes |
 | Refresh token lifespan | `8640000` | 100 days |
 | Token format | `JWT` | |
 
 > **Why `authorization_code`, not `client_credentials`?** The DIY guide uses `client_credentials`
 > because that flow is designed for background scripts that hold a stored secret. This guide uses
-> `authorization_code` + PKCE because Claude Code is a desktop app — it opens a browser window
-> and you personally approve the connection. There is no shared secret to store or leak.
+> `authorization_code` because Claude Code is a desktop app — it opens a browser window and you
+> personally approve the connection, so every action runs as you. The client secret identifies
+> the app, not the user, and stays in the Keychain.
 > Client Credentials grant is not currently available for the MCP Server Console.
 > *Source: [MCP Server Console FAQ][faq]*
 
@@ -191,16 +213,14 @@ You create one OAuth client in ServiceNow, and all four MCP servers share it.
 > ServiceNow redirects your browser to that address after you approve access. The redirect URL
 > must match exactly — if you change the port here, the OAuth flow will fail.
 
-4. Click **Submit**. ServiceNow generates the Client ID.
-5. Open the record that was just created and **copy the Client ID** (the 32-character string). You
-   will need this in Part 3.
+4. Click **Submit**. ServiceNow generates the Client ID and the Client Secret.
+5. Open the record that was just created and copy the **Client ID** (the 32-character string) and
+   the **Client Secret** (the field is masked on the record). You will need both in Part 3. Treat
+   the secret like a password: do not paste it into chat, email or a file.
 
-> **Field verification:** Every field in the table above — `public_client`, `use_pkce`,
-> `code_challenge_method`, `default_grant_type`, `redirect_url`, token lifespans, `token_format`
-> — was read live from a verified Application Registry record on `empjwells2.service-now.com`
-> (Australia release, `sys_id: 4956b5e2c37c0f1035252dceb0013145`, verified 2026-06-05). The
-> `public_client` checkbox in the Application Registry form UI is confirmed by a
-> [community forum post][pkce-community].
+> **Field verification:** The values above — `public_client`, `use_pkce`, the inbound grant type,
+> redirect URL, token lifespans and token format — were read live from the working Application
+> Registry record on `empjwells2.service-now.com` (Australia release) on 2026-10-06.
 
 > **Scope restriction:** Leave scope restriction at its default (broadly scoped) during initial
 > setup. Narrowing OAuth scopes requires additional configuration (`oauth_entity_scope` records);
@@ -220,9 +240,11 @@ https://YOUR-INSTANCE.service-now.com/sncapps/mcp-server/mcp/<registry-row-name-
 
 | Claude Code server name | URL |
 |---|---|
-| `sn-cmdb` | `https://YOUR-INSTANCE.service-now.com/sncapps/mcp-server/mcp/sn_cmdb_gen_ai_now_assist_cmdb_mcp_server` |
-| `sn-itom` | `https://YOUR-INSTANCE.service-now.com/sncapps/mcp-server/mcp/sn_alert_gen_ai_aiops_mcp_server` |
+| `sn-cmdb` | `https://YOUR-INSTANCE.service-now.com/sncapps/mcp-server/mcp/sn_cmdb_mcp_server_cmdb_mcp_server` |
+| `sn-itom` | `https://YOUR-INSTANCE.service-now.com/sncapps/mcp-server/mcp/sn_genai_itom_mcp_server` |
 | `sn-itsm` | `https://YOUR-INSTANCE.service-now.com/sncapps/mcp-server/mcp/sn_itsm_mcp_server_itsm_default` |
+| `sn-quickstart` | `https://YOUR-INSTANCE.service-now.com/sncapps/mcp-server/mcp/sn_mcp_server_default` |
+| `sn-moveworks` | `https://YOUR-INSTANCE.service-now.com/sncapps/mcp-server/mcp/sn_mcp_server_moveworks_default` |
 
 Replace `YOUR-INSTANCE` with your instance's subdomain (e.g. `yourcompany` for
 `yourcompany.service-now.com`).
@@ -237,7 +259,7 @@ Before leaving the instance, confirm the `/sncapps/mcp-server` routing path is e
 following in a terminal — you should get **HTTP 401** (unauthorized), not 404:
 
 ```bash
-curl -I "https://YOUR-INSTANCE.service-now.com/sncapps/mcp-server/mcp/sn_cmdb_gen_ai_now_assist_cmdb_mcp_server"
+curl -s -o /dev/null -D - -X POST "https://YOUR-INSTANCE.service-now.com/sncapps/mcp-server/mcp/sn_cmdb_mcp_server_cmdb_mcp_server"
 ```
 
 A `404` means the routing path isn't enabled on your instance. If that happens, contact
@@ -246,70 +268,76 @@ ServiceNow Support and ask them to enable the `/sncapps/mcp-server` path forward
 
 ---
 
-Part 2 is complete. Hand the **client ID** (from Step 3) and the three **server URLs** (from
-Step 4) to whoever will do the Claude Code setup.
+Part 2 is complete. Hand the **client ID** and **client secret** (from Step 3) and the five
+**server URLs** (from Step 4) to whoever will do the Claude Code setup — the secret by a secure
+channel, not chat or email.
 
 ---
 
 # Part 3 — Connecting Claude Code
 
-> **Role:** The person using Claude Code on their laptop. You'll need the client ID and server
-> URLs from Part 2.
+> **Role:** The person using Claude Code on their laptop. You'll need the client ID, client secret
+> and server URLs from Part 2.
 
 ---
 
 ## Step 5 — Add the MCP Servers
 
 Open a terminal. Run one command per server, replacing `YOUR-CLIENT-ID` and `YOUR-INSTANCE` with
-your actual values:
+your actual values. Each command stops and prompts for the client secret — paste it at the prompt.
 
 ```bash
 claude mcp add --transport http \
-  --client-id YOUR-CLIENT-ID \
+  --client-id YOUR-CLIENT-ID --client-secret \
   --callback-port 33418 \
   sn-cmdb \
-  "https://YOUR-INSTANCE.service-now.com/sncapps/mcp-server/mcp/sn_cmdb_gen_ai_now_assist_cmdb_mcp_server"
+  "https://YOUR-INSTANCE.service-now.com/sncapps/mcp-server/mcp/sn_cmdb_mcp_server_cmdb_mcp_server"
 ```
 
 ```bash
 claude mcp add --transport http \
-  --client-id YOUR-CLIENT-ID \
+  --client-id YOUR-CLIENT-ID --client-secret \
   --callback-port 33418 \
   sn-itom \
-  "https://YOUR-INSTANCE.service-now.com/sncapps/mcp-server/mcp/sn_alert_gen_ai_aiops_mcp_server"
+  "https://YOUR-INSTANCE.service-now.com/sncapps/mcp-server/mcp/sn_genai_itom_mcp_server"
 ```
 
 ```bash
 claude mcp add --transport http \
-  --client-id YOUR-CLIENT-ID \
+  --client-id YOUR-CLIENT-ID --client-secret \
   --callback-port 33418 \
   sn-itsm \
   "https://YOUR-INSTANCE.service-now.com/sncapps/mcp-server/mcp/sn_itsm_mcp_server_itsm_default"
 ```
 
+```bash
+claude mcp add --transport http \
+  --client-id YOUR-CLIENT-ID --client-secret \
+  --callback-port 33418 \
+  sn-quickstart \
+  "https://YOUR-INSTANCE.service-now.com/sncapps/mcp-server/mcp/sn_mcp_server_default"
+```
+
+```bash
+claude mcp add --transport http \
+  --client-id YOUR-CLIENT-ID --client-secret \
+  --callback-port 33418 \
+  sn-moveworks \
+  "https://YOUR-INSTANCE.service-now.com/sncapps/mcp-server/mcp/sn_mcp_server_moveworks_default"
+```
+
 Each command writes an entry into Claude Code's configuration file (`~/.claude.json` or your
-profile's config file). No Python, no scripts, no `.env` file.
+profile's config file) and hands the client secret to Claude Code to keep in the macOS Keychain.
+No Python, no scripts, no `.env` file.
 
 > **Multiple profiles (personal vs. work Claude accounts):** If you have separate personal and
-> work Claude Code profiles, add a `--scope` flag to control which config gets the entry. Run
-> `claude mcp add --help` to see available scope options. The three servers above should go in
-> whichever profile you use for work.
+> work Claude Code profiles, add a scope flag to control which config gets the entry (`-s user`
+> is the form verified for this guide). Run `claude mcp add --help` to see the scope options.
 
-> **What if I want to edit the config file directly instead?** Open `~/.claude.json` (or your
-> profile's equivalent) in a text editor and add entries like this inside the `mcpServers` block:
->
-> ```json
-> "sn-cmdb": {
->   "type": "http",
->   "url": "https://YOUR-INSTANCE.service-now.com/sncapps/mcp-server/mcp/sn_cmdb_gen_ai_now_assist_cmdb_mcp_server",
->   "oauth": {
->     "clientId": "YOUR-CLIENT-ID",
->     "callbackPort": 33418
->   }
-> }
-> ```
->
-> Repeat for `sn-itom` and `sn-itsm` with their respective URLs.
+> **Don't hand-edit the config file instead.** An entry typed straight into `~/.claude.json` has
+> no client secret behind it. The browser still reports a successful sign-in, but the token
+> exchange fails and the instance's system log records `Exception on token flow - client_secret`.
+> Add servers with `claude mcp add … --client-secret`.
 
 ---
 
@@ -346,9 +374,8 @@ won't be prompted again unless the refresh window expires.
 > **Browser doesn't open automatically?** Copy the authorization URL printed in the terminal and
 > paste it into your browser manually.
 
-> **This happens once per server.** You may be prompted up to three times — once for each of
-> `sn-cmdb`, `sn-itom`, and `sn-itsm` — but usually all three share the same session and only
-> one browser window appears.
+> **This happens once per server.** Expect to approve each of the five servers. Inside Claude
+> Code, `/mcp` starts the sign-in for a server that has not prompted yet.
 
 ---
 
@@ -360,77 +387,76 @@ Check that all servers connected:
 claude mcp list
 ```
 
-You should see:
+All five servers — `sn-cmdb`, `sn-itom`, `sn-itsm`, `sn-quickstart` and `sn-moveworks` — should
+be listed as connected. If one is not, see the Troubleshooting section.
 
-```
-✓ Connected  sn-cmdb   (3 tools)
-✓ Connected  sn-itom   (9 tools)
-✓ Connected  sn-itsm   (5 tools)
-```
-
-If any server shows `✗` instead of `✓ Connected`, see the Troubleshooting section.
+**Connected only proves the handshake** — not that sign-in worked or that the tools return data.
+Make one real call.
 
 Now test it end-to-end in a Claude Code session. Open Claude Code and ask:
 
 ```
-Can you search the CMDB for Linux servers?
+List the application services in the CMDB
 ```
 
-Claude will call the `cmdb_search` tool and return matching configuration items. If results come
-back, the setup is working.
+Claude will call the `get_all_application_service_names` tool and return the service names. If
+results come back, the setup is working.
 
 ---
 
 ## Verification Tests
 
-Paste these prompts into Claude after setup to confirm each tool is working. All were verified on `empjwells2.service-now.com` (Australia release, 2026-06-05).
+One call per server, each made on `empjwells2.service-now.com` (Australia release) on 2026-10-06.
+The prompts are examples; what was verified is the tool call and that it returned data.
 
-### CMDB — sn-cmdb
+| Server | Example prompt | Tool it should call | Result that day |
+|---|---|---|---|
+| `sn-cmdb` | `List the application services in the CMDB` | `get_all_application_service_names` | 55 services |
+| `sn-itom` | `List the 5 most recent alerts` | `list_alert_records` | 5 alerts |
+| `sn-itsm` | `Look up assignment groups matching Network` | `lookup_assignment_groups` | 3 groups |
+| `sn-quickstart` | `Look up 5 incident records` | `look_up_incident_records` | 5 incidents |
+| `sn-moveworks` | `How many incidents are there?` | `enterprise_graph` | a count |
 
-| Prompt | Expected result |
-|---|---|
-| `Search the CMDB for Linux servers` | Count and list of Linux server CIs |
-| `What CMDB class should I use to create a Linux server CI?` | Class options with required fields |
+### More prompts — last run 2026-06-05, not re-run since the instance was rebuilt
 
-### ITOM Visibility — sn-itom-visibility
-
-| Prompt | Expected result |
-|---|---|
-| `Show me the status of all MID servers` | Name, status (Up/Down), version, and last check-in for each MID |
-
-### Alerts — sn-itom
+#### Alerts — sn-itom
 
 | Prompt | Expected result |
 |---|---|
-| `List the 5 most recent open alerts` | Alert numbers, severities, and states |
-| `Analyze alert [number from above]` | Full AI-generated analysis with brief and recommended steps |
-| `What is the impact of alert [number from above]?` | Count and names of impacted service instances |
-| `What are the alert investigation findings for [number]?` | Historical incident context; returns a "no related incidents" message if none exist — that is expected, not an error |
+| `Analyze alert [number]` | AI-generated analysis with brief and recommended steps — check specifics such as drive letters and percentages against the alert data; the analysis can invent them |
+| `What is the impact of alert [number]?` | Count and names of impacted service instances |
+| `What are the alert investigation findings for [number]?` | Historical incident context; an empty result when the alert has no linked incidents is expected, not an error |
 
-### Incidents — sn-itsm
+#### Incidents — sn-itsm
 
 | Prompt | Expected result |
 |---|---|
 | `Get details on incident INC0000015` | Full incident record — state, priority, assignment, CI, work notes |
-| `Look up assignment groups matching Service Desk` | Matching group names and their IDs |
 | `Look up user Fred Luddy` | User record |
 | `Add a work note to INC0000015 saying "MCP test"` | Confirmation that work_notes field was updated |
 
-### Known issues (as of 2026-06-05)
+### Known issues (as of 2026-10-06)
 
 | Tool | Status | Notes |
 |---|---|---|
-| `search_similar_records` | Broken | Returns HTTP 500 from ServiceNow on every call |
-| `acc_policy_redeploy` | Broken | Schema bug — policy sys_id is not forwarded to ServiceNow; returns HTTP 400. Use the manual UI workaround: switch scope to **Agent Client Collector for Visibility Content** → Edit in Sandbox → Save → Republish |
+| `get_all_application_service_names` (sn-cmdb), `list_alert_records` (sn-itom) | HTTP 500 on an empty request body | Pass at least one argument — `{"include_inactive": false}` or `{"limit": 5}`. Seen 2026-10-06 |
+| `cmdb_search` (sn-cmdb) | Errored on "find all windows servers" (`encoded_query` undefined) | Seen 2026-09-22, not re-tested |
+| `create_incident_or_request` (sn-itsm) | HTTP 403 "Missing required api access scope: a2aauthscope" | Seen 2026-09-22; open, no documented fix found |
+| `alert_hypothesizer` (sn-itom) | Errors unless the alert is a Log Analytics, non-group alert with a resource set | Seen 2026-09-22 |
+| `search_similar_records` (sn-itsm) | Returned HTTP 500 on every call in June 2026 | Not confirmed either way since |
+| MID Servers, Discovery, Agent Client Collector | No native MCP server covers them | Use the Table API |
 
 ---
 
 ## What You Can Ask Claude
 
-The 17 tools span four areas. Claude picks the right one automatically — you describe what you
-want in plain English.
+The 36 tools span five servers. Claude picks the right one automatically — you describe what you
+want in plain English. The tables below are examples, not the full tool list. Besides the three
+domain servers, `sn-quickstart` (4 tools, including `look_up_incident_records`) and
+`sn-moveworks` (1 tool, `enterprise_graph`) are general-purpose servers that come with the MCP
+Server Console.
 
-### CMDB (3 tools)
+### CMDB — `sn-cmdb` (9 tools)
 
 | What you want | What to ask |
 |---|---|
@@ -438,7 +464,7 @@ want in plain English.
 | Add a new CI | "Create a new server CI named app-prod-07, OS Windows Server 2022" |
 | Find the right CI class before creating | "What's the correct CMDB class for a network switch?" |
 
-### Incidents (5 tools)
+### Incidents and requests — `sn-itsm` (13 tools)
 
 | What you want | What to ask |
 |---|---|
@@ -448,7 +474,7 @@ want in plain English.
 | Find who handles a queue | "Which assignment group handles Windows server alerts?" |
 | Update an incident | "Set INC0012345 to In Progress and assign it to the Linux team" |
 
-### Alerts and reliability (9 tools)
+### Alerts and reliability — `sn-itom` (9 tools)
 
 | What you want | What to ask |
 |---|---|
@@ -478,9 +504,15 @@ The client ID in your `claude mcp add` command doesn't match the one in ServiceN
 Registry. Re-check the record, then remove and re-add the server:
 ```bash
 claude mcp remove sn-cmdb
-claude mcp add --transport http --client-id CORRECT-ID --callback-port 33418 \
-  sn-cmdb "https://YOUR-INSTANCE.service-now.com/sncapps/mcp-server/mcp/sn_cmdb_gen_ai_now_assist_cmdb_mcp_server"
+claude mcp add --transport http --client-id CORRECT-ID --client-secret --callback-port 33418 \
+  sn-cmdb "https://YOUR-INSTANCE.service-now.com/sncapps/mcp-server/mcp/sn_cmdb_mcp_server_cmdb_mcp_server"
 ```
+
+### Browser says the sign-in succeeded, but the server still fails
+The server was added without the client secret, or with the wrong one. The token exchange fails
+after the browser step, and the instance's system log shows
+`Exception on token flow - client_secret`. Remove the server and add it again with
+`--client-secret` (Step 5).
 
 ### "HTTP 403" when a tool runs
 The ServiceNow account you approved during OAuth consent doesn't have the roles those tools need.
@@ -499,19 +531,19 @@ record, find the Tool Definitions related list, select all rows, right-click →
 ### Claude says it has no ServiceNow tools
 Run `claude mcp list`. If any server shows `✗ Disconnected`:
 1. Check that the server URL is correct (no typo, correct instance subdomain)
-2. Run the pre-flight `curl -I` check from Part 2, Step 4 — a `404` means routing isn't enabled
+2. Run the pre-flight `curl` check from Part 2, Step 4 — a `404` means routing isn't enabled
 3. Try `claude mcp remove <name>` then re-add with the correct values
 
 ### "HTTP 400 — redirect_uri_mismatch"
-The redirect URL in the Application Registry record doesn't include both localhost variants.
+The redirect URL in the Application Registry record doesn't match the callback Claude Code uses.
 Open the record in ServiceNow and set:
 ```
-http://localhost:33418/callback,http://127.0.0.1:33418/callback
+http://localhost:33418/callback
 ```
 
 ### Re-authenticating after tokens expire (after 100 days)
-Run `claude mcp remove sn-cmdb` (and repeat for sn-itom, sn-itsm), then re-add them with
-`claude mcp add` as in Step 5. The OAuth approval flow will run again and issue new tokens.
+Run `claude mcp remove sn-cmdb` (and repeat for each of the other servers), then re-add them
+with `claude mcp add` as in Step 5 — have the client secret to hand. The OAuth approval flow will run again and issue new tokens.
 
 ---
 
@@ -537,11 +569,11 @@ Run `claude mcp remove sn-cmdb` (and repeat for sn-itom, sn-itsm), then re-add t
 | VS Code | The editor Claude Code lives inside | |
 | Node.js | The engine that runs Claude Code | |
 | Claude Code CLI | The core tool (`@anthropic-ai/claude-code`) | |
-| MCP Server Console (`sn_mcp_server`) | The base MCP framework on your instance | Required by all domain apps |
-| Now Assist for CMDB (`sn_cmdb_gen_ai`) | CMDB tool suite | Provides the 3 CMDB tools |
-| Alert Assist (`sn_alert_gen_ai`) | ITOM tool suite | Provides the 9 alert/reliability tools |
-| ITSM MCP Server (`sn_itsm_mcp_server`) | ITSM tool suite | Provides the 5 incident tools |
-| OAuth Application Registry record | One OAuth client on your instance | Identifies Claude Code as an approved app |
+| MCP Server Console (`sn_mcp_server`) | The base MCP framework on your instance | Required by all domain apps; also supplies the two general-purpose servers (5 tools) |
+| CMDB MCP Server (`sn_cmdb_mcp_server`) | CMDB tool suite | Provides the 9 CMDB tools |
+| ITOM MCP Server (`sn_itom_mcp_server`) | ITOM tool suite | Provides the 9 alert/reliability tools |
+| ITSM MCP Server (`sn_itsm_mcp_server`) | ITSM tool suite | Provides the 13 incident and request tools |
+| OAuth Application Registry record | One confidential OAuth client on your instance | Identifies Claude Code as an approved app; its secret lives in the macOS Keychain |
 
 Nothing runs on your laptop except Claude Code itself. The ServiceNow connector — the tools, the
 data, the logic — is hosted on your instance.
@@ -556,9 +588,8 @@ data, the logic — is hosted on your instance.
 - [Implementing MCP in ServiceNow — cross-instance setup guide][cross-instance] (Community)
 - [Enable MCP and A2A for your agentic workflows — FAQs][faq-a2a] (Community)
 - [MCP Server Console FAQ][faq] (Community)
-- [PKCE in Application Registry][pkce-community] (Community forum)
 - [Understanding OAuth refresh-token expiration patterns][oauth-patterns] (Community blog)
-- Live instance verification: `empjwells2.service-now.com`, Australia release, 2026-06-05
+- Live instance verification: `empjwells2.service-now.com`, Australia release — OAuth client, registry rows, URLs, tool counts and one call per server on 2026-10-06; Part 2 click-paths on 2026-06-05
 
 [docs-mcp-client]: https://www.servicenow.com/docs/r/intelligent-experiences/install-mcp-client.html
 [docs-mcp-ref]: https://www.servicenow.com/docs/r/intelligent-experiences/mcp-reference.html
@@ -566,6 +597,5 @@ data, the logic — is hosted on your instance.
 [cross-instance]: https://www.servicenow.com/community/ceg-ai-coe-articles/implementing-the-model-context-protocol-in-servicenow-a/ta-p/3541020
 [faq-a2a]: https://www.servicenow.com/community/now-assist-articles/enable-mcp-and-a2a-for-your-agentic-workflows-with-faqs-updated/ta-p/3373907
 [faq]: https://www.servicenow.com/community/now-assist-articles/mcp-server-console-faq/ta-p/3550125
-[pkce-community]: https://www.servicenow.com/community/hrsd-forum/how-to-use-pkce-in-application-registrie/m-p/2640690
 [oauth-patterns]: https://www.servicenow.com/community/platform-privacy-security-blog/understanding-oauth-refresh-token-expiration-patterns-for/ba-p/3481290
 [kb2820840]: https://support.servicenow.com/kb?id=kb_article_view&sysparm_article=KB2820840

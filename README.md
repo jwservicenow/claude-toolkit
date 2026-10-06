@@ -17,7 +17,7 @@ Everything here works inside **Claude Code** (the command-line app). Some tools 
 | [/token-audit](#token-audit) | Checks your Claude Code accounts for token waste — oversized `CLAUDE.md` files, MCP server bloat, undocumented `settings.json` keys, dead hooks, and actual cache/token usage totals per account |
 | [RAG demo walkthrough](https://jwservicenow.github.io/claude-toolkit/docs/servicenow-rag-demo-walkthrough-2026-08-08.html) | Annotated end-to-end run of `/servicenow_rag` against a real question — what it fetches, in what order, and why |
 | [Mirror retrieval testing](docs/mirror-testing/) | Test artifacts and mirror-side recommendations from evaluating the ServiceNow docs mirror as an AI retrieval source, plus the [model × thinking-effort benchmark](https://jwservicenow.github.io/claude-toolkit/docs/mirror-testing/model-thinking-sweep-writeup-2026-08-09.html) behind the model guidance |
-| [PDI integration - native MCP install](docs/pdi_native_mcp_install_guide.md) | Connect Claude Code to ServiceNow using the platform's ootb MCP — no scripts needed, OAuth 2.1 security profile with PKCE, 17 purpose-built tools |
+| [PDI integration - native MCP install](docs/pdi_native_mcp_install_guide.md) | Connect Claude Code to ServiceNow using the platform's ootb MCP — no scripts needed, browser-approved OAuth with the client secret kept in the macOS Keychain, 36 purpose-built tools across five servers |
 | [Status bar](#status-bar-customization) | Show model, context size, usage bar, and session cost at the bottom of Claude Code session UI |
 | [Using Multiple Claude Subscriptions on Mac](docs/dual-subscription-setup.md) | Run ServiceNow's Enterprise account and your personal Claude account on the same Mac without them mixing — separate configs, separate sessions |
 | [SSH Agent Key Management for Claude Homelab Access](docs/ssh-agent-homelab.md) | Load a passphrase-protected SSH key into the macOS agent for a configurable window (default 2h) so Claude can reach your lab hosts — and access expires automatically when you're done |
@@ -246,7 +246,7 @@ Restart Claude Code. Then type `/token-audit`.
 
 ### `Connect Claude Code to PDI: Native MCP install guide`
 
-Connects Claude Code to your ServiceNow instance using the platform's own built-in connector. No local Python script, no clear text passwords — credentials stay in your macOS Keychain. Gives you 17 purpose-built tools for CMDB, ITSM, and ITOM work.
+Connects Claude Code to your ServiceNow instance using the platform's own built-in connector. No local Python script, no clear text passwords — credentials stay in your macOS Keychain. Gives you 36 purpose-built tools across five servers for CMDB, ITSM, and ITOM work.
 
 **Requires:** ServiceNow Australia release (Zurich Patch 9+) with Now Assist. If your instance doesn't meet that, use the DIY Table-API guide instead.
 
