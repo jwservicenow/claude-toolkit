@@ -14,14 +14,12 @@ small helper. About 20 minutes.
 **You need:** a Mac, a PDI where you have the `admin` role, and a Claude Pro, Max, Team or
 Enterprise plan (the free plan doesn't include Claude Code).
 
-> **Status — 2026-10-07.** The helper's sign-in and redaction code was tested on macOS in bash
-> and zsh against a local stub server: a password with quotes, backslashes, `:` and `$` arrived
-> intact, the password never showed in the process list, a `password` field came back
-> `<REDACTED>`, and `pdi_write` refused a read method. On the reference PDI (Australia), the
-> helper exactly as written here ran Step 5a and 5b as an admin integration user in bash and
-> zsh (HTTP 200 both), and Step 1's unauthenticated check returned 401. Not yet tested on a
-> fresh PDI: the full prompt end to end, granting the `admin` role in Step 2, the Step 5c write,
-> and whether every core role below exists on a new PDI before its app is installed.
+> **Status — 2026-10-07.** The full prompt was run end to end on a second Australia PDI in a fresh
+> Claude Code session: every step passed, including the Step 5c write (create HTTP 201, delete 204).
+> In that run the user record and role grants were made over REST as admin rather than in the
+> browser; the password was set with Set Password in the browser. Identity type Machine sets Web
+> service access only on save (checked in the instance's business rule). On that PDI, 5 of the 21
+> roles didn't exist (`snc_internal` and 4 MCP roles); the prompt handles that.
 
 **How this compares to the native MCP guide:**
 
@@ -81,7 +79,7 @@ What Claude will create:
 
 | | Roles |
 |---|---|
-| Core (always) | `admin`, `itil_admin`, `asset`, `discovery_admin`, `snc_internal`, `acc_admin_for_global`, `agent_client_collector_admin`, `mid_server`, `cmdb_inst_admin` |
+| Core (always) | `admin`, `itil_admin`, `asset`, `discovery_admin`, `snc_internal` (if offered), `acc_admin_for_global`, `agent_client_collector_admin`, `mid_server`, `cmdb_inst_admin` |
 | Optional — MCP | `sn_mcp_server.admin`, `sn_mcp_server.tools_admin`, `sn_mcp_client.admin`, `sn_mcp_client.viewer`, `sn_mcp_registry.mcp_registry_read`, `sn_mcp_registry.mcp_registry_write`, `sn_fd_genai.mcp_fd_admin`, `sn_sm_gen_ai.sm_mcp_admin` |
 | Optional — AI | `ai_agent_resource_admin`, `ai_native_experience_analytics_admin`, `ai_security_admin`, `ai_user_admin` |
 
@@ -105,19 +103,22 @@ Rules for this whole session:
   unless I ask.
 
 STEP 1 — Instance name.
-Ask me for my PDI instance name: the part before `.service-now.com`, e.g. `dev12345`. WAIT.
+Ask me for my PDI instance name: the part before `.service-now.com`, e.g. `dev12345`. Ask it as a
+plain question I type the answer to: no menu, no suggested or recommended name, even if other
+context names a PDI. WAIT.
 Then run, with no credentials:
   curl -sS -o /dev/null -w '%{http_code}\n' "https://<name>.service-now.com/api/now/table/sys_user?sysparm_limit=1"
 401 means the instance is awake and REST answers. Anything else (200, 302, a timeout) usually
 means the PDI is asleep: tell me to wake it from developer.servicenow.com, then run it again.
 
 STEP 2 — The integration user (I do this in the browser).
-Ask me whether I want the optional MCP roles, the optional AI roles, both or neither. WAIT.
+Ask me whether I want the optional MCP roles, the optional AI roles, both or neither. In the
+question, list every role name in each group (from the lists below), never just a count. WAIT.
 Then give me these steps to follow:
   In the PDI as admin: All > User Administration > Users > New.
   User ID `claude.integration`, First name `Claude`, Last name `Integration`.
-    If the form has an Identity type field, set it to Machine (that ticks Web service access
-    only for you). Otherwise tick Web service access only. Submit.
+    If the form has an Identity type field, set it to Machine (the instance then sets Web
+    service access only when you submit). Otherwise tick Web service access only. Submit.
     Reopen the record and use Set Password to give it a long random password. Copy it somewhere
     temporary, never into this chat.
     In the Roles related list, select Edit and add these core roles:
@@ -133,6 +134,7 @@ Then give me these steps to follow:
     and save.
   If a role isn't offered in the list, the app that provides it isn't installed on my PDI. Tell
   me which ones were missing so I can install that app or skip the role, and carry on.
+  (`snc_internal` comes from the Explicit Roles plugin; if it isn't offered, skip it.)
   If saving the admin role is refused, tell me to elevate to the security_admin role in the
   browser and try again.
 WAIT until I say the user exists with its roles.

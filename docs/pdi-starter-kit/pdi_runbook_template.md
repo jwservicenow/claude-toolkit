@@ -34,6 +34,7 @@ echo '{"field":"value"}' | pdi_write PATCH /api/now/table/<table>/<sys_id>      
 
 | Item | Value |
 |---|---|
+| Instance | `<instance>.service-now.com` |
 | Integration user | `claude.integration` — admin, web-service-only |
 | Direct roles | `<list from setup Step 5b>` |
 | Keychain item | account `claude.integration`, service `servicenow-pdi-<instance>` |
