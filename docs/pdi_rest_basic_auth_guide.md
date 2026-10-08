@@ -96,7 +96,7 @@ Then run, with no credentials:
 means the PDI is asleep: tell me to wake it from developer.servicenow.com, then run it again.
 
 STEP 2 — Two integration users (I do this in the browser).
-Give me these steps to follow, with <name> filled in:
+Give me these steps to follow:
   In the PDI as admin: All > User Administration > Users > New.
   User 1: User ID `claude.ro`, First name `Claude`, Last name `Read only`.
     If the form has an Identity type field, set it to Machine (that ticks Web service access
@@ -263,8 +263,14 @@ Show me this text and ask whether to add it to ~/.claude/CLAUDE.md. WAIT for my 
 
 STEP 7 — Report.
 Summarise what now exists: the two users and their roles, the two files, the two Keychain items,
-and whether CLAUDE.md was changed. Then tell me how to remove everything (see the guide's
-"Removing it" section).
+and whether CLAUDE.md was changed. Then tell me how to remove everything:
+  1. In the PDI: All > User Administration > Users, open claude.ro and claude.rw, and clear
+     Active (or delete the records).
+  2. In Terminal:
+       security delete-generic-password -a claude.ro -s servicenow-pdi-<name>
+       security delete-generic-password -a claude.rw -s servicenow-pdi-<name>
+  3. Delete the ~/pdi-claude folder, and the "ServiceNow PDI access" section from
+     ~/.claude/CLAUDE.md if it was added.
 ~~~~
 
 ---
