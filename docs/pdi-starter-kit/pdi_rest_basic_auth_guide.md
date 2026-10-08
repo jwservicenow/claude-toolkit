@@ -14,26 +14,6 @@ small helper. About 20 minutes.
 **You need:** a Mac, a PDI where you have the `admin` role, and a Claude Pro, Max, Team or
 Enterprise plan (the free plan doesn't include Claude Code).
 
-> **Status — 2026-10-07.** The full prompt was run end to end on a second Australia PDI in a fresh
-> Claude Code session: every step passed, including the Step 5c write (create HTTP 201, delete 204).
-> In that run the user record and role grants were made over REST as admin rather than in the
-> browser; the password was set with Set Password in the browser. Identity type Machine sets Web
-> service access only on save (checked in the instance's business rule). On that PDI, 5 of the 21
-> roles didn't exist (`snc_internal` and 4 MCP roles); the prompt handles that.
-
-**How this compares to the native MCP guide:**
-
-| | This guide (REST, Basic Auth) | [Native MCP guide](pdi_native_mcp_install_guide.md) |
-|---|---|---|
-| What Claude can reach | Any table, through the Table API | 36 purpose-built tools across five servers |
-| How it signs in | Basic Auth as one admin integration user | OAuth; you approve in a browser |
-| Actions recorded as | The integration user | Whoever approved in the browser |
-| Credentials stored where? | macOS Keychain only | macOS Keychain only |
-| On your laptop | Two small files Claude writes from this guide | Nothing beyond Claude Code |
-| Instance requirement | Any release | Australia / Zurich Patch 9+ with Now Assist |
-
-The two complement each other: MCP for the guided tools, REST for any table they don't cover.
-
 ---
 
 # Part 1 — Install Claude Code
@@ -63,7 +43,7 @@ Requires macOS 13 or later. Full details:
    ```bash
    mkdir -p ~/pdi-claude && cd ~/pdi-claude && claude
    ```
-2. Copy **everything** inside the block below and paste it into Claude Code.
+2. Copy [**The Prompt**](#the-prompt) below, all of it, and paste it into Claude Code.
 3. Follow along. Claude stops and waits for you at each step marked **WAIT**.
    Keep your PDI open in a browser and logged in as admin.
 
@@ -84,6 +64,10 @@ What Claude will create:
 | Optional — AI | `ai_agent_resource_admin`, `ai_native_experience_analytics_admin`, `ai_security_admin`, `ai_user_admin` |
 
 Add the optional roles only if you'll use Claude for MCP or AI agent work on the instance.
+
+## The Prompt
+
+Copy everything in this block. GitHub shows a copy button at its top right.
 
 ~~~~text
 Set up access from Claude Code to my ServiceNow personal developer instance (PDI) over the REST
@@ -364,6 +348,28 @@ included. These rails are what keep that under your control:
    ```
 3. Delete the `~/pdi-claude` folder, and the "ServiceNow PDI access" section from
    `~/.claude/CLAUDE.md` if you added it.
+
+## How this compares to the native MCP guide
+
+| | This guide (REST, Basic Auth) | [Native MCP guide](pdi_native_mcp_install_guide.md) |
+|---|---|---|
+| What Claude can reach | Any table, through the Table API | 36 purpose-built tools across five servers |
+| How it signs in | Basic Auth as one admin integration user | OAuth; you approve in a browser |
+| Actions recorded as | The integration user | Whoever approved in the browser |
+| Credentials stored where? | macOS Keychain only | macOS Keychain only |
+| On your laptop | Two small files Claude writes from this guide | Nothing beyond Claude Code |
+| Instance requirement | Any release | Australia / Zurich Patch 9+ with Now Assist |
+
+The two complement each other: MCP for the guided tools, REST for any table they don't cover.
+
+## Status
+
+> **Status — 2026-10-07.** The full prompt was run end to end on a second Australia PDI in a fresh
+> Claude Code session: every step passed, including the Step 5c write (create HTTP 201, delete 204).
+> In that run the user record and role grants were made over REST as admin rather than in the
+> browser; the password was set with Set Password in the browser. Identity type Machine sets Web
+> service access only on save (checked in the instance's business rule). On that PDI, 5 of the 21
+> roles didn't exist (`snc_internal` and 4 MCP roles); the prompt handles that.
 
 ## Sources
 
