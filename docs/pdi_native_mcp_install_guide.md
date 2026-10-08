@@ -15,23 +15,23 @@ by the same person.
 > what the working setup looks like today. The click-paths and button names in Part 2 date from
 > June 2026 and have not been re-walked since — confirm them on screen.
 
-**How this compares to the DIY Table-API guide:**
+**How this compares to the [REST Basic Auth guide](pdi_rest_basic_auth_guide.md):**
 
-| | DIY guide (Python/Table-API) | This guide (native MCP) |
+| | REST guide (Table API, Basic Auth) | This guide (native MCP) |
 |---|---|---|
-| Something to install on your laptop? | Yes — a Python script | No — runs inside ServiceNow |
-| Credentials stored where? | Plain-text `.env` file | macOS Keychain only |
-| How it logs in | Shared OAuth secret | You approve in a browser; the OAuth client secret is kept in the macOS Keychain |
-| Actions recorded as | One fixed service account | Your own ServiceNow login |
-| Tools available | 2 generic table-read tools | 36 purpose-built tools across five servers (CMDB, ITSM, ITOM and two general ones) |
-| Instance requirement | Any instance, any release | Australia / Zurich Patch 9+ with Now Assist |
+| Something to install on your laptop? | Two small files Claude writes from the guide | No — runs inside ServiceNow |
+| Credentials stored where? | macOS Keychain only | macOS Keychain only |
+| How it logs in | Basic Auth as two integration users: one read-only, one for approved writes | You approve in a browser; the OAuth client secret is kept in the macOS Keychain |
+| Actions recorded as | The two integration accounts | Your own ServiceNow login |
+| Tools available | Any table the accounts' roles can read, through the Table API | 36 purpose-built tools across five servers (CMDB, ITSM, ITOM and two general ones) |
+| Instance requirement | Any release | Australia / Zurich Patch 9+ with Now Assist |
 
 **How long it takes:** 15–25 minutes if the ServiceNow apps are already installed. Add 20–30
 minutes if a ServiceNow admin needs to install them first.
 
 **Platform requirement:** ServiceNow Australia release (Zurich Patch 9 or newer). The tool
 suites below are edition-gated — see Part 2, Step 1 for details. If your instance doesn't meet
-these requirements, the DIY Table-API guide works on any release.
+these requirements, the [REST Basic Auth guide](pdi_rest_basic_auth_guide.md) works on any release.
 
 ---
 
@@ -39,8 +39,8 @@ these requirements, the DIY Table-API guide works on any release.
 
 | You'll need | Covered in |
 |---|---|
-| A Claude account with a paid plan | Part 1, Step 1 |
-| Claude Code installed and signed in | Part 1, Steps 2–5 |
+| A Claude account with a paid plan | Part 1 |
+| Claude Code installed and signed in | Part 1 |
 | A ServiceNow instance on Australia / Zurich Patch 9+ | Your ServiceNow admin |
 | MCP Server apps installed on the instance | Part 2, Step 1 |
 | An OAuth client created on the instance | Part 2, Step 3 |
@@ -54,13 +54,11 @@ these requirements, the DIY Table-API guide works on any release.
 If you already have Claude Code installed and `claude --version` prints a version number in a
 terminal, skip to Part 2.
 
-Otherwise, follow **Steps 1–5** of the [DIY ServiceNow integration guide][diy-guide]. Those
-steps cover creating a Claude account, installing VS Code and Node.js, installing Claude Code,
-and signing in. The installation process is identical for both guides.
+Otherwise, follow **Part 1** of the [REST Basic Auth guide](pdi_rest_basic_auth_guide.md#part-1--install-claude-code).
+It covers the plan you need, installing Claude Code and signing in. The installation is the same
+for both guides.
 
-Return here after completing Step 5 of that guide.
-
-[diy-guide]: Integrating%20Claude%20Code%20with%20ServiceNow%20via%20the%20Table%20API
+Return here after completing that Part 1.
 
 ---
 
@@ -103,7 +101,7 @@ In your ServiceNow instance:
 > official ServiceNow documentation ([Australia release][docs-mcp-client];
 > [cross-instance setup community guide][cross-instance]). The three domain apps are the
 > application names recorded against each registry row on a live Australia-release PDI
-> (`empjwells2.service-now.com`), read 2026-10-06 — CMDB MCP Server 1.0.1, ITOM MCP Server 1.0.1,
+> (the reference PDI), read 2026-10-06 — CMDB MCP Server 1.0.1, ITOM MCP Server 1.0.1,
 > ITSM MCP Server 3.2.3. Their Store listing names were not independently confirmed; verify them
 > against your instance's Store.
 >
@@ -148,20 +146,20 @@ before Claude Code can connect to them.
 > If you see a script error, activate the row using the REST API instead. Open a terminal and run:
 >
 > ```bash
-> curl -u "YOUR-ADMIN-USER:YOUR-PASSWORD" -X PATCH \
+> curl -u "YOUR-ADMIN-USER" -X PATCH \
 >   "https://YOUR-INSTANCE.service-now.com/api/now/table/sn_mcp_server_registry/SYS-ID-HERE" \
 >   -H "Content-Type: application/json" \
 >   -d '{"status":"active"}'
 > ```
 >
-> Replace `SYS-ID-HERE` with the `sys_id` of the registry row — it appears in the URL when you
+> curl asks for the password, so it never lands in your shell history. Replace `SYS-ID-HERE` with the `sys_id` of the registry row — it appears in the URL when you
 > open the record (the value after `sys_id=`).
 >
 > Also check the tool association rows. Open the registry record, find the **Tool Definitions**
 > related list, and confirm each tool shows **Enabled = true**. If not, select all rows → right-
 > click → Update → set `Enabled` to `true`.
 >
-> *This REST workaround was used on `empjwells2` in June 2026, before that instance was rebuilt.
+> *This REST workaround was used on the reference PDI in June 2026, before that instance was rebuilt.
 > It has not been re-tested since — treat it as a fallback. Writing registry or tool rows may
 > need the `sn_mcp_server.admin` and `sn_mcp_server.tools_admin` roles, not just `admin`.*
 
@@ -201,8 +199,8 @@ You create one OAuth client in ServiceNow, and all five MCP servers share it.
 | Refresh token lifespan | `8640000` | 100 days |
 | Token format | `JWT` | |
 
-> **Why `authorization_code`, not `client_credentials`?** The DIY guide uses `client_credentials`
-> because that flow is designed for background scripts that hold a stored secret. This guide uses
+> **Why `authorization_code`, not `client_credentials`?** `client_credentials` is designed for
+> background scripts that hold a stored secret. This guide uses
 > `authorization_code` because Claude Code is a desktop app — it opens a browser window and you
 > personally approve the connection, so every action runs as you. The client secret identifies
 > the app, not the user, and stays in the Keychain.
@@ -220,7 +218,7 @@ You create one OAuth client in ServiceNow, and all five MCP servers share it.
 
 > **Field verification:** The values above — `public_client`, `use_pkce`, the inbound grant type,
 > redirect URL, token lifespans and token format — were read live from the working Application
-> Registry record on `empjwells2.service-now.com` (Australia release) on 2026-10-06.
+> Registry record on the reference PDI (Australia release) on 2026-10-06.
 
 > **Scope restriction:** Leave scope restriction at its default (broadly scoped) during initial
 > setup. Narrowing OAuth scopes requires additional configuration (`oauth_entity_scope` records);
@@ -406,7 +404,7 @@ results come back, the setup is working.
 
 ## Verification Tests
 
-One call per server, each made on `empjwells2.service-now.com` (Australia release) on 2026-10-06.
+One call per server, each made on the reference PDI (Australia release) on 2026-10-06.
 The prompts are examples; what was verified is the tool call and that it returned data.
 
 | Server | Example prompt | Tool it should call | Result that day |
@@ -589,7 +587,7 @@ data, the logic — is hosted on your instance.
 - [Enable MCP and A2A for your agentic workflows — FAQs][faq-a2a] (Community)
 - [MCP Server Console FAQ][faq] (Community)
 - [Understanding OAuth refresh-token expiration patterns][oauth-patterns] (Community blog)
-- Live instance verification: `empjwells2.service-now.com`, Australia release — OAuth client, registry rows, URLs, tool counts and one call per server on 2026-10-06; Part 2 click-paths on 2026-06-05
+- Live instance verification: the reference PDI, Australia release — OAuth client, registry rows, URLs, tool counts and one call per server on 2026-10-06; Part 2 click-paths on 2026-06-05
 
 [docs-mcp-client]: https://www.servicenow.com/docs/r/intelligent-experiences/install-mcp-client.html
 [docs-mcp-ref]: https://www.servicenow.com/docs/r/intelligent-experiences/mcp-reference.html
