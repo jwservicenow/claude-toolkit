@@ -1,9 +1,11 @@
 # Connecting Claude Code to your PDI — REST Table API with Basic Auth
 
+Part of the [PDI starter kit](README.md).
+
 **What you'll end up with:** Claude Code reading and writing your ServiceNow personal developer
-instance (PDI) through the REST Table API. Reads use an account the platform itself refuses to
-let write. Writes use a second account, and Claude asks you before every one. Passwords live in
-the macOS Keychain, never in a file, a command line or the chat.
+instance (PDI) through the REST Table API. It signs in as one admin integration user. Claude asks
+you before every write. The password lives in the macOS Keychain, never in a file, a command line
+or the chat.
 
 **How you set it up:** install Claude Code (Part 1), then paste one prompt into it (Part 2).
 The prompt walks you through the few browser steps only you can do, then writes and tests a
@@ -12,19 +14,22 @@ small helper. About 20 minutes.
 **You need:** a Mac, a PDI where you have the `admin` role, and a Claude Pro, Max, Team or
 Enterprise plan (the free plan doesn't include Claude Code).
 
-> **Status — 2026-10-07.** The helper in the prompt was tested on macOS in bash and zsh against
-> a local stub server. The tests covered a password with quotes, backslashes, `:` and `$`, the
-> password never showing in the process list, a `password` field in a response coming back
-> `<REDACTED>`, and a read method refused by `pdi_write`. The full prompt has not yet been run
-> end to end against a fresh PDI.
+> **Status — 2026-10-07.** The helper's sign-in and redaction code was tested on macOS in bash
+> and zsh against a local stub server: a password with quotes, backslashes, `:` and `$` arrived
+> intact, the password never showed in the process list, a `password` field came back
+> `<REDACTED>`, and `pdi_write` refused a read method. On the reference PDI (Australia), the
+> helper exactly as written here ran Step 5a and 5b as an admin integration user in bash and
+> zsh (HTTP 200 both), and Step 1's unauthenticated check returned 401. Not yet tested on a
+> fresh PDI: the full prompt end to end, granting the `admin` role in Step 2, the Step 5c write,
+> and whether every core role below exists on a new PDI before its app is installed.
 
 **How this compares to the native MCP guide:**
 
 | | This guide (REST, Basic Auth) | [Native MCP guide](pdi_native_mcp_install_guide.md) |
 |---|---|---|
-| What Claude can reach | Any table your accounts' roles can read, through the Table API | 36 purpose-built tools across five servers |
-| How it signs in | Basic Auth as two integration users: one read-only, one for approved writes | OAuth; you approve in a browser |
-| Actions recorded as | The two integration accounts | Your own ServiceNow login |
+| What Claude can reach | Any table, through the Table API | 36 purpose-built tools across five servers |
+| How it signs in | Basic Auth as one admin integration user | OAuth; you approve in a browser |
+| Actions recorded as | The integration user | Whoever approved in the browser |
 | Credentials stored where? | macOS Keychain only | macOS Keychain only |
 | On your laptop | Two small files Claude writes from this guide | Nothing beyond Claude Code |
 | Instance requirement | Any release | Australia / Zurich Patch 9+ with Now Assist |
@@ -66,10 +71,21 @@ Requires macOS 13 or later. Full details:
 
 What Claude will create:
 
-- **On your instance:** two users, `claude.ro` and `claude.rw`, both web-service-only (they can't
-  log in to the UI). No other changes.
-- **On your Mac:** `~/pdi-claude/pdi-curl.sh` and `~/pdi-claude/pdi-redact.py`, two Keychain
-  items, and (if you agree) a short rules section in `~/.claude/CLAUDE.md`.
+- **On your instance:** one user, `claude.integration`, web-service-only (it can't log in to the
+  UI), holding the roles below. No other changes.
+- **On your Mac:** `~/pdi-claude/pdi-curl.sh`, `~/pdi-claude/pdi-redact.py`,
+  `~/pdi-claude/pdi_runbook.md`, one Keychain item, and (if you agree) a short rules section in
+  `~/.claude/CLAUDE.md`.
+
+**Roles for `claude.integration`:**
+
+| | Roles |
+|---|---|
+| Core (always) | `admin`, `itil_admin`, `asset`, `discovery_admin`, `snc_internal`, `acc_admin_for_global`, `agent_client_collector_admin`, `mid_server`, `cmdb_inst_admin` |
+| Optional — MCP | `sn_mcp_server.admin`, `sn_mcp_server.tools_admin`, `sn_mcp_client.admin`, `sn_mcp_client.viewer`, `sn_mcp_registry.mcp_registry_read`, `sn_mcp_registry.mcp_registry_write`, `sn_fd_genai.mcp_fd_admin`, `sn_sm_gen_ai.sm_mcp_admin` |
+| Optional — AI | `ai_agent_resource_admin`, `ai_native_experience_analytics_admin`, `ai_security_admin`, `ai_user_admin` |
+
+Add the optional roles only if you'll use Claude for MCP or AI agent work on the instance.
 
 ~~~~text
 Set up access from Claude Code to my ServiceNow personal developer instance (PDI) over the REST
@@ -80,13 +96,13 @@ Rules for this whole session:
 - Never ask me to paste a password, token or key into this chat, and never print one. If one
   ever appears in the chat, stop and tell me to change that password on the instance.
 - Never run `security find-generic-password` with `-w` or `-g` yourself. Only the helper
-  functions read passwords.
-- Every call to the instance goes through the helper functions `pdi_ro` and `pdi_write`. Never
+  functions read the password.
+- Every call to the instance goes through the helper functions `pdi` and `pdi_write`. Never
   write a raw curl command to the instance (Step 1's unauthenticated check is the only exception).
-- Use `pdi_ro` for every read. Before any `pdi_write`, show me the method, path and body and
-  wait for my yes.
-- Never give either account the admin role, and never change roles, ACLs or security settings on
-  my instance unless I ask.
+- Reads with `pdi` need no approval. Before any `pdi_write`, show me the method, path and body
+  and wait for my yes.
+- The integration user is admin. Never change roles, ACLs or security settings on my instance
+  unless I ask.
 
 STEP 1 — Instance name.
 Ask me for my PDI instance name: the part before `.service-now.com`, e.g. `dev12345`. WAIT.
@@ -95,32 +111,40 @@ Then run, with no credentials:
 401 means the instance is awake and REST answers. Anything else (200, 302, a timeout) usually
 means the PDI is asleep: tell me to wake it from developer.servicenow.com, then run it again.
 
-STEP 2 — Two integration users (I do this in the browser).
-Give me these steps to follow:
+STEP 2 — The integration user (I do this in the browser).
+Ask me whether I want the optional MCP roles, the optional AI roles, both or neither. WAIT.
+Then give me these steps to follow:
   In the PDI as admin: All > User Administration > Users > New.
-  User 1: User ID `claude.ro`, First name `Claude`, Last name `Read only`.
+  User ID `claude.integration`, First name `Claude`, Last name `Integration`.
     If the form has an Identity type field, set it to Machine (that ticks Web service access
     only for you). Otherwise tick Web service access only. Submit.
     Reopen the record and use Set Password to give it a long random password. Copy it somewhere
     temporary, never into this chat.
-    In the Roles related list, select Edit, add `itil` and `snc_read_only`, and save.
-  User 2: User ID `claude.rw`, First name `Claude`, Last name `Writer`. Same steps, but the only
-    role is `itil`.
-  If `snc_read_only` isn't offered in the role list, the Read-Only User Role plugin
-  (com.snc.read_only.role) isn't active. Activate it from All > System Applications > All
-  Available Applications > All, then add the role.
-WAIT until I say both users exist.
+    In the Roles related list, select Edit and add these core roles:
+      admin, itil_admin, asset, discovery_admin, snc_internal, acc_admin_for_global,
+      agent_client_collector_admin, mid_server, cmdb_inst_admin
+    plus, if I chose them,
+      MCP: sn_mcp_server.admin, sn_mcp_server.tools_admin, sn_mcp_client.admin,
+           sn_mcp_client.viewer, sn_mcp_registry.mcp_registry_read,
+           sn_mcp_registry.mcp_registry_write, sn_fd_genai.mcp_fd_admin,
+           sn_sm_gen_ai.sm_mcp_admin
+      AI:  ai_agent_resource_admin, ai_native_experience_analytics_admin, ai_security_admin,
+           ai_user_admin
+    and save.
+  If a role isn't offered in the list, the app that provides it isn't installed on my PDI. Tell
+  me which ones were missing so I can install that app or skip the role, and carry on.
+  If saving the admin role is refused, tell me to elevate to the security_admin role in the
+  browser and try again.
+WAIT until I say the user exists with its roles.
 
-STEP 3 — Store the passwords in the macOS Keychain (I do this in a separate Terminal window).
-Tell me to open a NEW Terminal window, not this chat, and run these two commands. Each one asks
-for the password without showing it:
-  security add-generic-password -a claude.ro -s servicenow-pdi-<name> -w
-  security add-generic-password -a claude.rw -s servicenow-pdi-<name> -w
-If one says the item already exists, add -U to the command and run it again to replace it.
-Tell me to clear the temporary copy of the passwords afterwards.
-WAIT. Then confirm both items exist without reading the passwords:
-  security find-generic-password -a claude.ro -s servicenow-pdi-<name> >/dev/null && echo "claude.ro found"
-  security find-generic-password -a claude.rw -s servicenow-pdi-<name> >/dev/null && echo "claude.rw found"
+STEP 3 — Store the password in the macOS Keychain (I do this in a separate Terminal window).
+Tell me to open a NEW Terminal window, not this chat, and run this command. It asks for the
+password without showing it:
+  security add-generic-password -a claude.integration -s servicenow-pdi-<name> -w
+If it says the item already exists, add -U to the command and run it again to replace it.
+Tell me to clear the temporary copy of the password afterwards.
+WAIT. Then confirm the item exists without reading the password:
+  security find-generic-password -a claude.integration -s servicenow-pdi-<name> >/dev/null && echo "claude.integration found"
 
 STEP 4 — Write the helper files.
 Create ~/pdi-claude/ if it doesn't exist and write the two files below exactly as given. The
@@ -199,12 +223,11 @@ File 2: ~/pdi-claude/pdi-curl.sh
 ```bash
 # Claude Code helper for a ServiceNow PDI: REST Table API over Basic Auth.
 #   source ~/pdi-claude/pdi-curl.sh
-#   pdi_ro '/api/now/table/incident?sysparm_limit=5'
+#   pdi '/api/now/table/incident?sysparm_limit=5'
 #   echo '{"short_description":"x"}' | pdi_write POST /api/now/table/incident
 #   pdi_write DELETE /api/now/table/incident/<sys_id>
 PDI_INSTANCE="<your-instance>"
-PDI_RO_USER="claude.ro"
-PDI_RW_USER="claude.rw"
+PDI_USER="claude.integration"
 PDI_KC_SERVICE="servicenow-pdi-${PDI_INSTANCE}"
 PDI_DIR="$HOME/pdi-claude"
 
@@ -225,13 +248,13 @@ _pdi_call() {
     "https://${PDI_INSTANCE}.service-now.com${path}" | /usr/bin/python3 "$PDI_DIR/pdi-redact.py"
 }
 
-# Reads: the claude.ro account holds snc_read_only, so the platform refuses its writes.
-pdi_ro() { _pdi_call "$PDI_RO_USER" GET "$1"; }
+# Reads.
+pdi() { _pdi_call "$PDI_USER" GET "$1"; }
 
-# Writes: separate account. Claude runs this only after you approve the exact call.
+# Writes. Claude runs this only after you approve the exact call.
 pdi_write() {
   case "$1" in
-    POST|PUT|PATCH|DELETE) _pdi_call "$PDI_RW_USER" "$1" "$2" ;;
+    POST|PUT|PATCH|DELETE) _pdi_call "$PDI_USER" "$1" "$2" ;;
     *) echo "pdi_write: method must be POST, PUT, PATCH or DELETE" >&2; return 2 ;;
   esac
 }
@@ -241,34 +264,48 @@ accept, then try again.
 
 STEP 5 — Prove it works. Run each test and show me the output. Every call prints `HTTP <code>`.
 5a. Read (no approval needed):
-  source ~/pdi-claude/pdi-curl.sh && pdi_ro '/api/now/table/incident?sysparm_limit=1&sysparm_fields=number,short_description'
+  source ~/pdi-claude/pdi-curl.sh && pdi '/api/now/table/incident?sysparm_limit=1&sysparm_fields=number,short_description'
   Expect HTTP 200. An empty `{"result": []}` still counts as success.
-5b. Read-only rail. Ask me first, then try a write as claude.ro. It must be refused:
-  source ~/pdi-claude/pdi-curl.sh && echo '{"short_description":"Claude read-only test - should be refused"}' | _pdi_call "$PDI_RO_USER" POST /api/now/table/incident
-  Expect HTTP 403. If it returns 201 instead, the rail is NOT working: stop, tell me, and (with
-  my yes) delete the record it created using pdi_write DELETE.
+5b. Roles. List the roles given directly to the integration user:
+  source ~/pdi-claude/pdi-curl.sh && pdi '/api/now/table/sys_user_has_role?sysparm_query=user.user_name%3Dclaude.integration%5Einherited%3Dfalse&sysparm_fields=role.name&sysparm_limit=100'
+  Expect HTTP 200. Compare the list against the roles from Step 2 and tell me any that are
+  missing.
 5c. Write path. Ask me first, then create a test incident with pdi_write POST, show me its
   number and sys_id, and delete it again with pdi_write DELETE (expect HTTP 204).
-A 401 on any test means the Keychain password doesn't match the one set on the instance: have me
-redo Step 3 with -U for that account.
+A 401 on any test means the Keychain password doesn't match the one set on the instance, or the
+account is locked out: have me check the user record and redo Step 3 with -U.
 
 STEP 6 — Keep the rules for future sessions.
 Show me this text and ask whether to add it to ~/.claude/CLAUDE.md. WAIT for my yes:
   ## ServiceNow PDI access
-  - Instance: <name>.service-now.com. Calls go through `source ~/pdi-claude/pdi-curl.sh`, then
-    `pdi_ro <path>` for reads and `pdi_write <METHOD> <path>` (JSON body on stdin) for writes.
-  - Never hand-build a curl to the instance, and never read a password from the Keychain directly.
-  - Never paste or print a password, token or key in chat.
+  - Instance: <name>.service-now.com, integration user `claude.integration` (admin,
+    web-service-only).
+  - Before any action on the instance, read ~/pdi-claude/pdi_runbook.md: search it for the
+    section you need rather than reading it all. When you verify a new fact about the instance,
+    add it to the runbook with the date.
+  - All REST calls: `source ~/pdi-claude/pdi-curl.sh`, then `pdi <path>` for reads and
+    `pdi_write <METHOD> <path>` (JSON body on stdin) for writes. Never hand-build a curl to the
+    instance; it skips the redaction filter.
+  - Never read a password from the Keychain directly, and never paste or print a password, token
+    or key in chat. If one appears, stop and tell me which password to change.
   - Before any pdi_write, show me the method, path and body and wait for my yes.
+  - A 200 on a write means the row changed, not that the platform acted on it. Check for a
+    draft/publish workflow or a business rule before calling a change done.
 
-STEP 7 — Report.
-Summarise what now exists: the two users and their roles, the two files, the two Keychain items,
-and whether CLAUDE.md was changed. Then tell me how to remove everything:
-  1. In the PDI: All > User Administration > Users, open claude.ro and claude.rw, and clear
-     Active (or delete the records).
+STEP 7 — Start the runbook.
+Download the runbook template:
+  curl -fsSL https://raw.githubusercontent.com/jwservicenow/claude-toolkit/main/docs/pdi-starter-kit/pdi_runbook_template.md -o ~/pdi-claude/pdi_runbook.md
+Fill in section 1.1 (Access) from this session: instance name, integration user, Keychain
+service name, helper path, the direct roles from Step 5b, and today's date as the verified date.
+Leave every other placeholder as it is. Show me the filled section.
+
+STEP 8 — Report.
+Summarise what now exists: the user and its roles, the three files, the Keychain item, and
+whether CLAUDE.md was changed. Then tell me how to remove everything:
+  1. In the PDI: All > User Administration > Users, open claude.integration, and clear Active
+     (or delete the record).
   2. In Terminal:
-       security delete-generic-password -a claude.ro -s servicenow-pdi-<name>
-       security delete-generic-password -a claude.rw -s servicenow-pdi-<name>
+       security delete-generic-password -a claude.integration -s servicenow-pdi-<name>
   3. Delete the ~/pdi-claude folder, and the "ServiceNow PDI access" section from
      ~/.claude/CLAUDE.md if it was added.
 ~~~~
@@ -278,31 +315,36 @@ and whether CLAUDE.md was changed. Then tell me how to remove everything:
 ## Everyday use
 
 Ask Claude in plain words: *"List the 10 newest incidents"*, *"Which CIs in cmdb_ci_server have
-no serial number?"*, *"Set the short description of INC0010001 to …"*. Claude reads with
-`pdi_ro` straight away and asks before any `pdi_write`.
+no serial number?"*, *"Set the short description of INC0010001 to …"*. Claude reads with `pdi`
+straight away and asks before any `pdi_write`.
 
 When Claude Code asks permission to run a command, approve `pdi_write` calls one at a time.
 Don't choose the option that stops it asking for those.
 
+**Where REST inserts land:** a record created over REST goes into the integration user's current
+application scope, even when the request body names a different `sys_scope`. Check the user's
+`apps.current_app` preference (`sys_user_preference`) before creating records in a scoped app.
+Seen on the reference PDI, 2026-10-06.
+
 ## What the safety rails are
+
+The integration user is admin, so it can change anything on the instance, security settings
+included. These rails are what keep that under your control:
 
 | Rail | What it stops |
 |---|---|
-| `claude.ro` holds `snc_read_only` | The platform blocks creating, updating and deleting on any table for that account, whatever Claude sends. Step 5b proves it on your instance |
-| Separate `claude.rw` account | Writes are a different identity, easy to spot in the audit history and easy to switch off (deactivate the user) |
-| Web service access only on both | Neither account can log in to the UI or a portal |
-| No `admin` on either | A wrong write can only touch what `itil` allows |
-| Keychain, read per call | No password in a file, a command line, shell history or the chat |
-| Redaction filter on every response | Password-type fields an account can read come back as `<REDACTED>` |
 | Claude asks before every write | You see method, path and body before anything changes |
+| Redaction filter on every response | An admin reads password-type fields in clear text; the filter turns them into `<REDACTED>` before they reach the chat |
+| Keychain, read per call | No password in a file, a command line, shell history or the chat |
+| Web service access only | The account can't log in to the UI or a portal |
+| One named integration user | Every change shows as `claude.integration` in the audit history; clearing **Active** on that user cuts Claude off at once |
 
 ## Troubleshooting
 
 - **`HTTP 401`**: the Keychain password and the instance password don't match, or the account
   is locked out after failed attempts. Reset the password on the user record, then re-run the
   Step 3 command with `-U`. Check that the user's **Locked out** box is clear.
-- **`HTTP 403` on a read**: the account's roles don't cover that table. Add the role that
-  table needs (not `admin`) to `claude.ro`.
+- **`HTTP 403`**: a role is missing for that table or API. Re-run Step 5b and compare.
 - **HTML instead of JSON, or a timeout**: the PDI is probably asleep. Wake it from
   developer.servicenow.com.
 - **`pdi: no keychain item`**: the Keychain item's account or service name doesn't match
@@ -310,12 +352,11 @@ Don't choose the option that stops it asking for those.
 
 ## Removing it
 
-1. In the PDI: open each of `claude.ro` and `claude.rw` (All → User Administration → Users) and
-   clear **Active**, or delete the records.
+1. In the PDI: open `claude.integration` (All → User Administration → Users) and clear
+   **Active**, or delete the record.
 2. On the Mac:
    ```bash
-   security delete-generic-password -a claude.ro -s servicenow-pdi-<your-instance>
-   security delete-generic-password -a claude.rw -s servicenow-pdi-<your-instance>
+   security delete-generic-password -a claude.integration -s servicenow-pdi-<your-instance>
    ```
 3. Delete the `~/pdi-claude` folder, and the "ServiceNow PDI access" section from
    `~/.claude/CLAUDE.md` if you added it.
@@ -326,9 +367,8 @@ Don't choose the option that stops it asking for those.
   Web service access only, Identity type, Set Password. Australia, updated 2026-03-12.
 - [Non-interactive sessions](https://www.servicenow.com/docs/r/australia/platform-administration/user-administration/c_NonInteractiveSessions.html):
   non-interactive users can only authenticate API connections. Australia, updated 2026-03-12.
-- [Read-only role](https://www.servicenow.com/docs/r/australia/platform-administration/user-administration/c_ReadOnlyRole.html):
-  `snc_read_only` blocks insert, update and delete on any table; the `com.snc.read_only.role`
-  plugin. Australia, updated 2026-03-12.
+- Role names: read from a working admin integration user on the reference PDI (Australia),
+  2026-10-07.
 - [Claude Code setup](https://code.claude.com/docs/en/setup): installer, requirements, sign-in.
   Read 2026-10-07.
 - macOS `security` man page: `-w` placed last prompts for the password instead of taking it on

@@ -15,15 +15,17 @@ by the same person.
 > what the working setup looks like today. The click-paths and button names in Part 2 date from
 > June 2026 and have not been re-walked since — confirm them on screen.
 
+Part of the [PDI starter kit](README.md) — optional.
+
 **How this compares to the [REST Basic Auth guide](pdi_rest_basic_auth_guide.md):**
 
 | | REST guide (Table API, Basic Auth) | This guide (native MCP) |
 |---|---|---|
 | Something to install on your laptop? | Two small files Claude writes from the guide | No — runs inside ServiceNow |
 | Credentials stored where? | macOS Keychain only | macOS Keychain only |
-| How it logs in | Basic Auth as two integration users: one read-only, one for approved writes | You approve in a browser; the OAuth client secret is kept in the macOS Keychain |
-| Actions recorded as | The two integration accounts | Your own ServiceNow login |
-| Tools available | Any table the accounts' roles can read, through the Table API | 36 purpose-built tools across five servers (CMDB, ITSM, ITOM and two general ones) |
+| How it logs in | Basic Auth as one admin integration user; Claude asks before every write | You approve in a browser; the OAuth client secret is kept in the macOS Keychain |
+| Actions recorded as | The integration user | Your own ServiceNow login |
+| Tools available | Any table, through the Table API | 36 purpose-built tools across five servers (CMDB, ITSM, ITOM and two general ones) |
 | Instance requirement | Any release | Australia / Zurich Patch 9+ with Now Assist |
 
 **How long it takes:** 15–25 minutes if the ServiceNow apps are already installed. Add 20–30

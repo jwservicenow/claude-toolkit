@@ -17,8 +17,7 @@ Everything here works inside **Claude Code** (the command-line app). Some tools 
 | [/token-audit](#token-audit) | Checks your Claude Code accounts for token waste — oversized `CLAUDE.md` files, MCP server bloat, undocumented `settings.json` keys, dead hooks, and actual cache/token usage totals per account |
 | [RAG demo walkthrough](https://jwservicenow.github.io/claude-toolkit/docs/servicenow-rag-demo-walkthrough-2026-08-08.html) | Annotated end-to-end run of `/servicenow_rag` against a real question — what it fetches, in what order, and why |
 | [Mirror retrieval testing](docs/mirror-testing/) | Test artifacts and mirror-side recommendations from evaluating the ServiceNow docs mirror as an AI retrieval source, plus the [model × thinking-effort benchmark](https://jwservicenow.github.io/claude-toolkit/docs/mirror-testing/model-thinking-sweep-writeup-2026-08-09.html) behind the model guidance |
-| [PDI integration - native MCP install](docs/pdi_native_mcp_install_guide.md) | Connect Claude Code to ServiceNow using the platform's ootb MCP — no scripts needed, browser-approved OAuth with the client secret kept in the macOS Keychain, 36 purpose-built tools across five servers |
-| [PDI integration - REST Basic Auth](#connect-claude-code-to-pdi-rest-table-api-with-basic-auth) | Give Claude read and write access to any PDI table via the REST Table API — one paste-in prompt, Keychain-stored passwords, a read account the platform won't let write, and your approval before every write |
+| [PDI starter kit](#pdi-starter-kit) | Give Claude Code admin access to your ServiceNow PDI — one paste-in prompt, a Keychain-stored password, a redaction filter on every response, your approval before every write, a CLAUDE.md snippet and a runbook template. Optional: native MCP servers and Table API over OAuth |
 | [Status bar](#status-bar-customization) | Show model, context size, usage bar, and session cost at the bottom of Claude Code session UI |
 | [Using Multiple Claude Subscriptions on Mac](docs/dual-subscription-setup.md) | Run ServiceNow's Enterprise account and your personal Claude account on the same Mac without them mixing — separate configs, separate sessions |
 | [SSH Agent Key Management for Claude Homelab Access](docs/ssh-agent-homelab.md) | Load a passphrase-protected SSH key into the macOS agent for a configurable window (default 2h) so Claude can reach your lab hosts — and access expires automatically when you're done |
@@ -245,23 +244,16 @@ Restart Claude Code. Then type `/token-audit`.
 
 ---
 
-### `Connect Claude Code to PDI: Native MCP install guide`
+### `PDI starter kit`
 
-Connects Claude Code to your ServiceNow instance using the platform's own built-in connector. No local Python script, no clear text passwords — credentials stay in your macOS Keychain. Gives you 36 purpose-built tools across five servers for CMDB, ITSM, and ITOM work.
+Gives Claude Code admin access to your ServiceNow PDI through the REST Table API, the way it's used day to day on the reference PDI. You paste one prompt into Claude Code. It walks you through creating one admin integration user, `claude.integration`, and storing its password in the macOS Keychain, then writes and tests a small helper, adds standing rules to your `CLAUDE.md`, and starts a runbook for your instance. Every response passes through a redaction filter, and Claude asks you before every write. Works on any release.
 
-**Requires:** ServiceNow Australia release (Zurich Patch 9+) with Now Assist. If your instance doesn't meet that, use the [REST Basic Auth guide](docs/pdi_rest_basic_auth_guide.md) instead.
-
-[Open the guide](docs/pdi_native_mcp_install_guide.md)
-
----
-
-### `Connect Claude Code to PDI: REST Table API with Basic Auth`
-
-Gives Claude Code read and write access to any table on your PDI through the REST Table API. You paste one prompt into Claude Code. It walks you through creating two integration users and storing their passwords in the macOS Keychain, then writes and tests a small helper. Reads use an account holding `snc_read_only`, so the platform refuses its writes. Writes go through a second account, and Claude asks you before each one. Works on any release, and pairs with the native MCP guide for anything its tools don't cover.
+- **Core:** [REST Basic Auth guide](docs/pdi-starter-kit/pdi_rest_basic_auth_guide.md), [CLAUDE.md snippet](docs/pdi-starter-kit/claude_md_snippet.md), [runbook template](docs/pdi-starter-kit/pdi_runbook_template.md)
+- **Optional:** [native MCP servers](docs/pdi-starter-kit/pdi_native_mcp_install_guide.md) (Australia / Zurich Patch 9+ with Now Assist; 36 purpose-built tools across five servers), [Table API over OAuth](docs/pdi-starter-kit/optional_oauth_table_api.md)
 
 **Requires:** a Mac, a PDI where you have `admin`, and a Claude Pro, Max, Team or Enterprise plan.
 
-[Open the guide](docs/pdi_rest_basic_auth_guide.md)
+[Open the kit](docs/pdi-starter-kit/README.md)
 
 ---
 
