@@ -2,72 +2,13 @@
 
 Part of the [PDI starter kit](README.md).
 
-**What you'll end up with:** Claude Code reading and writing your ServiceNow personal developer
-instance (PDI) through the REST Table API. It signs in as one admin integration user. Claude asks
-you before every write. The password lives in the macOS Keychain, never in a file, a command line
-or the chat.
-
-**How you set it up:** install Claude Code (Part 1), then paste one prompt into it (Part 2).
-The prompt walks you through the few browser steps only you can do, then writes and tests a
-small helper. About 20 minutes.
-
-**You need:** a Mac, a PDI where you have the `admin` role, and a Claude Pro, Max, Team or
-Enterprise plan (the free plan doesn't include Claude Code).
-
----
-
-# Part 1 — Install Claude Code
-
-Skip this part if `claude --version` already prints a version number in a terminal.
-
-1. Open **Terminal** (Applications → Utilities).
-2. Run Anthropic's installer:
-   ```bash
-   curl -fsSL https://claude.ai/install.sh | bash
-   ```
-   If you use Homebrew, `brew install --cask claude-code` works too. Homebrew installs don't
-   update themselves; run `brew upgrade claude-code` now and then.
-3. Open a **new** Terminal window and run `claude --version`. A version number means it worked.
-   If you get `command not found`, follow
-   [Fix your PATH](https://code.claude.com/docs/en/troubleshoot-install#command-not-found-claude-after-installation).
-4. Run `claude` and follow the browser prompts to sign in with your Claude account.
-
-Requires macOS 13 or later. Full details:
-[Claude Code setup](https://code.claude.com/docs/en/setup).
-
----
-
-# Part 2 — Run the setup prompt
-
-1. In Terminal, make a working folder and start Claude Code there:
-   ```bash
-   mkdir -p ~/pdi-claude && cd ~/pdi-claude && claude
-   ```
-2. Copy [**The Prompt**](#the-prompt) below, all of it, and paste it into Claude Code.
-3. Follow along. Claude stops and waits for you at each step marked **WAIT**.
-   Keep your PDI open in a browser and logged in as admin.
-
-What Claude will create:
-
-- **On your instance:** one user, `claude.integration`, web-service-only (it can't log in to the
-  UI), holding the roles below. No other changes.
-- **On your Mac:** `~/pdi-claude/pdi-curl.sh`, `~/pdi-claude/pdi-redact.py`,
-  `~/pdi-claude/pdi_runbook.md`, one Keychain item, and (if you agree) a short rules section in
-  `~/.claude/CLAUDE.md`.
-
-**Roles for `claude.integration`:**
-
-| | Roles |
-|---|---|
-| Core (always) | `admin`, `itil_admin`, `asset`, `discovery_admin`, `snc_internal` (if offered), `acc_admin_for_global`, `agent_client_collector_admin`, `mid_server`, `cmdb_inst_admin` |
-| Optional — MCP | `sn_mcp_server.admin`, `sn_mcp_server.tools_admin`, `sn_mcp_client.admin`, `sn_mcp_client.viewer`, `sn_mcp_registry.mcp_registry_read`, `sn_mcp_registry.mcp_registry_write`, `sn_fd_genai.mcp_fd_admin`, `sn_sm_gen_ai.sm_mcp_admin` |
-| Optional — AI | `ai_agent_resource_admin`, `ai_native_experience_analytics_admin`, `ai_security_admin`, `ai_user_admin` |
-
-Add the optional roles only if you'll use Claude for MCP or AI agent work on the instance.
+**Start with the [three setup steps in the README](README.md#setup).** Step 3 sends you here
+for The Prompt. Everything below it is reference.
 
 ## The Prompt
 
-Copy everything in this block. GitHub shows a copy button at its top right.
+Copy everything in this block (GitHub shows a copy button at its top right) and paste it into
+Claude Code. Claude stops and waits for you at each step marked **WAIT**.
 
 ~~~~text
 Set up access from Claude Code to my ServiceNow personal developer instance (PDI) over the REST
@@ -298,6 +239,26 @@ whether CLAUDE.md was changed. Then tell me how to remove everything:
 
 ---
 
+## What The Prompt creates
+
+- **On your instance:** one user, `claude.integration`, web-service-only (it can't log in to the
+  UI), holding the roles below. No other changes.
+- **On your Mac:** `~/pdi-claude/pdi-curl.sh`, `~/pdi-claude/pdi-redact.py`,
+  `~/pdi-claude/pdi_runbook.md`, one Keychain item, and (if you agree) a short rules section in
+  `~/.claude/CLAUDE.md`.
+
+**Roles for `claude.integration`:**
+
+| | Roles |
+|---|---|
+| Core (always) | `admin`, `itil_admin`, `asset`, `discovery_admin`, `snc_internal` (if offered), `acc_admin_for_global`, `agent_client_collector_admin`, `mid_server`, `cmdb_inst_admin` |
+| Optional — MCP | `sn_mcp_server.admin`, `sn_mcp_server.tools_admin`, `sn_mcp_client.admin`, `sn_mcp_client.viewer`, `sn_mcp_registry.mcp_registry_read`, `sn_mcp_registry.mcp_registry_write`, `sn_fd_genai.mcp_fd_admin`, `sn_sm_gen_ai.sm_mcp_admin` |
+| Optional — AI | `ai_agent_resource_admin`, `ai_native_experience_analytics_admin`, `ai_security_admin`, `ai_user_admin` |
+
+Add the optional roles only if you'll use Claude for MCP or AI agent work on the instance.
+
+---
+
 ## Everyday use
 
 Ask Claude in plain words: *"List the 10 newest incidents"*, *"Which CIs in cmdb_ci_server have
@@ -329,6 +290,11 @@ included. These rails are what keep that under your control:
 
 ## Troubleshooting
 
+- **`claude: command not found` after installing**: open a new Terminal window. If it's still
+  missing, follow
+  [Fix your PATH](https://code.claude.com/docs/en/troubleshoot-install#command-not-found-claude-after-installation).
+  Claude Code needs macOS 13 or later; `brew install --cask claude-code` is an alternative
+  installer. Full details: [Claude Code setup](https://code.claude.com/docs/en/setup).
 - **`HTTP 401`**: the Keychain password and the instance password don't match, or the account
   is locked out after failed attempts. Reset the password on the user record, then re-run the
   Step 3 command with `-U`. Check that the user's **Locked out** box is clear.

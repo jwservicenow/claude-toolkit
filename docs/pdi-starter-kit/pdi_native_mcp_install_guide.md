@@ -56,11 +56,10 @@ these requirements, the [REST Basic Auth guide](pdi_rest_basic_auth_guide.md) wo
 If you already have Claude Code installed and `claude --version` prints a version number in a
 terminal, skip to Part 2.
 
-Otherwise, follow **Part 1** of the [REST Basic Auth guide](pdi_rest_basic_auth_guide.md#part-1--install-claude-code).
-It covers the plan you need, installing Claude Code and signing in. The installation is the same
-for both guides.
+Otherwise, do steps 1 and 2 of [Setup in the README](README.md#setup): install Claude Code, then
+run `claude` and sign in. The installation is the same for both guides.
 
-Return here after completing that Part 1.
+Return here once `claude --version` prints a version number.
 
 ---
 
