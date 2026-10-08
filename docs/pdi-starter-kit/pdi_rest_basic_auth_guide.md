@@ -321,10 +321,12 @@ straight away and asks before any `pdi_write`.
 When Claude Code asks permission to run a command, approve `pdi_write` calls one at a time.
 Don't choose the option that stops it asking for those.
 
-**Where REST inserts land:** a record created over REST goes into the integration user's current
-application scope, even when the request body names a different `sys_scope`. Check the user's
-`apps.current_app` preference (`sys_user_preference`) before creating records in a scoped app.
-Seen on the reference PDI, 2026-10-06.
+**Where REST inserts land:** a config record created over REST goes into the integration user's
+current application scope, even when the request body names a different `sys_scope`. Keep that
+scope on **Global**, the default. To create a record in a scoped app, switch the user's
+`apps.current_app` preference (`sys_user_preference`) to that app, do the write, and switch it
+back to Global. Seen on the reference PDI, 2026-10-06; a scope left on a scoped app stranded
+config records there (2026-10-07).
 
 ## What the safety rails are
 

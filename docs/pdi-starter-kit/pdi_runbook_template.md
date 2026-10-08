@@ -59,10 +59,10 @@ echo '{"field":"value"}' | pdi_write PATCH /api/now/table/<table>/<sys_id>      
 
 ## 2. Scope, update sets, check-in
 
-- `claude.integration`'s current application scope: `<scope>` (`sys_user_preference`
-  `name=apps.current_app`). Verified `<date>`.
+- `claude.integration`'s current application scope: Global, the default — keep it there
+  (`sys_user_preference` `name=apps.current_app`). Verified `<date>`.
 - A REST insert lands in that scope, even when the body names another `sys_scope`. To create a
-  record in another scope, switch the preference first and switch it back after.
+  record in a scoped app, switch the preference to it first and back to Global after.
 - Update sets: `<which update set REST changes land in, if you track them>`.
 
 ---
