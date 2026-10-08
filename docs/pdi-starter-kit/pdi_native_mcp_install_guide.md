@@ -470,7 +470,7 @@ Server Console.
 |---|---|
 | Look up an incident | "Get details on incident INC0012345" |
 | Find similar past incidents | "Are there any past incidents similar to this one about database timeouts?" |
-| Find a user | "Look up Jim Wells in ServiceNow — what's his user ID?" |
+| Find a user | "Look up Abel Tuter in ServiceNow — what's his user ID?" |
 | Find who handles a queue | "Which assignment group handles Windows server alerts?" |
 | Update an incident | "Set INC0012345 to In Progress and assign it to the Linux team" |
 

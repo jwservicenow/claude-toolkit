@@ -40,6 +40,7 @@ Enterprise plan.
 
 ## Status — 2026-10-07
 
-The helper was tested in bash and zsh against a local stub server and against the reference PDI
-(Australia). The paste-in prompt has not yet been run end to end on a fresh PDI. Each guide's
-status note says exactly what was and wasn't tested.
+The paste-in prompt was run end to end on a second Australia PDI in a fresh Claude Code session,
+and every step passed. The helper was also tested in bash and zsh against a local stub server and
+against the reference PDI (Australia). Each guide's status note says exactly what was and wasn't
+tested.
