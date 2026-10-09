@@ -1,5 +1,8 @@
 # Connecting Claude Code to your PDI — Platform-Native MCP Path
 
+**To set this up, paste [SETUP_2_NATIVE_MCP.md](SETUP_2_NATIVE_MCP.md) into Claude Code.** This guide is
+the reference behind it.
+
 **What you'll end up with:** Claude Code connected to your ServiceNow instance using the
 platform's own built-in connector — no Python script on your laptop, no passwords in plain-text
 files. You can search the CMDB, manage incidents and investigate alerts by typing in plain English.
@@ -9,15 +12,17 @@ files. You can search the CMDB, manage incidents and investigate alerts by typin
 side (Part 2), and the Claude Code user wires up their machine (Part 3). Both steps can be done
 by the same person.
 
-> **Status — 2026-10-06.** The OAuth client settings, server list, URLs and tool counts in this
+> **Status — 2026-10-09.** The paste-in prompt, [SETUP_2_NATIVE_MCP.md](SETUP_2_NATIVE_MCP.md),
+> was run once on 2026-10-09; its status line says what passed. The notes below are from
+> 2026-10-06. The OAuth client settings, server list, URLs and tool counts in this
 > guide were re-read from a live Australia-release instance on 2026-10-06. Earlier versions
 > described a public PKCE client with no secret, and three servers with 17 tools; that is not
 > what the working setup looks like today. The click-paths and button names in Part 2 date from
 > June 2026 and have not been re-walked since — confirm them on screen.
 
-Part of the [PDI starter kit](README.md) — optional.
+Part of the [PDI starter kit](README.md).
 
-**How this compares to the [REST Basic Auth guide](pdi_rest_basic_auth_guide.md):**
+**How this compares to the [Claude REST (with admin) guide](claude_rest_admin_guide.md):**
 
 | | REST guide (Table API, Basic Auth) | This guide (native MCP) |
 |---|---|---|
@@ -26,14 +31,16 @@ Part of the [PDI starter kit](README.md) — optional.
 | How it logs in | Basic Auth as one admin integration user; Claude asks before every write | You approve in a browser; the OAuth client secret is kept in the macOS Keychain |
 | Actions recorded as | The integration user | Your own ServiceNow login |
 | Tools available | Any table, through the Table API | 36 purpose-built tools across five servers (CMDB, ITSM, ITOM and two general ones) |
-| Instance requirement | Any release | Australia / Zurich Patch 9+ with Now Assist |
+| Instance requirement | Any release | Zurich or Australia, with a Now Assist application active |
 
 **How long it takes:** 15–25 minutes if the ServiceNow apps are already installed. Add 20–30
 minutes if a ServiceNow admin needs to install them first.
 
-**Platform requirement:** ServiceNow Australia release (Zurich Patch 9 or newer). The tool
-suites below are edition-gated — see Part 2, Step 1 for details. If your instance doesn't meet
-these requirements, the [REST Basic Auth guide](pdi_rest_basic_auth_guide.md) works on any release.
+**Platform requirement:** Zurich or Australia, with a Now Assist application active; MCP Server
+Console comes with Now Assist activation, and its patch compatibility is on the Store listing
+([release notes][rn-mcp]). This guide was verified on Australia only. The tool suites below are
+edition-gated — see Part 2, Step 1 for details. If your instance doesn't meet these requirements,
+the [Claude REST (with admin) guide](claude_rest_admin_guide.md) works on any release.
 
 ---
 
@@ -43,7 +50,7 @@ these requirements, the [REST Basic Auth guide](pdi_rest_basic_auth_guide.md) wo
 |---|---|
 | A Claude account with a paid plan | Part 1 |
 | Claude Code installed and signed in | Part 1 |
-| A ServiceNow instance on Australia / Zurich Patch 9+ | Your ServiceNow admin |
+| A ServiceNow instance on Zurich or Australia, with Now Assist | Your ServiceNow admin |
 | MCP Server apps installed on the instance | Part 2, Step 1 |
 | An OAuth client created on the instance | Part 2, Step 3 |
 | The client ID (32 characters) and client secret from that OAuth record | Part 2, Step 3 |
@@ -56,8 +63,8 @@ these requirements, the [REST Basic Auth guide](pdi_rest_basic_auth_guide.md) wo
 If you already have Claude Code installed and `claude --version` prints a version number in a
 terminal, skip to Part 2.
 
-Otherwise, do steps 1 and 2 of [Setup in the README](README.md#setup): install Claude Code, then
-run `claude` and sign in. The installation is the same for both guides.
+Otherwise, do steps 1 and 2 of the [kit README](README.md): install Claude Code, then start it in
+`~/pdi-claude` and sign in. The installation is the same for both setups.
 
 Return here once `claude --version` prints a version number.
 
@@ -282,8 +289,10 @@ channel, not chat or email.
 
 ## Step 5 — Add the MCP Servers
 
-Open a terminal. Run one command per server, replacing `YOUR-CLIENT-ID` and `YOUR-INSTANCE` with
-your actual values. Each command stops and prompts for the client secret — paste it at the prompt.
+Open a terminal in the folder you start Claude Code from (the kit uses `~/pdi-claude`): the
+default scope, `local`, saves a server for that folder only. Run one command per server,
+replacing `YOUR-CLIENT-ID` and `YOUR-INSTANCE` with your actual values. Each command stops and
+prompts for the client secret — paste it at the prompt.
 
 ```bash
 claude mcp add --transport http \
@@ -469,7 +478,7 @@ Server Console.
 |---|---|
 | Look up an incident | "Get details on incident INC0012345" |
 | Find similar past incidents | "Are there any past incidents similar to this one about database timeouts?" |
-| Find a user | "Look up Abel Tuter in ServiceNow — what's his user ID?" |
+| Find a user | "Look up the user named <name> in ServiceNow — what's their user ID?" |
 | Find who handles a queue | "Which assignment group handles Windows server alerts?" |
 | Update an incident | "Set INC0012345 to In Progress and assign it to the Linux team" |
 
@@ -565,9 +574,7 @@ with `claude mcp add` as in Step 5 — have the client secret to hand. The OAuth
 | Component | What it is | Why you need it |
 |---|---|---|
 | Claude account | Your subscription at claude.ai | Required to use Claude Code |
-| VS Code | The editor Claude Code lives inside | |
-| Node.js | The engine that runs Claude Code | |
-| Claude Code CLI | The core tool (`@anthropic-ai/claude-code`) | |
+| Claude Code | The command-line tool, installed in step 1 of the [kit README](README.md) | Runs Claude on your Mac and connects it to the servers |
 | MCP Server Console (`sn_mcp_server`) | The base MCP framework on your instance | Required by all domain apps; also supplies the two general-purpose servers (5 tools) |
 | CMDB MCP Server (`sn_cmdb_mcp_server`) | CMDB tool suite | Provides the 9 CMDB tools |
 | ITOM MCP Server (`sn_itom_mcp_server`) | ITOM tool suite | Provides the 9 alert/reliability tools |
@@ -581,6 +588,7 @@ data, the logic — is hosted on your instance.
 
 ## Sources
 
+- [Combined MCP Server Console release notes, Zurich to Australia][rn-mcp] — Activation information (updated 2026-09-24)
 - [ServiceNow MCP Client — official docs (Australia)][docs-mcp-client]
 - [MCP Reference — official docs (Australia)][docs-mcp-ref]
 - [Add an MCP server with OAuth 2.1 — official docs (Australia)][docs-mcp-oauth]
@@ -590,6 +598,7 @@ data, the logic — is hosted on your instance.
 - [Understanding OAuth refresh-token expiration patterns][oauth-patterns] (Community blog)
 - Live instance verification: the reference PDI, Australia release — OAuth client, registry rows, URLs, tool counts and one call per server on 2026-10-06; Part 2 click-paths on 2026-06-05
 
+[rn-mcp]: https://www.servicenow.com/docs/r/australia/delta-zurich-australia/australia-zurich-mcpserverconsole-release-notes.html
 [docs-mcp-client]: https://www.servicenow.com/docs/r/intelligent-experiences/install-mcp-client.html
 [docs-mcp-ref]: https://www.servicenow.com/docs/r/intelligent-experiences/mcp-reference.html
 [docs-mcp-oauth]: https://www.servicenow.com/docs/r/intelligent-experiences/add-an-oauth-2-1-mcp-server.html
@@ -598,3 +607,13 @@ data, the logic — is hosted on your instance.
 [faq]: https://www.servicenow.com/community/now-assist-articles/mcp-server-console-faq/ta-p/3550125
 [oauth-patterns]: https://www.servicenow.com/community/platform-privacy-security-blog/understanding-oauth-refresh-token-expiration-patterns-for/ba-p/3481290
 [kb2820840]: https://support.servicenow.com/kb?id=kb_article_view&sysparm_article=KB2820840
+
+---
+
+## Removing it
+
+Do this only when you want the setup gone. The Store apps can stay installed.
+
+1. In `~/pdi-claude`, run `claude mcp remove -s local <server>` for each `sn-*` server.
+2. In the PDI: All > System OAuth > Application Registry, open Claude Code and delete it.
+3. Delete the `## ServiceNow MCP servers` section from `~/pdi-claude/CLAUDE.md`.

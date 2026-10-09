@@ -246,10 +246,10 @@ Restart Claude Code. Then type `/token-audit`.
 
 ### `PDI starter kit`
 
-Gives Claude Code admin access to your ServiceNow PDI through the REST Table API, the way it's used day to day on the reference PDI. You paste one prompt into Claude Code. It walks you through creating one admin integration user, `claude.integration`, and storing its password in the macOS Keychain, then writes and tests a small helper, adds standing rules to your `CLAUDE.md`, and starts a runbook for your instance. Every response passes through a redaction filter, and Claude asks you before every write. Works on any release.
+Connects Claude Code to your ServiceNow PDI in two setups. **Setup 1, REST with admin** (required) reaches any table through the REST Table API as one admin integration user, `claude.integration`, with its password in the macOS Keychain, and works on any release. **Setup 2, native MCP** (optional, after Setup 1) uses the platform's own 36 MCP tools, signed in as you through the browser, and needs Zurich or Australia with Now Assist. Each setup is one prompt you paste into Claude Code. Claude asks before every change, and no password or secret goes in the chat.
 
-- **Core:** [REST Basic Auth guide](docs/pdi-starter-kit/pdi_rest_basic_auth_guide.md), [CLAUDE.md snippet](docs/pdi-starter-kit/claude_md_snippet.md), [runbook template](docs/pdi-starter-kit/pdi_runbook_template.md)
-- **Optional:** [native MCP servers](docs/pdi-starter-kit/pdi_native_mcp_install_guide.md) (Australia / Zurich Patch 9+ with Now Assist; 36 purpose-built tools across five servers), [Table API over OAuth](docs/pdi-starter-kit/optional_oauth_table_api.md)
+- **Prompts:** [Setup 1 — REST with admin](docs/pdi-starter-kit/SETUP_1_REST_ADMIN.md), [Setup 2 — native MCP](docs/pdi-starter-kit/SETUP_2_NATIVE_MCP.md)
+- **Reference:** [Claude REST (with admin) guide](docs/pdi-starter-kit/claude_rest_admin_guide.md), [native MCP guide](docs/pdi-starter-kit/pdi_native_mcp_install_guide.md), [CLAUDE.md snippet](docs/pdi-starter-kit/claude_md_snippet.md), [runbook template](docs/pdi-starter-kit/pdi_runbook_template.md)
 
 **Requires:** a Mac, a PDI where you have `admin`, and a Claude Pro, Max, Team or Enterprise plan.
 
