@@ -91,11 +91,12 @@ which uvx</code></pre>
       <pre><button class="copy-btn">Copy</button><code>"mcpServers": {
   "fetch": {
     "command": "/Users/YOU/.local/bin/uvx",
-    "args": ["--with", "mcp&lt;2.0.0", "mcp-server-fetch", "--ignore-robots-txt"]
+    "args": ["--with", "mcp&lt;2.0.0", "mcp-server-fetch", "--ignore-robots-txt", "--allow-private-ips"]
   }
 }</code></pre>
       <p class="desc" style="margin-top:10px">Replace the <code>command</code> path with your own <code>uvx</code> path. If the file already has an <code>mcpServers</code> block, merge <code>fetch</code> into it — don't duplicate the key.</p>
       <p class="desc">Quit Claude Desktop fully (⌘Q) and reopen. Confirm under Settings → Connectors.</p>
+      <div class="footnote"><span><b>If you set this up before Oct 13 2026:</b> add <code>--allow-private-ips</code> to the end of <code>args</code>. Since release 2026.10.10 the connector refuses any address that is not public, and Zscaler answers DNS with a <code>100.64.x.x</code> tunnel address, so every fetch fails with "Refused to fetch … not a public address". The flag also lets the connector reach localhost and other internal addresses.</span></div>
       <div class="footnote"><span><b>If you set this up before Aug 6 2026:</b> your config is missing the <code>--with mcp&lt;2.0.0</code> pin — add it to the front of <code>args</code> or the connector will fail dependency resolution. New setups already have it above.</span></div>
     </li>
 
