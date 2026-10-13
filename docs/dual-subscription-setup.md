@@ -158,7 +158,7 @@ CLAUDE_CONFIG_DIR=$HOME/.claude-personal /Users/YOUR_USERNAME/.local/bin/claude 
 
 **fetch** — allows Claude Code to fetch URLs and web content: `--allow-private-ips` is needed behind Zscaler, which answers DNS with a `100.64.x.x` tunnel address that mcp-server-fetch 2026.10.10 and later refuses by default; it also lets fetch reach localhost and other internal addresses.
 ```bash
-CLAUDE_CONFIG_DIR=$HOME/.claude-personal /Users/YOUR_USERNAME/.local/bin/claude mcp add fetch -s user -- uvx --with 'mcp<2.0.0' mcp-server-fetch --allow-private-ips
+CLAUDE_CONFIG_DIR=$HOME/.claude-personal /Users/YOUR_USERNAME/.local/bin/claude mcp add fetch -s user -- uvx --with 'mcp<2.0.0' mcp-server-fetch==2026.10.10 --allow-private-ips
 ```
 
 > **Note:** `uvx` requires the `uv` package manager. Install if needed: `brew install uv`
@@ -187,7 +187,7 @@ CLAUDE_CONFIG_DIR=$HOME/.claude-personal /Users/YOUR_USERNAME/.local/bin/claude 
 ```bash
 CLAUDE_CONFIG_DIR=$HOME/.claude-work /Users/YOUR_USERNAME/.local/bin/claude mcp add filesystem -s user -- npx -y @modelcontextprotocol/server-filesystem /Users/YOUR_USERNAME/ClaudeOS/work /Users/YOUR_USERNAME/Documents/Work "/Users/YOUR_USERNAME/OneDrive - YourCompany"
 
-CLAUDE_CONFIG_DIR=$HOME/.claude-work /Users/YOUR_USERNAME/.local/bin/claude mcp add fetch -s user -- uvx --with 'mcp<2.0.0' mcp-server-fetch --allow-private-ips
+CLAUDE_CONFIG_DIR=$HOME/.claude-work /Users/YOUR_USERNAME/.local/bin/claude mcp add fetch -s user -- uvx --with 'mcp<2.0.0' mcp-server-fetch==2026.10.10 --allow-private-ips
 ```
 
 > **GitHub for work:** Do NOT connect a personal GitHub token to `claudew` without checking with IT. Your employer may require a company-managed GitHub org.
