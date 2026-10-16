@@ -293,7 +293,7 @@ chmod +x ~/.claude/statusline-command.sh
 
 ### `Using Multiple Claude Subscriptions on Mac`
 
-- **[dual-subscription-setup.md](docs/dual-subscription-setup.md)** — How to run a personal and a work Claude account on the same Mac without them mixing. About 15 minutes start to finish.
+- **[dual-subscription-setup.md](docs/dual-subscription-setup.md)** — How to run a personal and a work Claude account on the same Mac without them mixing — Claude Code CLI, VS Code, and the Claude Desktop app. About 15 minutes start to finish.
 
 ---
 

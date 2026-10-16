@@ -2,7 +2,7 @@
 ## Dual-Subscription Configuration — Personal Pro + Enterprise
 **macOS**
 
-This guide is for anyone running both a Personal Claude Pro subscription and a work Claude Enterprise plan on the same Mac. The technique keeps the two configs, auth tokens, MCP servers, and session histories cleanly separated so work data never flows through your personal account.
+This guide is for anyone running both a Personal Claude Pro subscription and a work Claude Enterprise plan on the same Mac. The technique keeps the two configs, auth tokens, MCP servers, and session histories cleanly separated so work data never flows through your personal account. It covers the Claude Code CLI, VS Code, and the Claude Desktop app.
 
 ---
 
@@ -73,10 +73,12 @@ nano ~/.zshrc
 Add these three lines — replace `/Users/YOUR_USERNAME/.local/bin/claude` with your actual binary path from the prerequisite step:
 
 ```bash
-alias claudep='cd ~/ClaudeOS/personal && CLAUDE_CONFIG_DIR=$HOME/.claude-personal /Users/YOUR_USERNAME/.local/bin/claude'
-alias claudew='cd ~/ClaudeOS/work && CLAUDE_CONFIG_DIR=$HOME/.claude-work /Users/YOUR_USERNAME/.local/bin/claude'
+alias claudep='CLAUDE_CONFIG_DIR=$HOME/.claude-personal /Users/YOUR_USERNAME/.local/bin/claude'
+alias claudew='CLAUDE_CONFIG_DIR=$HOME/.claude-work /Users/YOUR_USERNAME/.local/bin/claude'
 alias claude='echo "⚠️  Use claudep (personal) or claudew (work) instead of bare claude."'
 ```
+
+The aliases start Claude Code in whatever folder you are in, so `cd` into the project first.
 
 Save with `Ctrl+X` → `Y` → Enter, then reload:
 
@@ -92,22 +94,9 @@ Should print: `⚠️  Use claudep (personal) or claudew (work) instead of bare 
 
 ---
 
-## Step 4 — Restrict the Default Orphan Config
+## Step 4 — Block the Default Config
 
-The default `~/.claude/` config still exists and has broad access. Restrict it:
-
-```bash
-nano ~/.claude/settings.json
-```
-
-Replace entire contents with:
-```json
-{
-  "mcpServers": {}
-}
-```
-
-Save with `Ctrl+X` → `Y` → Enter.
+Bare `claude` uses the default `~/.claude/` config. The `claude` alias from Step 3 is the block: it prints a warning instead of starting. Leave `~/.claude/settings.json` alone. Overwriting it doesn't remove MCP servers (they live in `.claude.json`, not `settings.json`) and wipes any settings already there. VS Code's toolbar icon also falls back to `~/.claude/` until you wire it up in Step 11.6.
 
 ---
 
@@ -207,7 +196,15 @@ If your work Enterprise plan provisions MCP servers automatically (e.g., interna
 
 `CLAUDE.md` files give Claude Code persistent context about who you are and what you're working on. Claude Code reads them automatically at session start — parent directories first, then project-level files.
 
-**Global** (`~/.claude/CLAUDE.md`) — applies to every session:
+**Global** — Claude Code reads it from `$CLAUDE_CONFIG_DIR/CLAUDE.md`, so each config needs its own: `~/.claude-personal/CLAUDE.md` and `~/.claude-work/CLAUDE.md`. `~/.claude/CLAUDE.md` is **not** read by `claudep` or `claudew`. To keep one copy, write it once and symlink it into both:
+```bash
+mkdir -p ~/ClaudeOS/global
+nano ~/ClaudeOS/global/CLAUDE.md
+ln -s ~/ClaudeOS/global/CLAUDE.md ~/.claude-personal/CLAUDE.md
+ln -s ~/ClaudeOS/global/CLAUDE.md ~/.claude-work/CLAUDE.md
+```
+
+Example content:
 ```markdown
 # Your Name — Global Claude Code Context
 
@@ -229,7 +226,7 @@ If your work Enterprise plan provisions MCP servers automatically (e.g., interna
 - `~/ClaudeOS/work/`      — Work projects, prompts, outputs, inbox
 ```
 
-**Work** (`~/ClaudeOS/work/CLAUDE.md`) — applies to all `claudew` sessions:
+**Work** (`~/ClaudeOS/work/CLAUDE.md`) — applies to any session started inside `~/ClaudeOS/work`:
 ```markdown
 # Work Context
 
@@ -264,7 +261,8 @@ Run this complete check:
 # Test aliases
 cd ~
 claude          # Should print warning
-claudep         # Should launch in ~/ClaudeOS/personal with personal account
+cd ~/ClaudeOS/personal
+claudep         # Should launch with your personal account
 ```
 
 Inside claudep:
@@ -275,7 +273,8 @@ Inside claudep:
 ```
 
 ```bash
-claudew         # Should launch in ~/ClaudeOS/work with Enterprise account
+cd ~/ClaudeOS/work
+claudew         # Should launch with your Enterprise account
 ```
 
 Inside claudew:
@@ -324,7 +323,7 @@ code --force --install-extension anthropic.claude-code
 
 ### 11.4 — The Correct VS Code Workflow
 
-Always use the **integrated terminal** to launch Claude Code — not the Claude Code toolbar icon. The toolbar icon bypasses your aliases and uses the wrong config.
+Launch from the **integrated terminal**, or use the ✳ toolbar icon once you've wired it to the profile's config in 11.6.
 
 ```
 1. Switch to correct VS Code profile (Personal or Work)
@@ -343,17 +342,58 @@ IDE: Installed VS Code extension ✅
 
 If it shows an error, run `/exit` and re-run `claudep` or `claudew` — it usually resolves on the second launch after the extension is installed.
 
-### 11.6 — VS Code Toolbar Icon Warning
+### 11.6 — Wire the Toolbar Icon to Each Profile
 
-The ✳ Claude Code icon in the VS Code toolbar looks useful but **bypasses your alias setup**:
+The ✳ Claude Code toolbar icon ignores shell aliases, so out of the box it uses the default `~/.claude/` config. Point it at the right config in each VS Code profile:
 
-| | Terminal `claudep`/`claudew` | Toolbar ✳ icon |
-|---|---|---|
-| Uses your config? | ✅ Yes | ❌ No — uses default `~/.claude/` |
-| Correct account? | ✅ Yes | ❌ May use wrong account |
-| MCPs loaded? | ✅ All servers | ❌ Unreliable |
+1. Switch to the **Work** profile (gear icon → **Profile** → **Work**).
+2. Hold ⌘ Command + ⇧ Shift, press P, type `Preferences: Open User Settings (JSON)`, press Enter.
+3. Add this inside the outer `{ }`:
+   ```json
+   "claudeCode.environmentVariables": [
+     { "name": "CLAUDE_CONFIG_DIR", "value": "/Users/YOUR_USERNAME/.claude-work" }
+   ]
+   ```
+4. Save (⌘ Command + S), then hold ⌘ Command + ⇧ Shift, press P, run `Developer: Reload Window`.
+5. Repeat in the **Personal** profile with `/Users/YOUR_USERNAME/.claude-personal`.
 
-**Always use the terminal.** Use the toolbar icon only for quick one-off questions where account separation doesn't matter.
+Verify: open Claude Code from the toolbar icon and run `/status` — the email should match the profile.
+
+---
+
+## Step 12 — Claude Desktop App with Multiple Accounts (Optional)
+
+The Claude Desktop app keeps its login in `~/Library/Application Support/Claude/`. Starting it with `--user-data-dir` pointed at a different folder gives that copy its own login, so each account runs in its own window side by side.
+
+> **Why a plain shortcut doesn't work:** macOS runs one copy of an app at a time. Double-clicking `Claude.app` (or a Desktop alias to it) while any account is open only brings that window to the front — no second account starts. `open -n` forces a new copy.
+
+### 12.1 — Build One Launcher per Account
+
+1. Open **Finder** → **Applications** → **Automator**.
+2. Click **New Document**, select **Application**, click **Choose**.
+3. In the search box at the top of the left column, type `Run Shell Script` and drag it into the right-hand pane.
+4. Replace the text in the box with:
+   ```bash
+   open -n -a "Claude" --args --user-data-dir="$HOME/Library/Application Support/Claude-Work"
+   ```
+5. Press ⌘ Command + S, name it `Claude Work`, and save it in **Applications** (use the `Applications` folder inside your home folder if macOS refuses to save in the main one).
+6. Repeat with `Claude-Personal` and the name `Claude Personal`.
+
+> **Keep an existing login:** the account you first signed into lives in `Application Support/Claude`. Point that account's launcher at `--user-data-dir="$HOME/Library/Application Support/Claude"` to keep it signed in.
+
+### 12.2 — Put the Launchers on the Desktop
+
+In Finder, select a launcher, hold ⌘ Command + ⌥ Option, and drag it to the Desktop — this makes an alias. Alias the launchers, never `Claude.app` itself.
+
+### 12.3 — First Launch and Verify
+
+Each new launcher opens a signed-out window — sign in with that account. To confirm each account runs as its own copy:
+
+```bash
+ps -axo command | grep 'Claude.app/Contents/MacOS/Claude ' | grep -v grep
+```
+
+You should see one line per open account, each ending in its own `--user-data-dir=...`.
 
 ---
 
@@ -363,8 +403,8 @@ The ✳ Claude Code icon in the VS Code toolbar looks useful but **bypasses your
 
 | Command | What happens |
 |---|---|
-| `claudep` | Launches in `~/ClaudeOS/personal` with Personal Pro |
-| `claudew` | Launches in `~/ClaudeOS/work` with Work Enterprise |
+| `claudep` | Launches in the current folder with Personal Pro |
+| `claudew` | Launches in the current folder with Work Enterprise |
 | `claude` | Blocked — prints warning |
 
 ### MCP Scope — Important Lesson
@@ -398,7 +438,8 @@ Without `-s user`, servers are added at project scope and only load from that sp
 | MCP config not being picked up | MCP servers belong in `.claude.json`, not `settings.json` |
 | IDE extension install failed | Run `Cmd+Shift+P` → install `code` in PATH, then `code --force --install-extension anthropic.claude-code` |
 | VS Code diff viewer not showing | Run `/status` inside Claude Code — check IDE line shows `Installed VS Code extension` |
-| Toolbar icon uses wrong account | Always use terminal + `claudep`/`claudew` — never the ✳ toolbar icon |
+| Toolbar icon uses wrong account | Set `claudeCode.environmentVariables` → `CLAUDE_CONFIG_DIR` in that VS Code profile's settings (Step 11.6) |
+| Claude Desktop icon does nothing or opens the wrong account | The icon is a plain alias to `Claude.app` — replace it with a launcher from Step 12.1 |
 
 ---
 
