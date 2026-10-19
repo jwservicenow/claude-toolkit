@@ -35,11 +35,16 @@ rules above (OFFSET-JUMP, INDEX PAGING CAP, FILE SIZE BOUND, MINIMUM WINDOW) app
 takes a `query` or a KB `number` and returns matching articles whole, with no `start_index` or
 `max_length` concept. Call it by `number` whenever a KB number has surfaced; call it by `query`
 only on an explicit user ask for a KB. It is a repository lookup, not a search engine — see Step
-5 for why a free-text `query` is not run against every question.
+5 for why a free-text `query` is not run against every question. If it isn't loaded, run
+ToolSearch `select:mcp__claude_ai_Now_Support_MCP__search_kb` once (a keyword ToolSearch is not
+that check). If that loads nothing, the tool is not in this session: list each surfaced KB as
+"KB<number> (<book> p.<n>) — not resolved: Now Support KB tool not in this session" and claim
+nothing about its content.
 
 VERBOSE FLAG — if `$ARGUMENTS` begins with `--verbose ` or `-v `, strip that token and treat
 the remainder as the question; for this response only, narrate the retrieval route as you go
-(read counts, offsets, which rule you're applying). Without the flag, ANSWER HYGIENE below
+(read counts, offsets, which rule you're applying). Every count in the route note (toc calls,
+searches, pages read) is counted from the calls actually made, never estimated. Without the flag, ANSWER HYGIENE below
 binds and narration is off. The flag has no effect on any later invocation — it is not sticky.
 
 ANSWER HYGIENE — silent by default: the rules in this command govern how you retrieve; they
@@ -121,7 +126,9 @@ silently and start at Step 1.
     gives the commands, and lists the books the set does NOT have.
   - At most 3 `python3 -I <dir>/sn-docs.py search "<terms>" -b <book>` calls, then read only the
     hit pages with `page <book> <p> [count]`. A README page pointer that matches the question
-    counts as a hit: read it directly, no search needed. Never Grep/rg/grep that folder
+    counts as a hit: read it directly, no search needed. When a `page` read ends with `(topic
+    continues on p.N …)`, keep reading until that line stops appearing: the topic isn't read, and
+    its last row or step can't be called missing, until then. Never Grep/rg/grep that folder
     (gitignored — silent zero hits) and never Read the PDFs.
   - The export IS the docs site's content, so it ranks (1) with the mirror in TRUSTED SOURCE
     RANKING. Report it under `## Official Mirror`, citing the nearest `=====` or `-----` line
@@ -135,7 +142,9 @@ silently and start at Step 1.
     "recommended"; "Regardless of how you implement" is not narrowed to one route. Say the docs
     lack something ("names no version", "not self-service") only after reading the pages that
     would hold it; otherwise name those pages as "not read this pass". Add no units or words
-    the page doesn't print. If a sentence is cut or garbled, quote it as printed and flag it, or
+    the page doesn't print, and drop none it does: a release or version qualifier ("Starting from
+    the August 2024 release") stays with its fact. A name cut at a line or column edge is quoted as
+    printed and flagged as possibly cut; never guess how it continues. If a sentence is cut or garbled, quote it as printed and flag it, or
     cite a page that prints it whole; never rebuild it yourself.
   - When Step 0 answers the question, SKIP Steps 1-3 — no llms.txt, no index, no topic fetch.
     Community (Step 4) and KB resolution (Step 5) still run.
@@ -890,13 +899,13 @@ Steps:
 5. Resolve any KB references (last — after Mirror and Community are both done):
    Support KB is a repository you look articles up IN, not a search engine you run against every
    question. Call `mcp__claude_ai_Now_Support_MCP__search_kb` with `number` for every KB number
-   that surfaced while working Steps 1-4 — a citation on a mirror page, a KB number named in a
+   that surfaced while working Steps 0-4 — a citation on a mirror or local export page, a KB number named in a
    community post, or a KB number the user's own question names. Pull that KB's real content and
    cite it; a bare number is not a citation.
 
    If the user's question itself asks for a KB — by number, or asking whether one exists on a
    topic — honor that directly, by `number` if given or by `query` if not, even when no number
-   surfaced organically in Steps 1-4. This is the only case where a `query` call is appropriate.
+   surfaced organically in Steps 0-4. This is the only case where a `query` call is appropriate.
    A `query` call run against every question, independent of any surfaced number or explicit ask,
    returns noise from internal/TOI knowledge bases that have nothing to do with the question —
    confirmed in testing 2026-10-02, which is why this is no longer an independent per-question
@@ -915,7 +924,7 @@ Steps:
    This filter applies only to a `query` call — a `number` lookup returns exactly one article and
    needs no filtering.
 
-   If no KB number surfaced in Steps 1-4 and the user didn't ask for one, this step produces
+   If no KB number surfaced in Steps 0-4 and the user didn't ask for one, this step produces
    nothing — say so in the Support KB section rather than running a speculative query call.
 
 6. Cite using canonical_url from the file's YAML frontmatter.
@@ -965,6 +974,6 @@ Response format (every time):
 ## Official Mirror
 [findings, canonical docs.servicenow.com URLs — or, for Step 0 findings, the nearest `=====` or `-----` line above each fact, copied whole, with the "local docs export" label]
 ## Support KB
-[every KB actually resolved in Step 5, each cited by KB number, OR "No KB number surfaced or was requested this pass"]
+[every KB actually resolved in Step 5, each cited by KB number, and every surfaced KB the tool could not resolve, in the SUPPORT KB TOOL wording; OR "No KB number surfaced or was requested this pass"]
 ## Community Sources
 [each finding + full community post URL + "peer-authored" flag, plus any "found, not read: <URL>" lines, OR "no relevant on-domain results", OR the SEARCH FALLBACK LADDER phrase]
