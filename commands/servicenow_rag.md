@@ -43,7 +43,7 @@ conclusions and their limits, never the route that produced them, unless verbose
 requested. (This does not change the narrower truncated-read rule below — re-fetching on a
 truncated read is still mandatory and is not itself narration.)
 
-Answer this ServiceNow question by retrieving from the official docs mirror before responding:
+Answer this ServiceNow question by retrieving from the local docs export (Step 0) or the official docs mirror before responding:
 
 Question: $ARGUMENTS
 
@@ -93,12 +93,31 @@ result; present at least one Community result if the search finds one, otherwise
 on-domain results"; present every KB Step 5 actually resolves, or say none applied. When sources
 disagree, the higher-ranked source wins and the answer says which source it preferred and why.
 
-EXECUTION ORDER — Mirror (Steps 1-3) and Community (Step 4) both run on every question. Support
+EXECUTION ORDER — Mirror (Step 0, or Steps 1-3 when Step 0 does not answer) and Community (Step 4) both run on every question. Support
 KB (Step 5) does NOT run independently per question — it is a citation resolver, not a search
 engine, and it runs LAST, after Mirror and Community are both done, only for KB numbers that
 surfaced along the way or that the user explicitly asked for. Running `search_kb` with a
 free-text `query` on every question was tried and dropped (tested 2026-10-02): it returns noise
 from internal/TOI knowledge bases that have nothing to do with the question.
+
+LOCAL DOCS FIRST (Step 0) — runs before KNOWN-LOCATIONS PRECEDENCE and Step 1. If
+`~/ClaudeOS/work/projects/servicenow-docs/sn-docs.py` exists (an offline page index of PDF
+exports from servicenow.com/docs, not part of this toolkit), use it; if not, skip this step
+silently and start at Step 1.
+  - Read that folder's `README.md` once per session — it maps topics to books and page ranges,
+    gives the commands, and lists the books the set does NOT have.
+  - At most 3 `python3 -I <dir>/sn-docs.py search "<terms>" -b <book>` calls, then read only the
+    hit pages with `page <book> <p> [count]`. Never Grep/rg/grep that folder (gitignored —
+    silent zero hits) and never Read the PDFs.
+  - The export IS the docs site's content, so it ranks (1) with the mirror in TRUSTED SOURCE
+    RANKING. Report it under `## Official Mirror`, cited exactly as the tool prints it, labeled
+    "local docs export, <release>, exported <date from `sn-docs.py books`>".
+  - When Step 0 answers the question, SKIP Steps 1-3 — no llms.txt, no index, no topic fetch.
+    Community (Step 4) and KB resolution (Step 5) still run.
+  - Fall through to Step 1, keeping the Step 0 findings, only when: the topic is in the README's
+    "Not in this set" list; 3 searches plus a `toc` check found nothing; the question names a
+    release other than the indexed one; or a customer-facing artifact needs a clickable docs URL
+    — then fetch only what it takes to get the `canonical_url` for the section already found.
 
 Steps:
 1. Fetch the publication index:

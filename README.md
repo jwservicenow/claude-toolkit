@@ -42,6 +42,8 @@ Follow the steps inside — about 10 minutes total.
 
 Claude Code version — Retrieves from ServiceNow's official [GitHub docs mirror](https://github.com/ServiceNow/ServiceNowDocs#servicenowdocs) before answering: the same plain-text source ServiceNow publishes for AI tools. It navigates the mirror's own index down to the exact topic file, reads that file to the end, then adds a scoped ServiceNow Community pass for the operational detail the docs omit. Every answer is grounded in a page it actually retrieved and cited to a real `docs.servicenow.com` URL — and where the documentation genuinely doesn't cover something, it says so instead of filling the gap from training knowledge.
 
+Optional local-first step: if an offline page index of docs-site PDF exports exists at `~/ClaudeOS/work/projects/servicenow-docs/sn-docs.py` (not part of this toolkit), the command searches it first. It cites book, section and page, and skips the mirror walk unless the topic, the release or a needed docs URL isn't covered locally.
+
 
 <details>
 <summary>How it works under the hood</summary>
