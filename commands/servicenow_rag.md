@@ -989,9 +989,12 @@ Steps:
      Step 0 fact carries a printed line; a "[p.N, not cited]" stand-in is a defect.
    - CITATION CHECK (Step 0 answers) — write the full draft answer to a scratchpad file and run
      `python3 -I <dir>/sn-docs.py check <file>`. It confirms each citation line is printed on
-     its page with the same `=====`/`-----` prefix, and flags cut paths and stand-ins. Fix every
-     FAIL and SHORT line it prints, re-run until it reports 0 to fix, then answer. It does not
-     check that the fact is on that page; that check stays yours.
+     its page with the same `=====`/`-----` prefix, and flags cut paths and stand-ins. It also
+     tests the exact items in each cited fact line (quotes, menu paths, dotted or underscored
+     names, numbers of 3+ digits) against the text under the cited line; a WHERE line names the
+     printed line that holds the item, or says it is not on that page or the pages beside it. Fix
+     every FAIL, SHORT and WHERE line, re-run until it reports 0 to fix and 0 to recheck (exit
+     0), then answer. Paraphrased facts carry no such items; that check stays yours.
    Known gap: mirror and KB citations are enforced by instruction only — there is no automated
    check that a cited fact actually appears in fetched bytes, so double-check your own
    citations against what you fetched before answering, especially on truncated reads.
