@@ -136,7 +136,7 @@ silently and start at Step 1.
     gap only if the mirror lacks it too. Known gap, already checked — do NOT fall through for
     it: platform p.2344 says standard MID Server products "share the same minimum disk space
     and memory requirements" and gives no numbers, and so do the live Brazil page and the
-    `australia` mirror file (checked 2026-10-19). Report it as a gap in the docs, cite
+    `brazil` and `australia` mirror files (checked 2026-10-19). Report it as a gap in the docs, cite
     https://www.servicenow.com/docs/r/servicenow-platform/mid-server/r_MIDServerSystemRequirements.html,
     and never fill it from community posts or blogs. Health Log Analytics' own MID sizing IS in
     the docs: itom p.4490 ("… Health Log Analytics configuration preferences › MID Server
@@ -151,15 +151,19 @@ Steps:
 1. Fetch the publication index:
    https://raw.githubusercontent.com/ServiceNow/ServiceNowDocs/{branch}/llms.txt
    For {branch} see BRANCH DERIVATION below. On a first query with nothing cached, fetch the
-   `australia` copy to read its latest-release line, then re-fetch on the family it names.
+   `HEAD` copy (GitHub serves the default branch, which is the latest family), read its
+   latest-release line, and use that family for every fetch after. Never bootstrap from a
+   named family: each family's llms.txt names ITSELF as latest (measured 2026-10-19:
+   `australia/llms.txt` says australia while `HEAD/llms.txt` says brazil).
 
    WHAT llms.txt IS AUTHORITATIVE FOR — it is the mandatory entry point and the authority on
    WHICH FAMILY IS LATEST. It is NOT a complete or clean publication inventory and must never
-   be used as one. Measured 2026-08-20 on `australia`: llms.txt lists 51 publications while the
-   live `markdown/` tree holds 56 directories. Six live publications are absent from it
-   (`roles-by-product`, `vocabulary`, and the four `delta-*-australia` upgrade guides), and one
-   entry it does list is dead in both directions — `product-directory` 404s as an index AND as
-   a directory. "Not in llms.txt" is therefore never evidence a publication does not exist;
+   be used as one. Measured 2026-10-19 on `brazil`: llms.txt lists 50 publications while the
+   live `markdown/` tree holds 58 directories. Ten live publications are absent from it
+   (`roles-by-product`, `vocabulary`, and eight `delta-*` upgrade guides), and two entries it
+   does list have no folder on brazil — `product-directory` 404s as an index AND as a
+   directory on every branch, and `source-to-pay-operations` exists only on `australia` (use
+   that branch for it and say so). "Not in llms.txt" is therefore never evidence a publication does not exist;
    probe the path before saying so.
 
    The routing table below has TWO jobs because of that: it disambiguates where llms.txt's
@@ -209,15 +213,16 @@ Steps:
      -- rows below carry publications llms.txt OMITS; they are not optional extras --
      Role lists per product ("what roles does X need")       → roles-by-product
      Term/synonym normalization, doc-site vocabulary         → vocabulary
-     Upgrade delta, "what changed between {family} and now"  → delta-{family}-australia
-       (delta-washingtondc-australia, delta-xanadu-australia, delta-yokohama-australia,
-        delta-zurich-australia — all live, none listed in llms.txt)
+     Upgrade delta, "what changed between {family} and now"  → delta-{family}-brazil
+       (delta-australia-brazil, delta-zurich-brazil, delta-yokohama-brazil,
+        delta-xanadu-brazil; the brazil branch also still carries the four
+        delta-*-australia guides — none listed in llms.txt, checked 2026-10-19)
      Store app release notes      → branch `store`,  publication store-release-notes
      Mobile release notes         → branch `mobile`, publication mobile-release-notes
      Release notes tied to no release family → branch `other`, publication other-release-notes
        (the three above are SIBLING BRANCHES, see below — not folders on a family branch)
      DEAD, never route here: product-directory — listed in llms.txt, 404 as index AND as
-       directory, confirmed 2026-08-20.
+       directory, confirmed 2026-08-20 and again on brazil 2026-10-19.
    If uncertain, prefer a publication llms.txt lists — but do not stop there. The rows above
    for roles-by-product, vocabulary and the delta guides exist precisely because llms.txt
    omits them, and a topic matching one of those rows routes there regardless.
@@ -227,14 +232,15 @@ Steps:
    release" line and use that family as the branch for every fetch this session. The mirror
    keeps only THREE family branches — four during an early-access window — and DELETES THE
    OLDEST AT GA, so a family that answered last month can be gone today; that is why the
-   hardcoded default was removed. Live as of 2026-08-20: australia (latest), zurich, yokohama,
-   xanadu. Use an older family only when the question names it, and if that family 404s say
+   hardcoded default was removed. Live as of 2026-10-19: brazil (latest, the default branch since
+   2026-10-16), australia, zurich, yokohama; a `xanadu` branch still exists but brazil's
+   llms.txt no longer lists it. Use an older family only when the question names it, and if that family 404s say
    the mirror no longer carries it rather than silently answering from the latest. If the
-   latest-release line cannot be parsed, fall back to `australia` and SAY that you fell back.
+   latest-release line cannot be parsed, fall back to `brazil` and SAY that you fell back.
    RELEASE ORDER — families after Zurich are country names in alphabetical order: Australia,
-   then Brazil. The mirror trails the docs site: on 2026-10-19 the mirror's latest was
-   `australia` while the docs site and the Step 0 export were Brazil. When an answer mixes
-   Step 0 and mirror findings, say the mirror text is one release older.
+   then Brazil. On 2026-10-19 the mirror, the docs site and the Step 0 export were all
+   Brazil. If the mirror's latest family ever differs from the Step 0 export's release, say
+   which release each finding comes from.
 
    SIBLING BRANCHES — release-notes content lives OUTSIDE the four family branches, on its own
    branches, each with its own README, llms.txt and markdown tree: `store`
@@ -254,8 +260,9 @@ Steps:
    `store` returns 200. So: if a link's `{branch}` segment differs from the branch whose
    llms.txt you fetched, substitute the branch you are on and fetch that. This is the ONLY
    sanctioned edit to a verbatim link — everything after `{branch}/` is still copied character
-   for character, never guessed. The `australia` llms.txt is clean (all 51 links say australia)
-   so family arms are unaffected today; check anyway rather than assuming.
+   for character, never guessed. The `brazil` llms.txt is NOT clean: all 50 of its document links
+   say `australia` (measured 2026-10-19), so on brazil substitute `brazil` in every llms.txt
+   link. The brazil `index.md` files are clean (ITOM: 3,204 of 3,204 links say brazil).
 
 2. Fetch that publication's index.md. Take the index URL from the llms.txt link list —
    do NOT build it from the folder name. The real path includes a `markdown/` segment:
@@ -341,8 +348,8 @@ Steps:
    INDEX FLOOR, and they are exempt from MINIMUM WINDOW only because `index.md` and
    `llms.txt` are already exempt. Never probe a CONTENT file this way — the 30,000 floor
    binds there without exception. A size quoted anywhere in this file is NOT a probe —
-   probe anyway: the indexes grow (platform 1,255,768 → 1,259,979 B and ITOM 1.18MB →
-   1,241,265 B between 2026-08 and 2026-10-19).
+   probe anyway: the indexes change (platform 1,255,768 → 1,259,979 B on australia between
+   2026-08 and 2026-10-19, then 1,263,530 B on brazil; ITOM 1.18MB → 1,241,265 → 1,235,770 B).
 
    Once probed, the index HAS a stated size, so FILE SIZE BOUND's bracketing branch
    applies and its doubling branch does not. In particular the "never issue a
@@ -355,19 +362,19 @@ Steps:
    ITOM index the agent-client-collector block begins at 0.86x length, so offsets of
    12,000 / 180,000 / 400,000 all sit in the first third and can only miss. Choose the
    first read at the fraction the topic's position in the publication implies, not at a
-   round number. Not every block is in the tail (measured 2026-10-19): in the ITOM index
-   health-log-analytics begins at 0.74x and r_SupportedApplications at 0.54x; in the
-   servicenow-platform index the mid-server block begins at 0.33x and
+   round number. Not every block is in the tail (measured 2026-10-19 on brazil): in the ITOM
+   index health-log-analytics begins at 0.73x and r_SupportedApplications at 0.54x; in the
+   servicenow-platform index the mid-server block begins at 0.34x and
    r_MIDServerSystemRequirements sits at 0.37x. Check Known direct paths before paging.
 
    TAIL FIRST — on a probed index, the FIRST read opens at the START of the last 15% of
    the measured length, not deeper, unless the topic is known to sit elsewhere. On the
-   1.24MB ITOM index that is offset ~1,055,000: first reads at 760,000 or 880,000 sit in
+   1.24MB ITOM index that is offset ~1,050,000: first reads at 760,000 or 880,000 sit in
    the middle third and can only miss, and a first read at 1,140,000 skips the front of
    the tail entirely. Page forward from there CONTIGUOUSLY — each next read opens where
    the previous one ended (`start_index` + `max_length`), never at a fresh guess — so the
    reads sweep an unbroken span instead of leaving holes between them. Three 45,000 reads
-   cover 135,000 chars and the last 15% of a 1.24MB index is ~186,000, so a contiguous
+   cover 135,000 chars and the last 15% of a 1.24MB index is ~185,000, so a contiguous
    sweep plus the single TAIL BEFORE LEAVING read below covers the tail end to end; a
    scattered one cannot, however well each individual offset is reasoned.
 
@@ -526,7 +533,7 @@ Steps:
      generated 2026-08-17). The vocabulary folder carries no index of its own, so fetch
      this file by direct path.
    - MID Server system requirements (OS, CPU, Java, deployment types):
-     servicenow-platform/mid-server/r_MIDServerSystemRequirements.md (17,845 B, verified live
+     servicenow-platform/mid-server/r_MIDServerSystemRequirements.md (17,631 B on brazil, verified live
      2026-10-19); canonical URL
      https://www.servicenow.com/docs/r/servicenow-platform/mid-server/r_MIDServerSystemRequirements.html.
      It sits at 0.37x of the platform index, so TAIL FIRST paging misses it. It carries no
@@ -559,8 +566,8 @@ Steps:
      containment. Verified live 2026-09-01. NAMING TRAP: neither the filename nor the
      index description says "roles for CI CRUD" — the index line reads "components ...
      installed with the activation of the CMDB Workspace (sn_cmdb_ws) plugin", so a text
-     match on "role" or "CRUD" will not surface it and index paging misses it at ~5% of
-     the 1,259,979 B platform index (2026-10-19). There is NO cmdb-roles.md and no r_CMDBRoles.md;
+     match on "role" or "CRUD" will not surface it and index paging misses it at ~3% of
+     the 1,263,530 B brazil platform index (2026-10-19). There is NO cmdb-roles.md and no r_CMDBRoles.md;
      both 404. roles-by-product does not cover CMDB either. Note for upgrades: on an
      instance moved directly from Xanadu or Yokohama to Australia, the CUD grants on
      sn_cmdb_admin/sn_cmdb_editor require running the "Remove CMDB Roles from ITIL roles
@@ -570,7 +577,9 @@ Steps:
      `c_IRE.md` does NOT exist (common wrong guess); module landing is
      c_CMDBIdentifyandReconcile.md, identification is c_IdentificationRules.md.
    - Scripting APIs: api-reference/server-api-reference/c_IdentEngineScriptAPI.md (IRE),
-     api-reference/scripts/p_GlideServerAPIs.md (Glide server APIs, consolidated).
+     api-reference/server-api-reference/c_GlideRecordAPI.md, c_GlideRecordScopedAPI.md,
+     c_GlideSystemAPI.md, c_GlideSystemScopedAPI.md (Glide server APIs; the consolidated
+     api-reference/scripts/p_GlideServerAPIs.md is gone on brazil, 404 on 2026-10-19).
    - Service Mapping (it-operations-management/service-mapping/, flat, deep in a 1.2MB
      index — never page the index for it): r_EntryPointsforBizSvcDef.md (entry point
      attributes), prerequisites-service-mapping.md (top-down discovery prereqs),
@@ -738,7 +747,7 @@ Steps:
      on-demand evaluation (create dataset -> create Evaluation Run -> pick metrics ->
      Save & Evaluate); no scheduling mechanism appears anywhere in the Skill Kit
      publication.
-   - application-development (own publication, index.md 624,025 B — treat as index-only
+   - application-development (own publication, index.md 663,366 B on brazil — treat as index-only
      like it-service-management and it-asset-management, bracketing offsets required for
      anything not listed here; no cached direct paths before 2026-08-08):
      use-ai-capabilities-in-custom-apps.md (AI capabilities in custom apps),
