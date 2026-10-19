@@ -157,7 +157,10 @@ silently and start at Step 1.
     what the question asked, and it names the search or `toc` call that looked for it and the
     pages read; with no such call, make no gap claim. Add no units or words
     the page doesn't print, and drop none it does: a release or version qualifier ("Starting from
-    the August 2024 release") stays with its fact. A name cut at a line or column edge is quoted as
+    the August 2024 release") stays with its fact. So do the topic's "Role required" line, any
+    limit or exception that follows the fact ("This setting can't be modified", "Version X and
+    later … you can modify"), and any Note in the same topic, each cited to the page that prints
+    it. A name cut at a line or column edge is quoted as
     printed and flagged as possibly cut; never guess how it continues. A menu path is quoted
     only as the page prints it, with its ">" steps; a list or form name the page gives without
     a path is not a path, so say no path is printed. If a sentence is cut or garbled, quote it as printed and flag it, or
