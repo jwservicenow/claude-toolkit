@@ -158,7 +158,9 @@ silently and start at Step 1.
     pages read; with no such call, make no gap claim. Add no units or words
     the page doesn't print, and drop none it does: a release or version qualifier ("Starting from
     the August 2024 release") stays with its fact. A name cut at a line or column edge is quoted as
-    printed and flagged as possibly cut; never guess how it continues. If a sentence is cut or garbled, quote it as printed and flag it, or
+    printed and flagged as possibly cut; never guess how it continues. A menu path is quoted
+    only as the page prints it, with its ">" steps; a list or form name the page gives without
+    a path is not a path, so say no path is printed. If a sentence is cut or garbled, quote it as printed and flag it, or
     cite a page that prints it whole; never rebuild it yourself.
   - When Step 0 answers the question, SKIP Steps 1-3 — no llms.txt, no index, no topic fetch.
     Community (Step 4) and KB resolution (Step 5) still run.
@@ -982,7 +984,12 @@ Steps:
      Also check that each fact is printed on the page its citation names: a fact from a table or
      topic that spans pages cites the page that prints it, not the topic's first page. Every
      Step 0 fact carries a printed line; a "[p.N, not cited]" stand-in is a defect.
-   Known gap: this is enforced by instruction only, not tooling — there is no automated
+   - CITATION CHECK (Step 0 answers) — write the full draft answer to a scratchpad file and run
+     `python3 -I <dir>/sn-docs.py check <file>`. It confirms each citation line is printed on
+     its page with the same `=====`/`-----` prefix, and flags cut paths and stand-ins. Fix every
+     FAIL and SHORT line it prints, re-run until it reports 0 to fix, then answer. It does not
+     check that the fact is on that page; that check stays yours.
+   Known gap: mirror and KB citations are enforced by instruction only — there is no automated
    check that a cited fact actually appears in fetched bytes, so double-check your own
    citations against what you fetched before answering, especially on truncated reads.
 
