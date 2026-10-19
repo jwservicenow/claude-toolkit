@@ -20,6 +20,12 @@ with `mcp__fetch__fetch` at an offset before concluding anything. Never fall bac
 `curl`, `wget`, `grep`, or any shell command to retrieve mirror content; if
 `mcp__fetch__fetch` is unavailable, say so and stop rather than routing around it.
 `WebSearch` stays the correct tool for the SEARCH FALLBACK LADDER in Step 4.
+COMMUNITY EXCEPTION — `mcp__fetch__fetch` obeys robots.txt, and servicenow.com/community
+refuses it with a 403 naming robots.txt (claudew run 2026-10-19, two posts). On that 403 for a
+`servicenow.com/community/` URL, re-read the post once with `WebFetch`, asking for the post
+date, the author, whether it is the accepted answer, and the exact sentences you will cite.
+Measured 2026-10-19: `WebFetch` read m-p/1110379 whole. This covers community posts only — a
+mirror file never goes to `WebFetch` — and MINIMUM WINDOW does not apply to a `WebFetch` read.
 
 SUPPORT KB TOOL — Step 5's KB-resolution pass uses `mcp__claude_ai_Now_Support_MCP__search_kb`
 directly, a structured-data MCP tool, not `mcp__fetch__fetch`. None of the offset/pagination
@@ -113,7 +119,9 @@ silently and start at Step 1.
     hit pages with `page <book> <p> [count]`. Never Grep/rg/grep that folder (gitignored —
     silent zero hits) and never Read the PDFs.
   - The export IS the docs site's content, so it ranks (1) with the mirror in TRUSTED SOURCE
-    RANKING. Report it under `## Official Mirror`, cited exactly as the tool prints it, labeled
+    RANKING. Report it under `## Official Mirror`, citing the nearest `=====` or `-----` line
+    above the fact, copied whole — never shorten the path, merge two lines or name a section
+    yourself (`=====` opens each page; `-----` marks a topic or section starting mid-page) — labeled
     "local docs export, <release>, exported <date from `sn-docs.py books`>".
   - When Step 0 answers the question, SKIP Steps 1-3 — no llms.txt, no index, no topic fetch.
     Community (Step 4) and KB resolution (Step 5) still run.
@@ -122,9 +130,13 @@ silently and start at Step 1.
     release other than the indexed one; or a customer-facing artifact needs a clickable docs URL
     — then fetch only what it takes to get the `canonical_url` for the section already found.
   - Also fall through when the page names content the export lacks — it promises numbers or a
-    table that the next lines don't contain (e.g. platform p.2344 says standard MID Server
-    products "share the same minimum disk space and memory requirements" and gives no numbers).
-    Fetch only that section from the mirror; report a gap only if the mirror lacks it too.
+    table that the next lines don't contain. Fetch only that section from the mirror; report a
+    gap only if the mirror lacks it too. Known gap, already checked — do NOT fall through for
+    it: platform p.2344 says standard MID Server products "share the same minimum disk space
+    and memory requirements" and gives no numbers, and so do the live Brazil page and the
+    `australia` mirror file (checked 2026-10-19). Report it as a gap in the docs, cite
+    https://www.servicenow.com/docs/r/servicenow-platform/mid-server/r_MIDServerSystemRequirements.html,
+    and never fill it from community posts or blogs.
 
 Steps:
 1. Fetch the publication index:
@@ -210,6 +222,10 @@ Steps:
    xanadu. Use an older family only when the question names it, and if that family 404s say
    the mirror no longer carries it rather than silently answering from the latest. If the
    latest-release line cannot be parsed, fall back to `australia` and SAY that you fell back.
+   RELEASE ORDER — families after Zurich are country names in alphabetical order: Australia,
+   then Brazil. The mirror trails the docs site: on 2026-10-19 the mirror's latest was
+   `australia` while the docs site and the Step 0 export were Brazil. When an answer mixes
+   Step 0 and mirror findings, say the mirror text is one release older.
 
    SIBLING BRANCHES — release-notes content lives OUTSIDE the four family branches, on its own
    branches, each with its own README, llms.txt and markdown tree: `store`
@@ -315,7 +331,9 @@ Steps:
    index reads: they do not count against the INDEX PAGING CAP, they do not satisfy the
    INDEX FLOOR, and they are exempt from MINIMUM WINDOW only because `index.md` and
    `llms.txt` are already exempt. Never probe a CONTENT file this way — the 30,000 floor
-   binds there without exception.
+   binds there without exception. A size quoted anywhere in this file is NOT a probe —
+   probe anyway: the indexes grow (platform 1,255,768 → 1,259,979 B and ITOM 1.18MB →
+   1,241,265 B between 2026-08 and 2026-10-19).
 
    Once probed, the index HAS a stated size, so FILE SIZE BOUND's bracketing branch
    applies and its doubling branch does not. In particular the "never issue a
@@ -324,20 +342,23 @@ Steps:
    guessing against an unknown EOF, and you are no longer guessing.
 
    Bracket by FRACTION of the measured length, never by absolute offset. In a large
-   publication index the product subdirectories cluster in the LAST 15%: on the 1.18MB
-   ITOM index the agent-client-collector block begins at 0.87x length, so offsets of
+   publication index many product subdirectories cluster in the LAST 15%: on the 1.24MB
+   ITOM index the agent-client-collector block begins at 0.86x length, so offsets of
    12,000 / 180,000 / 400,000 all sit in the first third and can only miss. Choose the
    first read at the fraction the topic's position in the publication implies, not at a
-   round number.
+   round number. Not every block is in the tail (measured 2026-10-19): in the ITOM index
+   health-log-analytics begins at 0.74x and r_SupportedApplications at 0.54x; in the
+   servicenow-platform index the mid-server block begins at 0.33x and
+   r_MIDServerSystemRequirements sits at 0.37x. Check Known direct paths before paging.
 
    TAIL FIRST — on a probed index, the FIRST read opens at the START of the last 15% of
    the measured length, not deeper, unless the topic is known to sit elsewhere. On the
-   1.18MB ITOM index that is offset ~1,003,000: first reads at 760,000 or 880,000 sit in
+   1.24MB ITOM index that is offset ~1,055,000: first reads at 760,000 or 880,000 sit in
    the middle third and can only miss, and a first read at 1,140,000 skips the front of
    the tail entirely. Page forward from there CONTIGUOUSLY — each next read opens where
    the previous one ended (`start_index` + `max_length`), never at a fresh guess — so the
    reads sweep an unbroken span instead of leaving holes between them. Three 45,000 reads
-   cover 135,000 chars and the last 15% of a 1.18MB index is ~177,000, so a contiguous
+   cover 135,000 chars and the last 15% of a 1.24MB index is ~186,000, so a contiguous
    sweep plus the single TAIL BEFORE LEAVING read below covers the tail end to end; a
    scattered one cannot, however well each individual offset is reasoned.
 
@@ -462,9 +483,10 @@ Steps:
    JSON/size error, and page the remainder when you do. `index.md` and `llms.txt` are the
    only exempt paths — those stay under INDEX PAGING CAP and its bracketing discipline.
 
-   SPA STUB — a response under ~1,000 B from a JS-rendered host (`store.servicenow.com`,
+   SPA STUB — a short response from a JS-rendered host (`store.servicenow.com`,
    `www.servicenow.com/docs`) is an SPA stub, not a short file. Text like "Loading
-   application..." or "Page failed to be simplified from HTML" is the tell. Do not re-fetch
+   application..." or "Page failed to be simplified from HTML" is the tell, not the size: the
+   raw HTML of a docs page was 8,404 B of stub on 2026-10-19. Do not re-fetch
    it at a larger window — record the URL as unfetchable and move on. Escalating window size
    never renders JavaScript, and a stub is not a truncated read, so TRUNCATED-READ RE-FETCH
    does not apply to it.
@@ -494,6 +516,12 @@ Steps:
      TABLE above): vocabulary/sn-docs-synonym-terms-enus.md (11,329 B, 234 term groups,
      generated 2026-08-17). The vocabulary folder carries no index of its own, so fetch
      this file by direct path.
+   - MID Server system requirements (OS, CPU, Java, deployment types):
+     servicenow-platform/mid-server/r_MIDServerSystemRequirements.md (17,845 B, verified live
+     2026-10-19); canonical URL
+     https://www.servicenow.com/docs/r/servicenow-platform/mid-server/r_MIDServerSystemRequirements.html.
+     It sits at 0.37x of the platform index, so TAIL FIRST paging misses it. It carries no
+     RAM or disk minimums for standard deployments — a gap in the docs, not a missed read.
    - CMDB/CSDM have no own index.md; locate via servicenow-platform/index.md, but these
      are direct: common-service-data-model-csdm/csdm-landing-page.md,
      configuration-management-database-cmdb/cmdb-tables-details.md (base classes only —
@@ -523,7 +551,7 @@ Steps:
      index description says "roles for CI CRUD" — the index line reads "components ...
      installed with the activation of the CMDB Workspace (sn_cmdb_ws) plugin", so a text
      match on "role" or "CRUD" will not surface it and index paging misses it at ~5% of
-     the 1,255,768 B platform index. There is NO cmdb-roles.md and no r_CMDBRoles.md;
+     the 1,259,979 B platform index (2026-10-19). There is NO cmdb-roles.md and no r_CMDBRoles.md;
      both 404. roles-by-product does not cover CMDB either. Note for upgrades: on an
      instance moved directly from Xanadu or Yokohama to Australia, the CUD grants on
      sn_cmdb_admin/sn_cmdb_editor require running the "Remove CMDB Roles from ITIL roles
@@ -550,7 +578,7 @@ Steps:
      gives only the display label and pattern name — it contains ZERO cmdb_ci_* strings and can never answer a
      "what is the table name" question. Don't stop there.
    - ACC (it-operations-management/agent-client-collector/, flat — the ACC block begins at
-     0.87x the length of the 1.18MB ITOM index, so ordinary index paging will not reach it;
+     0.86x the length of the 1.24MB ITOM index (2026-10-19), so ordinary index paging will not reach it;
      go direct): acc-sys-requirements.md (6,193), acc-install-windows.md,
      acc-configuring-without-mid.md, acc-yml-options.md (9,783 — the acc.yml configuration
      option reference).
@@ -734,7 +762,8 @@ Steps:
    This is not our inference. The mirror instructs LLM readers directly, in its own llms.txt,
    verbatim: "Do NOT attempt to fetch content from servicenow.com/docs — it is a JavaScript
    single-page application that returns no readable content to LLMs." The mirror IS the
-   intended machine-readable surface; the docs site is not, and never becomes one.
+   intended machine-readable surface; the docs site is not, and never becomes one. That holds
+   for every raw fetch. The one narrow exception, a `WebFetch` confirmation check, is in Step 6.
 
    FRONTMATTER SELF-CHECK — every non-empty content file opens with YAML frontmatter, and it
    carries routing signal, not just citation data. Keys observed across a spread sample:
@@ -773,7 +802,10 @@ Steps:
    rest. If none remain, that search returned nothing usable (SEARCH FALLBACK LADDER below).
    Fetch the top 1-2 results that look relevant (articles/forum posts, not search pages).
    The WebSearch summary is a model's rendering, not a read: never cite a community post from
-   it alone. Fetch the post first; if the fetch fails, say so and cite nothing from it.
+   it alone. Fetch the post first (`WebFetch` on the robots.txt 403, per COMMUNITY EXCEPTION).
+   A post neither tool could read goes under `## Community Sources` as "found, not read:
+   <URL>" with nothing from it, and it does not count as the one presented result. Never
+   pass on WebSearch summary content, not even labeled unverified.
    Community covers operational behavior, gotchas, and real-world implications that docs omit.
 
    Any Store or community page you fetch is a CONTENT read — `max_length` 30,000 or more,
@@ -858,7 +890,15 @@ Steps:
    https://www.servicenow.com/docs/r/ , strip .md, append .html.
    Example: markdown/servicenow-platform/mid-server/r_MIDServerSystemRequirements.md →
    https://www.servicenow.com/docs/r/servicenow-platform/mid-server/r_MIDServerSystemRequirements.html
-   These URLs are JS-rendered — do NOT fetch them. Cite only; they require a browser.
+   These URLs are JS-rendered: `mcp__fetch__fetch` gets only an SPA stub, so never fetch
+   them with it. DOCS CONFIRMATION CHECK — `WebFetch` does read them (measured 2026-10-19:
+   r_MIDServerSystemRequirements.html came back with "Release version: Brazil", its 20
+   headings and the CPU minimum). Use at most one `WebFetch` of a canonical URL per answer,
+   only to confirm the current release version or that a gap is still a gap, after Step 0 or
+   the mirror has already found the section. Label what it returns "docs site, via WebFetch
+   (summarized)". It is a model's summary, not a raw read: it never replaces the mirror file,
+   never answers a question on its own, and loses to Step 0 or the mirror wherever they
+   disagree.
    Flag anything edition-gated or version-specific.
 
    CITATION INTEGRITY — attribution follows the fetch, not the topic:
@@ -886,8 +926,8 @@ surfaced before the failure or that the user explicitly asked for.
 
 Response format (every time):
 ## Official Mirror
-[findings, canonical docs.servicenow.com URLs — or, for Step 0 findings, the book / section / page citation exactly as `sn-docs.py` prints it, with the "local docs export" label]
+[findings, canonical docs.servicenow.com URLs — or, for Step 0 findings, the nearest `=====` or `-----` line above each fact, copied whole, with the "local docs export" label]
 ## Support KB
 [every KB actually resolved in Step 5, each cited by KB number, OR "No KB number surfaced or was requested this pass"]
 ## Community Sources
-[each finding + full community post URL + "peer-authored" flag, OR "no on-domain results"]
+[each finding + full community post URL + "peer-authored" flag, plus any "found, not read: <URL>" lines, OR "no on-domain results"]
