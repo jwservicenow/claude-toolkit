@@ -980,7 +980,8 @@ Steps:
      printed, character for character. A shortened path ("…", "same path ›"), a merged line
      or a hand-built path is a defect: fix it before answering. Saving space is never a reason.
      Also check that each fact is printed on the page its citation names: a fact from a table or
-     topic that spans pages cites the page that prints it, not the topic's first page.
+     topic that spans pages cites the page that prints it, not the topic's first page. Every
+     Step 0 fact carries a printed line; a "[p.N, not cited]" stand-in is a defect.
    Known gap: this is enforced by instruction only, not tooling — there is no automated
    check that a cited fact actually appears in fetched bytes, so double-check your own
    citations against what you fetched before answering, especially on truncated reads.
