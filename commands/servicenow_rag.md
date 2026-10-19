@@ -102,7 +102,8 @@ TRUSTED SOURCE RANKING — trust order, highest first: (1) the docs mirror, (2) 
 ServiceNow Community. This is citation precedence, not run order. Present every relevant Mirror
 result; present at least one relevant Community result if Step 4 finds one (relevant = under
 `servicenow.com/community/`, past Step 4's filters, and on the question's topic), otherwise say
-"no relevant on-domain results"; present every KB Step 5 actually resolves, or say none applied. When sources
+"no relevant on-domain results" (or, when no query returned a community URL at all, the SEARCH
+FALLBACK LADDER phrase); present every KB Step 5 actually resolves, or say none applied. When sources
 disagree, the higher-ranked source wins and the answer says which source it preferred and why.
 
 EXECUTION ORDER — Mirror (Step 0, or Steps 1-3 when Step 0 does not answer) and Community (Step 4) both run on every question. Support
@@ -119,19 +120,23 @@ silently and start at Step 1.
   - Read that folder's `README.md` once per session — it maps topics to books and page ranges,
     gives the commands, and lists the books the set does NOT have.
   - At most 3 `python3 -I <dir>/sn-docs.py search "<terms>" -b <book>` calls, then read only the
-    hit pages with `page <book> <p> [count]`. Never Grep/rg/grep that folder (gitignored —
-    silent zero hits) and never Read the PDFs.
+    hit pages with `page <book> <p> [count]`. A README page pointer that matches the question
+    counts as a hit: read it directly, no search needed. Never Grep/rg/grep that folder
+    (gitignored — silent zero hits) and never Read the PDFs.
   - The export IS the docs site's content, so it ranks (1) with the mirror in TRUSTED SOURCE
     RANKING. Report it under `## Official Mirror`, citing the nearest `=====` or `-----` line
     above the fact, copied whole — never shorten the path, merge two lines or name a section
     yourself (`=====` opens each page; `-----` marks a topic or section starting mid-page) — labeled
-    "local docs export, <release>, exported <date from `sn-docs.py books`>". On a multi-page
+    "local docs export, <release>, exported <the `updated` date `sn-docs.py books` prints for
+    that book>". On a multi-page
     read, a fact cites a line printed on its own page: that page's `=====` header outranks any
     line from the page before.
   - Keep the page's own strength and scope words: "encouraged" stays encouraged, not
     "recommended"; "Regardless of how you implement" is not narrowed to one route. Say the docs
     lack something ("names no version", "not self-service") only after reading the pages that
-    would hold it; otherwise name those pages as "not read this pass".
+    would hold it; otherwise name those pages as "not read this pass". Add no units or words
+    the page doesn't print. If a sentence is cut or garbled, quote it as printed and flag it, or
+    cite a page that prints it whole; never rebuild it yourself.
   - When Step 0 answers the question, SKIP Steps 1-3 — no llms.txt, no index, no topic fetch.
     Community (Step 4) and KB resolution (Step 5) still run.
   - Fall through to Step 1, keeping the Step 0 findings, only when: the topic is in the README's
@@ -146,8 +151,9 @@ silently and start at Step 1.
     `brazil` and `australia` mirror files (checked 2026-10-19). Report it as a gap in the docs, cite
     https://www.servicenow.com/docs/r/servicenow-platform/mid-server/r_MIDServerSystemRequirements.html,
     and never fill it from community posts or blogs. Health Log Analytics' own MID sizing IS in
-    the docs: itom p.4490 ("… Health Log Analytics configuration preferences › MID Server
-    settings") gives a minimum of 4 CPUs, 16 GB RAM and an 8 GB Java heap, and a preferred 8
+    the docs: itom p.4490, cited as `ServiceNow Brazil docs · IT Operations Management, ITOM
+    AIOps › Health Log Analytics › Health Log Analytics reference › Health Log Analytics
+    configuration preferences › MID Server settings, p.4490`, gives a minimum of 4 CPUs, 16 GB RAM and an 8 GB Java heap, and a preferred 8
     CPUs, 32 GB RAM and an 8,192 MB heap. On any MID Server sizing question, read that page and
     report it as Health Log Analytics only, never as the standard-product minimum.
   - A page the answer names but Step 0 did not read (a product book's MID settings, a page
@@ -872,8 +878,11 @@ Steps:
 
    SEARCH FALLBACK LADDER — if a `site:` scoped search returns nothing usable (zero results,
    or a bot-challenge/CAPTCHA page instead of results): rephrase and retry with the `site:`
-   restriction intact, up to twice. If it still returns nothing usable, say "Community pass
-   unavailable this session — scoped search returned no usable results" and move on. NEVER
+   restriction intact, twice — always both retries before giving up (a claudew run on
+   2026-10-19 found its only community URLs on the third query). If all three return nothing
+   usable, say "Community pass unavailable this session — scoped search returned no usable
+   results" and move on. That phrase is for no community URL at all; "no relevant on-domain
+   results" is for community URLs that came back but none on the question's topic. NEVER
    drop the `site:` restriction to get results, and never hand-filter an unscoped search
    back to on-domain — an unscoped web search is out of bounds no matter what you discard
    afterward.
@@ -958,4 +967,4 @@ Response format (every time):
 ## Support KB
 [every KB actually resolved in Step 5, each cited by KB number, OR "No KB number surfaced or was requested this pass"]
 ## Community Sources
-[each finding + full community post URL + "peer-authored" flag, plus any "found, not read: <URL>" lines, OR "no relevant on-domain results"]
+[each finding + full community post URL + "peer-authored" flag, plus any "found, not read: <URL>" lines, OR "no relevant on-domain results", OR the SEARCH FALLBACK LADDER phrase]
