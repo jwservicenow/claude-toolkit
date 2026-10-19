@@ -994,7 +994,10 @@ Steps:
      names, numbers of 3+ digits) against the text under the cited line; a WHERE line names the
      printed line that holds the item, or says it is not on that page or the pages beside it. Fix
      every FAIL, SHORT and WHERE line, re-run until it reports 0 to fix and 0 to recheck (exit
-     0), then answer. Paraphrased facts carry no such items; that check stays yours.
+     0), then answer. Paraphrased facts carry no such items; that check stays yours. A NOTE line
+     names a Note printed under a cited topic that the draft doesn't carry; it doesn't change the
+     exit code. Carry each Note with its fact, or leave it out only when it doesn't bear on the
+     question.
    Known gap: mirror and KB citations are enforced by instruction only — there is no automated
    check that a cited fact actually appears in fetched bytes, so double-check your own
    citations against what you fetched before answering, especially on truncated reads.
