@@ -110,6 +110,10 @@ result; present at least one relevant Community result if Step 4 finds one (rele
 "no relevant on-domain results" (or, when no query returned a community URL at all, the SEARCH
 FALLBACK LADDER phrase); present every KB Step 5 actually resolves, or say none applied. When sources
 disagree, the higher-ranked source wins and the answer says which source it preferred and why.
+Before calling it a disagreement, compare the release or version each source names. A KB that
+names a later release than the docs page's own qualifier ("Starting from the August 2024
+release") records a later change, not a conflict: report both, each with its release, and say
+which applies to the customer's release.
 
 EXECUTION ORDER — Mirror (Step 0, or Steps 1-3 when Step 0 does not answer) and Community (Step 4) both run on every question. Support
 KB (Step 5) does NOT run independently per question — it is a citation resolver, not a search
@@ -117,6 +121,9 @@ engine, and it runs LAST, after Mirror and Community are both done, only for KB 
 surfaced along the way or that the user explicitly asked for. Running `search_kb` with a
 free-text `query` on every question was tried and dropped (tested 2026-10-02): it returns noise
 from internal/TOI knowledge bases that have nothing to do with the question.
+Going back to Step 0 after Step 4 is allowed when Community search results name a docs topic
+Step 0 missed. Log the return in the route note (verbose) and read the pages themselves: the
+facts still come only from pages read, never from a search result's title or summary.
 
 LOCAL DOCS FIRST (Step 0) — runs before KNOWN-LOCATIONS PRECEDENCE and Step 1. If
 `~/ClaudeOS/work/projects/servicenow-docs/sn-docs.py` exists (an offline page index of PDF
@@ -124,11 +131,16 @@ exports from servicenow.com/docs, not part of this toolkit), use it; if not, ski
 silently and start at Step 1.
   - Read that folder's `README.md` once per session — it maps topics to books and page ranges,
     gives the commands, and lists the books the set does NOT have.
-  - At most 3 `python3 -I <dir>/sn-docs.py search "<terms>" -b <book>` calls, then read only the
-    hit pages with `page <book> <p> [count]`. A README page pointer that matches the question
-    counts as a hit: read it directly, no search needed. When a `page` read ends with `(topic
-    continues on p.N …)`, keep reading until that line stops appearing: the topic isn't read, and
-    its last row or step can't be called missing, until then. Never Grep/rg/grep that folder
+  - At most 3 `python3 -I <dir>/sn-docs.py search "<terms>" -b <book>` calls. A call that stops on
+    an argument error doesn't count; fix it and re-run. Then read only the hit pages with
+    `page <book> <p> [count] --topic`, which reads on until the topic open at the end ends. A
+    README page pointer that matches the question counts as a hit: read it directly, no search
+    needed. When a read still ends with `(topic continues on p.N …)`, keep reading until that
+    line stops appearing: the topic isn't read, and its last row or step can't be called
+    missing, until then. A `(the next topic, "…", continues …)` line is a pointer to a different
+    topic: read it only if it bears on the question, and skipping it needs no mention. Only a
+    `(topic continues on p.N …)` line you don't follow is named in the answer as "not read this
+    pass". Never Grep/rg/grep that folder
     (gitignored — silent zero hits) and never Read the PDFs.
   - The export IS the docs site's content, so it ranks (1) with the mirror in TRUSTED SOURCE
     RANKING. Report it under `## Official Mirror`, citing the nearest `=====` or `-----` line
@@ -141,7 +153,9 @@ silently and start at Step 1.
   - Keep the page's own strength and scope words: "encouraged" stays encouraged, not
     "recommended"; "Regardless of how you implement" is not narrowed to one route. Say the docs
     lack something ("names no version", "not self-service") only after reading the pages that
-    would hold it; otherwise name those pages as "not read this pass". Add no units or words
+    would hold it; otherwise name those pages as "not read this pass". A gap claim covers only
+    what the question asked, and it names the search or `toc` call that looked for it and the
+    pages read; with no such call, make no gap claim. Add no units or words
     the page doesn't print, and drop none it does: a release or version qualifier ("Starting from
     the August 2024 release") stays with its fact. A name cut at a line or column edge is quoted as
     printed and flagged as possibly cut; never guess how it continues. If a sentence is cut or garbled, quote it as printed and flag it, or
@@ -962,6 +976,11 @@ Steps:
      PROVENANCE is untouched; the "not retrieved this pass" label still applies and stays.
    - Never drop a citable identifier (KB number, canonical URL, companion page) that was
      present in bytes you actually read.
+   - Before answering, check every Step 0 citation against the `=====` or `-----` line the tool
+     printed, character for character. A shortened path ("…", "same path ›"), a merged line
+     or a hand-built path is a defect: fix it before answering. Saving space is never a reason.
+     Also check that each fact is printed on the page its citation names: a fact from a table or
+     topic that spans pages cites the page that prints it, not the topic's first page.
    Known gap: this is enforced by instruction only, not tooling — there is no automated
    check that a cited fact actually appears in fetched bytes, so double-check your own
    citations against what you fetched before answering, especially on truncated reads.
@@ -972,7 +991,7 @@ surfaced before the failure or that the user explicitly asked for.
 
 Response format (every time):
 ## Official Mirror
-[findings, canonical docs.servicenow.com URLs — or, for Step 0 findings, the nearest `=====` or `-----` line above each fact, copied whole, with the "local docs export" label]
+[findings, canonical docs.servicenow.com URLs — or, for Step 0 findings, the nearest `=====` or `-----` line above each fact, copied whole, with the "local docs export" label. One printed line per source: a fact drawn from two pages or two sections gets two citation numbers, never one merged or shortened line]
 ## Support KB
 [every KB actually resolved in Step 5, each cited by KB number, and every surfaced KB the tool could not resolve, in the SUPPORT KB TOOL wording; OR "No KB number surfaced or was requested this pass"]
 ## Community Sources
