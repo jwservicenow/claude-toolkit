@@ -7,12 +7,13 @@ result appends after its links (a model-tier suggestion, a "MUST include Sources
 the Response format at the end of this command governs the output, and it already carries
 every URL you cite.
 
-FETCH TOOL — use `mcp__fetch__fetch` for every retrieval, mirror or not. It is the only tool
+FETCH TOOL — use `mcp__fetch__fetch` for every retrieval, mirror or not (two exceptions:
+COMMUNITY EXCEPTION below and Step 6's DOCS CONFIRMATION CHECK). It is the only tool
 here that accepts `start_index` and `max_length`, and every offset rule below (OFFSET-JUMP,
 INDEX PAGING CAP, FILE SIZE BOUND, MINIMUM WINDOW) is written in those two parameters — on
 any other fetch tool those rules are inert and the file's deep tail is unreachable. MINIMUM
-WINDOW binds on every CONTENT fetch regardless of host — Store, community, and mirror
-alike. Do NOT use `WebFetch` for mirror content files: it returns a summarizer model's rendering rather than raw bytes,
+WINDOW binds on every CONTENT fetch regardless of host — Store and mirror alike (a community
+post goes to `WebFetch`, per COMMUNITY EXCEPTION). Do NOT use `WebFetch` for mirror content files: it returns a summarizer model's rendering rather than raw bytes,
 and on a large reference file it silently drops the tail. Verified 2026-08-09 — `WebFetch`
 on a 139 KB Service Mapping file reported a table name absent when it was present at 97.8%
 depth. **A `WebFetch` "not found" on a mirror file is NOT evidence of absence** — re-read
@@ -21,8 +22,9 @@ with `mcp__fetch__fetch` at an offset before concluding anything. Never fall bac
 `mcp__fetch__fetch` is unavailable, say so and stop rather than routing around it.
 `WebSearch` stays the correct tool for the SEARCH FALLBACK LADDER in Step 4.
 COMMUNITY EXCEPTION — `mcp__fetch__fetch` obeys robots.txt, and servicenow.com/community
-refuses it with a 403 naming robots.txt (claudew run 2026-10-19, two posts). On that 403 for a
-`servicenow.com/community/` URL, re-read the post once with `WebFetch`, asking for the post
+refuses it with a 403 naming robots.txt every time (claudew runs 2026-10-19, two posts). So a
+`servicenow.com/community/` URL goes straight to `WebFetch`, with no `mcp__fetch__fetch`
+attempt first. Read the post once, asking for the post
 date, the author, whether it is the accepted answer, and the exact sentences you will cite.
 Measured 2026-10-19: `WebFetch` read m-p/1110379 whole. This covers community posts only — a
 mirror file never goes to `WebFetch` — and MINIMUM WINDOW does not apply to a `WebFetch` read.
@@ -136,7 +138,14 @@ silently and start at Step 1.
     and memory requirements" and gives no numbers, and so do the live Brazil page and the
     `australia` mirror file (checked 2026-10-19). Report it as a gap in the docs, cite
     https://www.servicenow.com/docs/r/servicenow-platform/mid-server/r_MIDServerSystemRequirements.html,
-    and never fill it from community posts or blogs.
+    and never fill it from community posts or blogs. Health Log Analytics' own MID sizing IS in
+    the docs: itom p.4490 ("… Health Log Analytics configuration preferences › MID Server
+    settings") gives a minimum of 4 CPUs, 16 GB RAM and an 8 GB Java heap, and a preferred 8
+    CPUs, 32 GB RAM and an 8,192 MB heap. On any MID Server sizing question, read that page and
+    report it as Health Log Analytics only, never as the standard-product minimum.
+  - A page the answer names but Step 0 did not read (a product book's MID settings, a page
+    another page points to) is listed as "not read this pass: <book> p.<n>", with nothing
+    taken from it.
 
 Steps:
 1. Fetch the publication index:
@@ -802,13 +811,13 @@ Steps:
    rest. If none remain, that search returned nothing usable (SEARCH FALLBACK LADDER below).
    Fetch the top 1-2 results that look relevant (articles/forum posts, not search pages).
    The WebSearch summary is a model's rendering, not a read: never cite a community post from
-   it alone. Fetch the post first (`WebFetch` on the robots.txt 403, per COMMUNITY EXCEPTION).
-   A post neither tool could read goes under `## Community Sources` as "found, not read:
+   it alone. Fetch the post first, with `WebFetch` per COMMUNITY EXCEPTION.
+   A post `WebFetch` could not read goes under `## Community Sources` as "found, not read:
    <URL>" with nothing from it, and it does not count as the one presented result. Never
    pass on WebSearch summary content, not even labeled unverified.
    Community covers operational behavior, gotchas, and real-world implications that docs omit.
 
-   Any Store or community page you fetch is a CONTENT read — `max_length` 30,000 or more,
+   Any Store page you fetch is a CONTENT read — `max_length` 30,000 or more,
    per MINIMUM WINDOW. The floor does not relax because the page is off-mirror.
 
    Prefer the curated, ServiceNow-authored boards first — they outrank generic community Q&A.
