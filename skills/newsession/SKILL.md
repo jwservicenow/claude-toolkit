@@ -160,7 +160,10 @@ Running state:
 Only if something this session started is still running when it ends — a background shell or task, a dev server, a remote job (GPU run, benchmark, cron-less loop). One line each: what it is, its shell/task ID or PID, the host, where its output goes, and how to stop it. Omit if nothing is running. Never include a credential, even one the process uses.
 
 Awaiting:
-Only if the session ends blocked on user input. One sentence — what's blocked and what input is needed.
+Only if the session ends blocked on user input. One sentence — what's blocked and what input is needed. Never list a commit or push OK here — that goes under Commit at wrap-up.
+
+Commit at wrap-up:
+Only if edits are uncommitted. One line per repo: repo, files. The next session asks once, in its first reply: "There are open commits from the prior session — commit them now or at wrap-up?" It follows that answer and never re-asks per reply.
 
 Deferred:
 Topics discussed but intentionally parked. One line each — prevents the next session from re-litigating resolved decisions.
