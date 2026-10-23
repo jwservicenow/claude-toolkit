@@ -164,6 +164,8 @@ Save the plan to the working directory as:
 
 `<topic>` is a short kebab-case label (e.g. `auth-refactor-plan-2026-06-07.md`). Use today's date. If that filename already exists, append the next unused letter (`…-2026-06-07b.md`, then `c`) — never overwrite a plan.
 
+Other files the plan's work creates start with `<topic>-`; snapshots (reports, run outputs, one-off scripts) end `-YYYY-MM-DD[letter]`, living files (scripts, docs that keep changing) carry no date. Files for another subsystem keep that subsystem's prefix (`acc-`, `cmdb-`). Raw exports used as a reference baseline go in a folder named `<instance>-YYYY-MM-DD/`, never overwritten.
+
 Picking an approach in Step 3 is the user's approval to write the plan and prompt — save without asking again.
 
 **On a replan** (Step 2), after saving the new plan, prepend `STATUS YYYY-MM-DD — SUPERSEDED by <new-plan-filename>.` (today's date) to the replaced plan as a new first line — the existing title moves down one line — and move it into the `archive/` directly under the project dir; create it if it doesn't exist. Name it per the archive-naming rule in `prompt-sweep/prmpt-lifecycle.md` in the skills folder.
