@@ -1,6 +1,7 @@
 ---
 name: token-audit
 description: Use when the user types /token-audit to check Claude Code accounts for token waste — CLAUDE.md size, MCP server/tool footprint, model/effort config, hooks, subagents, scheduled cron jobs, undocumented settings.json keys, and cache/token usage totals. Auto-discovers every real Claude Code config on the machine (works for one account or several) and skips any that just mirrors another via symlinked session data. Runnable from any account. Strictly user-invoked — never auto-triggers.
+disable-model-invocation: true
 ---
 
 # /token-audit — Claude Code token-waste audit

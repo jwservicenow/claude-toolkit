@@ -1,6 +1,7 @@
 ---
 name: deps-audit
 description: Use when the user types /deps-audit to run a comprehensive dependency health check on a project — security vulnerabilities, outdated packages, unused dependencies, and license compliance. Detects the package manager (npm/yarn/pnpm, pip/poetry, etc.) and produces a prioritized report. Strictly user-invoked — never auto-triggers.
+disable-model-invocation: true
 ---
 
 # /deps-audit — Dependency Audit Skill

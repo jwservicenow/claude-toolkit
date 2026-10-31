@@ -1,6 +1,7 @@
 ---
 name: security-audit
 description: Use when the user types /security-audit to run a comprehensive security scan of the whole project — OWASP Top 10 patterns, dependency CVEs, hardcoded secrets, auth/authorization weaknesses, and risky configuration. Broader than a diff review — it audits the entire codebase, not just pending changes. Strictly user-invoked — never auto-triggers.
+disable-model-invocation: true
 ---
 
 # /security-audit — Security Audit Skill

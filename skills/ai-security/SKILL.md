@@ -1,6 +1,7 @@
 ---
 name: ai-security
 description: Use when the user types /ai-security to assess the security of AI/ML systems and LLM-based agents — prompt injection (direct and indirect), agent tool abuse, guardrail/blocklist resistance, model inversion and data poisoning exposure, mapped to MITRE ATLAS. This is the model-and-agent layer, NOT general application security (see /security-audit) and not dependency risk (see /deps-audit). Strictly user-invoked — never auto-triggers.
+disable-model-invocation: true
 ---
 
 # /ai-security — AI & LLM Security Assessment
