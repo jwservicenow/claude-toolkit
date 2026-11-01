@@ -198,10 +198,10 @@ If your work Enterprise plan provisions MCP servers automatically (e.g., interna
 
 **Global** — Claude Code reads it from `$CLAUDE_CONFIG_DIR/CLAUDE.md`, so each config needs its own: `~/.claude-personal/CLAUDE.md` and `~/.claude-work/CLAUDE.md`. `~/.claude/CLAUDE.md` is **not** read by `claudep` or `claudew`. To keep one copy, write it once and symlink it into both:
 ```bash
-mkdir -p ~/ClaudeOS/global
-nano ~/ClaudeOS/global/CLAUDE.md
-ln -s ~/ClaudeOS/global/CLAUDE.md ~/.claude-personal/CLAUDE.md
-ln -s ~/ClaudeOS/global/CLAUDE.md ~/.claude-work/CLAUDE.md
+mkdir -p ~/ClaudeOS/personal/global
+nano ~/ClaudeOS/personal/global/CLAUDE.md
+ln -s ~/ClaudeOS/personal/global/CLAUDE.md ~/.claude-personal/CLAUDE.md
+ln -s ~/ClaudeOS/personal/global/CLAUDE.md ~/.claude-work/CLAUDE.md
 ```
 
 Example content:

@@ -1,18 +1,17 @@
 #!/usr/bin/env bash
-# Canonical pre-commit guard for the ClaudeOS repos. ONE file, vendored unchanged
-# into every repo, armed per clone with:
-#     git config core.hooksPath .githooks
+# Pre-commit guard for jwservicenow/claude-toolkit (PUBLIC). Checks 1-4 match the other two repos;
+# 5-7 are fitted to this repo. Armed per clone with:
+#     git config core.hooksPath scripts/git-hooks
 # Fall back instantly (replaces the path, never additive):
 #     git config --unset core.hooksPath
 # Bypass a single commit, deliberately:
 #     git commit --no-verify
 #
-# Canonical copy lives at the workspace repo root, .githooks/pre-commit — the same
-# path it is armed from, so there is no second copy in this repo to drift.
-# Standard and rationale: homelab/git-convention.md.
+# Lives at scripts/git-hooks/pre-commit, the same path it is armed from.
+# Standard and rationale: git-convention.md, section 3.
 #
-# One file serves repos with very different contents because every check that
-# does not apply self-skips: the ansible/ rules never match outside homelab, and
+# It serves a repo with mixed contents because every check that does not apply
+# self-skips: the ansible/ rules never match outside homelab, and
 # the intake-artifact rules run only on paths under personal/projects/home/.
 #
 # What this guard CANNOT do, stated plainly: it does not recognise a serial
@@ -120,54 +119,36 @@ while IFS= read -r f; do
     esac
 done <<< "$staged"
 
-# 6. work/projects/search-routing must NEVER be committed to this repo. Its home is
-#    the jwservicenow account (private jwservicenow/search-routing), and it was
-#    pushed to jimww333/workspace by mistake twice — 2026-08-31 and 2026-09-01 —
-#    because the root .gitignore opted it in and the CLAUDE.md repo-map, plus a
-#    stale memory file, both named jimww333 as the destination. Documentation was
-#    corrected each time and the mistake still recurred, so the block lives here.
-#    Self-skips in every other repo, where the path does not exist.
-#    Deletions are NOT blocked: `staged` is ACM-filtered, so untracking the path
-#    (git rm --cached) commits cleanly. Only re-ADDING it is refused.
+# 6. Personal and work material must NEVER be committed to this public repo. Their
+#    homes are the private jimww333/personal and jwservicenow/work repos.
+#    Deletions are NOT blocked: `staged` is ACM-filtered, so only adding is refused.
 while IFS= read -r f; do
     case "$f" in
-        work/projects/search-routing/*)
-            echo "BLOCKED: search-routing artifact staged -> $f"
-            echo "         This project does NOT belong to jimww333/workspace."
-            echo "         Its home is the jwservicenow account. Commit it there instead."
+        personal/*|work/*|projects/*|global/*)
+            echo "BLOCKED: private repo path staged -> $f"
+            echo "         This repo is PUBLIC. Commit it in personal or work instead."
             fail=1
             ;;
     esac
 done <<< "$staged"
 
-# 7. Plan and prompt files: the repo's own .gitignore decides, not this hook
-#    (Jim, 2026-09-07; replaces the blanket block of 2026-08-25). A repo that
-#    ignores them has said they are scratch, so staging one means it was
-#    force-added and that is what gets blocked. A repo that does NOT ignore them
-#    has deliberately opted in — the private workspace tracks all five artifact
-#    types — and the hook stays out of the way.
-#
-#    Deferring keeps the policy in ONE place per repo. The previous form kept a
-#    second copy here, which is why a repo could not change its mind without
-#    editing a guard vendored into every other repo, public ones included.
-#    Additions only, so an already-tracked file never cries wolf. --no-index is
-#    REQUIRED: by hook time the file is in the index, and a plain check-ignore
-#    reports any staged path as not-ignored, so the block would never fire.
+# 7. Force-added files: the repo's own .gitignore decides, not this hook. An
+#    ignored file reaches the index only by `git add -f`, and that is what gets
+#    blocked. A real exception gets a ! line in .gitignore. Additions only, so an
+#    already-tracked file never cries wolf. --no-index is REQUIRED: by hook time
+#    the file is in the index, and a plain check-ignore reports any staged path
+#    as not-ignored. bootstrap.sh's probe is skipped so its self-test still proves
+#    the PEM check above.
 while IFS= read -r f; do
     [ -n "$f" ] || continue
-    case "$(basename "$f")" in
-        *-plan-*.md|*-prompt-*.md)
-            # Not ignored by this repo => deliberately tracked => allow.
-            if git check-ignore -q --no-index "$f" 2>/dev/null; then
-                echo "BLOCKED: plan/prompt file staged despite being gitignored -> $f"
-                echo "         This repo treats plans and prompts as untracked scratch."
-                echo "         It can only have been force-added. Deliberate exception:"
-                echo "         git commit --no-verify"
-                fail=1
-            fi
-            ;;
-    esac
-done <<< $(git diff --cached --name-only --diff-filter=A)
+    [ "$(basename "$f")" != .bootstrap-guard-probe ] || continue
+    if git check-ignore -q --no-index "$f" 2>/dev/null; then
+        echo "BLOCKED: file staged despite being gitignored -> $f"
+        echo "         It can only have been force-added. Deliberate exception:"
+        echo "         add a ! line to .gitignore."
+        fail=1
+    fi
+done <<< "$(git diff --cached --name-only --diff-filter=A)"
 
 if [ "$fail" -ne 0 ]; then
     echo ""
