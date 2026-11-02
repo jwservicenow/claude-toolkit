@@ -23,6 +23,17 @@ Look at what actually happened in this conversation (this session only — not m
   nothing, and end the turn with `<!-- no output -->`. A closed topic has nothing to resume, and
   its unmet items already sit on the plan's unmet line.
 
+## Step 0 — Commit and push first (runs before everything else)
+
+Run `git status --short` in every repo this session edited. Nothing uncommitted → go straight
+to Step 1, silently.
+
+Anything uncommitted → before writing anything, ask once in one reply: list each repo and its
+files, ask "Commit and push these now?", end the turn and wait.
+- Yes → commit and push each repo per the repo map in the user's CLAUDE.md (right account,
+  right remote), confirm clean with `git status`, then run Steps 1–4.
+- No → run Steps 1–4; the handoff lists them under `Commit at wrap-up`.
+
 ## Step 1 — Resolve the optional argument
 
 There is one mode. If `$ARGUMENTS` is empty, derive `<topic>` per Step 4 and proceed.
@@ -35,8 +46,8 @@ mode. First match wins:
 
 Every path runs Steps 2–4 (except a closed topic — see Definitions), then ends the turn with the literal text `<!-- no output -->` and
 nothing else. It renders as nothing, so the user sees no output, and the harness gets a non-empty
-reply so it never asks for one. **The one exception to silence** is rule 2's question, asked
-before anything is written.
+reply so it never asks for one. **The two exceptions to silence** are Step 0's commit question
+and rule 2's question, each asked before anything is written.
 
 ## Step 2 — Close-out sweep (always runs, silent)
 
