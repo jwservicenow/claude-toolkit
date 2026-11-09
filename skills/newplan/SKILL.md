@@ -99,10 +99,10 @@ cited source, which usually holds it already — a results file, script, commit 
 finished report, only when the session produced a real deliverable. Never an overflow or detail
 log that keeps growing — that's the running log this section replaces.
 
-**Resume read.** A fresh session reads the plan with `bash ~/ClaudeOS/shared/skills/newplan/plan-read.sh <plan>`:
+**Resume read.** A fresh session reads the plan with `bash ~/ClaudeOS/personal/skills/newplan/plan-read.sh <plan>`:
 every section in full, and every OPEN, trap and decision row, but not settled findings/defects or
 superseded rows. Those stay in the file; `grep -n '<term>' <plan>` for them before acting on
-anything they might cover. The script's path is `~/ClaudeOS/shared/skills/newplan/plan-read.sh`
+anything they might cover. The script's path is `~/ClaudeOS/personal/skills/newplan/plan-read.sh`
 where that exists, else `~/.claude/skills/newplan/plan-read.sh` — write whichever exists into the prompt.
 
 **The rule, in full:** when something changes, **edit the row in place.** If a conclusion is
