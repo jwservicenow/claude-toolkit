@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Pre-commit guard for jwservicenow/claude-toolkit (PUBLIC). Checks 1-4 match the other two repos;
+# Pre-commit guard for jwservicenow/claude-toolkit (PUBLIC). Checks 1-4 and 8 match the other two repos;
 # 5-7 are fitted to this repo. Armed per clone with:
 #     git config core.hooksPath scripts/git-hooks
 # Fall back instantly (replaces the path, never additive):
@@ -148,6 +148,21 @@ while IFS= read -r f; do
         echo "         add a ! line to .gitignore."
         fail=1
     fi
+done <<< "$(git diff --cached --name-only --diff-filter=A)"
+
+# 8. Scratch strays: Claude's throwaway files belong in ~/ClaudeOS/scratch/,
+#    outside every repo (global CLAUDE.md section 4, "Scratch files"). run/ is
+#    deliberately not listed: llm/run/ and work run/ are real folders.
+#    Additions only, so an already-tracked file never cries wolf.
+while IFS= read -r f; do
+    [ -n "$f" ] || continue
+    case "/$f" in
+        */scratch/*|*/tmp/*|*.bak|*.bak-*|*.bak.*|*.orig|*.rej|*.tmp|*~|*.swp|*/.DS_Store)
+            echo "BLOCKED: scratch stray staged -> $f"
+            echo "         Claude scratch goes in ~/ClaudeOS/scratch/<project>/, outside the repo."
+            fail=1
+            ;;
+    esac
 done <<< "$(git diff --cached --name-only --diff-filter=A)"
 
 if [ "$fail" -ne 0 ]; then
