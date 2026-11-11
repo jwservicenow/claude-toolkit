@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Pre-commit guard for jwservicenow/claude-toolkit (PUBLIC). Checks 1-4 and 8 match the other two repos;
+# Pre-commit guard for jwservicenow/claude-toolkit (PUBLIC). Checks 1-4, 8 and 10 match the other two repos;
 # 5-7 are fitted to this repo. Armed per clone with:
 #     git config core.hooksPath scripts/git-hooks
 # Fall back instantly (replaces the path, never additive):
@@ -164,6 +164,58 @@ while IFS= read -r f; do
             ;;
     esac
 done <<< "$(git diff --cached --name-only --diff-filter=A)"
+
+# 10. Secrets anywhere in the staged changes: gitleaks, its standard rules plus the
+#     two below (git-convention.md section 3). Staged changes only, so old history
+#     never blocks. Prints rule, file and line, never the value. gitleaks missing =
+#     BLOCKED: a scan that silently skips looks exactly like a pass.
+PATH="$PATH:/opt/homebrew/bin:/usr/local/bin"
+IFS= read -r -d '' GITLEAKS_CONFIG_TOML <<'TOML' || true
+[extend]
+useDefault = true
+
+[[rules]]
+id = "bearer-header"
+description = "Authorization Bearer value holding a digit"
+regex = '''(?i)\bbearer\s+([A-Za-z0-9._~+/=-]{6,}[0-9][A-Za-z0-9._~+/=-]{6,})'''
+entropy = 3.5
+keywords = ["bearer"]
+
+[[rules]]
+id = "password-assignment"
+description = "password set to a literal holding a digit or symbol"
+regex = '''(?i)\b(?:passw(?:or)?d|passphrase|pwd)\b\s*(?:is|=|:|:=)\s*["'\x60]?([^\s"'\x60<>{}$]*[0-9!@#%^&+=~][^\s"'\x60<>{}$]*)'''
+keywords = ["pass", "pwd"]
+
+[[allowlists]]
+description = "Doc placeholders: all-caps YOUR-... stand-ins, never real values"
+regexTarget = "match"
+regexes = ['''YOUR-[A-Z]+(?:-[A-Z]+)*''']
+TOML
+export GITLEAKS_CONFIG_TOML
+if ! command -v gitleaks >/dev/null 2>&1; then
+    echo "BLOCKED: gitleaks is not installed, so staged changes cannot be checked for secrets."
+    echo "         Install it first: git-convention.md section 3."
+    fail=1
+else
+    report=$(mktemp "${TMPDIR:-/tmp}/gitleaks-precommit.XXXXXX")
+    gitleaks git --pre-commit --staged --redact --no-banner --log-level error \
+        --exit-code 3 --report-format json --report-path "$report" . >/dev/null 2>&1
+    rc=$?
+    if [ "$rc" -eq 3 ]; then
+        echo "BLOCKED: possible secret in the staged changes (value hidden):"
+        python3 -I -c 'import json,sys
+for f in json.load(open(sys.argv[1])): print("         %s: %s line %s" % (f["RuleID"], f["File"], f["StartLine"]))' "$report" \
+            || echo "         details: gitleaks git --pre-commit --staged --redact -v"
+        echo "         Real secret: take it out; it stays on the host that owns it."
+        echo "         False alarm: allow-list the exact path in this hook (check 10)."
+        fail=1
+    elif [ "$rc" -ne 0 ]; then
+        echo "BLOCKED: gitleaks failed to run (exit $rc), so nothing was checked."
+        fail=1
+    fi
+    rm -f "$report"
+fi
 
 if [ "$fail" -ne 0 ]; then
     echo ""
