@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Pre-commit guard for jwservicenow/claude-toolkit (PUBLIC). Checks 1-4, 8 and 10 match the other two repos;
+# Pre-commit guard for jwservicenow/claude-toolkit (PUBLIC). Checks 4, 8 and 10 match the other two repos;
 # 5-7 are fitted to this repo. Armed per clone with:
 #     git config core.hooksPath scripts/git-hooks
 # Fall back instantly (replaces the path, never additive):
@@ -11,8 +11,7 @@
 # Standard and rationale: git-convention.md, section 3.
 #
 # It serves a repo with mixed contents because every check that does not apply
-# self-skips: the ansible/ rules never match outside homelab, and
-# the intake-artifact rules run only on paths under personal/projects/home/.
+# self-skips: the intake-artifact rules run only on paths under personal/projects/home/.
 #
 # What this guard CANNOT do, stated plainly: it does not recognise a serial
 # number, and it has no idea whether a repo is public or private. It shrinks the
@@ -24,49 +23,7 @@ fail=0
 staged=$(git diff --cached --name-only --diff-filter=ACM)
 [ -z "$staged" ] && exit 0
 
-# 1. The vault password file must never be staged, under any name or path.
-while IFS= read -r f; do
-    case "$(basename "$f")" in
-        .vault_pass|.vault_pass.txt|vault_pass|vault_pass.*)
-            echo "BLOCKED: vault password file staged -> $f"
-            echo "         Vault password files live only on the Ansible control node."
-            fail=1
-            ;;
-    esac
-done <<< "$staged"
-
-# 2. Any file named vault.yml / vault.yaml must be Ansible-Vault ciphertext, not plaintext.
-#    Reads the STAGED blob, not the worktree copy — an encrypted file on disk with a
-#    plaintext version staged would otherwise slip through.
-while IFS= read -r f; do
-    case "$(basename "$f")" in
-        vault.yml|vault.yaml|*.vault.yml)
-            if ! git show ":$f" 2>/dev/null | head -1 | grep -q '^\$ANSIBLE_VAULT'; then
-                echo "BLOCKED: $f is staged UNENCRYPTED (no \$ANSIBLE_VAULT header)."
-                echo "         Encrypt it:  ansible-vault encrypt $f"
-                fail=1
-            fi
-            ;;
-    esac
-done <<< "$staged"
-
-# 3. Belt-and-braces: obvious plaintext secret assignments anywhere under ansible/.
-#    Skips already-encrypted files. Deliberately narrow to avoid crying wolf.
-while IFS= read -r f; do
-    case "$f" in
-        ansible/*)
-            blob=$(git show ":$f" 2>/dev/null) || continue
-            printf '%s' "$blob" | head -1 | grep -q '^\$ANSIBLE_VAULT' && continue
-            if printf '%s' "$blob" | grep -nEi '^[[:space:]]*(vault_)?[a-z0-9_]*(password|passwd|secret|api_key|token)[a-z0-9_]*[[:space:]]*:[[:space:]]*["'"'"']?[^{[:space:]"'"'"'][^{]' | grep -vqi 'vault_password_file'; then
-                echo "WARNING: possible plaintext secret in $f:"
-                printf '%s' "$blob" | grep -nEi '^[[:space:]]*(vault_)?[a-z0-9_]*(password|passwd|secret|api_key|token)[a-z0-9_]*[[:space:]]*:' | grep -vi 'vault_password_file' | sed 's/^/         /'
-                echo "         If this is a real secret, move it into the vault file."
-                echo "         If it is a reference to a vault var, this is a false positive -> --no-verify."
-                fail=1
-            fi
-            ;;
-    esac
-done <<< "$staged"
+# Checks 1-3 (Ansible vault files) removed 2026-11-11 with Ansible; numbers not reused.
 
 # 4. Private key material — by filename and by content.
 #    The content test is anchored to the real PEM header form (five dashes, then
