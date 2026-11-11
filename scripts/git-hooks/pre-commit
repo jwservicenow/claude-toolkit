@@ -8,7 +8,7 @@
 #     git commit --no-verify
 #
 # Lives at scripts/git-hooks/pre-commit, the same path it is armed from.
-# Standard and rationale: git-convention.md, section 3.
+# Standard and rationale: homelab_git_convention.md, section 3.
 #
 # It serves a repo with mixed contents because every check that does not apply
 # self-skips: the intake-artifact rules run only on paths under personal/projects/home/.
@@ -28,7 +28,7 @@ staged=$(git diff --cached --name-only --diff-filter=ACM)
 # 4. Private key material — by filename and by content.
 #    The content test is anchored to the real PEM header form (five dashes, then
 #    BEGIN ... PRIVATE KEY, then five dashes). Matching the bare phrase would
-#    block every future edit to git-convention.md, which names these patterns in
+#    block every future edit to homelab_git_convention.md, which names these patterns in
 #    prose — the exact cry-wolf failure this guard is meant to avoid.
 while IFS= read -r f; do
     case "$(basename "$f")" in
@@ -53,7 +53,7 @@ done <<< "$staged"
 #    never to be committed, "even to a private repo". Scoped on purpose rather than
 #    applied globally: another project may legitimately track a documentation
 #    screenshot, and a blanket image block would refuse normal content. Full
-#    rationale lives in git-convention.md, which is not public.
+#    rationale lives in homelab_git_convention.md, which is not public.
 #
 #    The scope is the path prefix, not remote.origin.url. One repo now spans home/,
 #    homelab/ and work/, so a remote-URL test can never distinguish them and would
@@ -123,7 +123,7 @@ while IFS= read -r f; do
 done <<< "$(git diff --cached --name-only --diff-filter=A)"
 
 # 10. Secrets anywhere in the staged changes: gitleaks, its standard rules plus the
-#     two below (git-convention.md section 3). Staged changes only, so old history
+#     two below (homelab_git_convention.md section 3). Staged changes only, so old history
 #     never blocks. Prints rule, file and line, never the value. gitleaks missing =
 #     BLOCKED: a scan that silently skips looks exactly like a pass.
 PATH="$PATH:/opt/homebrew/bin:/usr/local/bin"
@@ -152,7 +152,7 @@ TOML
 export GITLEAKS_CONFIG_TOML
 if ! command -v gitleaks >/dev/null 2>&1; then
     echo "BLOCKED: gitleaks is not installed, so staged changes cannot be checked for secrets."
-    echo "         Install it first: git-convention.md section 3."
+    echo "         Install it first: homelab_git_convention.md section 3."
     fail=1
 else
     report=$(mktemp "${TMPDIR:-/tmp}/gitleaks-precommit.XXXXXX")
