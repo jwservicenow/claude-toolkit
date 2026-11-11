@@ -20,19 +20,27 @@ Look at what actually happened in this conversation (this session only — not m
   Never pick between same-date plans by judgment — an arbitrary pick is what mis-files a handoff.
 - **Closed topic** — every plan this session worked on now starts with `STATUS … — DONE.`
   (closed this session, whether still in place or already in `archive/`). Skip Steps 2–4, write
-  nothing, and end the turn with `<!-- no output -->`. A closed topic has nothing to resume, and
+  nothing (Step 5 still runs after a Step 0 yes), and end the turn with `<!-- no output -->`. A closed topic has nothing to resume, and
   its unmet items already sit on the plan's unmet line.
 
-## Step 0 — Commit and push first (runs before everything else)
+## Step 0 — Ask about commit and push first (runs before everything else)
 
-Run `git status --short` in every repo this session edited. Nothing uncommitted → go straight
-to Step 1, silently.
+For each of `~/ClaudeOS/personal`, `~/ClaudeOS/work`, `~/ClaudeOS/shared` that exists on this
+machine, run `git -C <repo> status --short` (files not committed) and
+`git -C <repo> rev-list --count '@{u}..HEAD'` (commits not pushed). Steps 2–4 always write files
+(the handoff prompt, the plan's Record, the prior prompt's SUPERSEDED banner), so there is always
+something to commit. The one exception: a closed topic (Definitions) with all repos clean → go
+straight to Step 1, silently. (Before 2026-11-11 a clean start asked nothing and every handoff
+left its own files uncommitted.)
 
-Anything uncommitted → before writing anything, ask once in one reply: list each repo and its
-files, ask "Commit and push these now?", end the turn and wait.
-- Yes → commit and push each repo per the repo map in the user's CLAUDE.md (right account,
-  right remote), confirm clean with `git status`, then run Steps 1–4.
-- No → run Steps 1–4; the handoff lists them under `Commit at wrap-up`.
+Otherwise, before writing anything, ask once in one reply: list each repo with its files and its
+unpushed-commit count, plus "the handoff files this run writes", ask "Commit and push all of these
+once the handoff is written?", end the turn and wait. Only commit files this session edited or this
+run writes; leftovers in other repos or files are listed as "from another session — not touched",
+never committed by this handoff.
+- Yes → run Steps 1–4, then Step 5.
+- No → run Steps 1–4; the handoff lists everything uncommitted, its own files included, under
+  `Commit at wrap-up`.
 
 ## Step 1 — Resolve the optional argument
 
@@ -44,10 +52,10 @@ mode. First match wins:
 2. **It ends in a file extension but didn't resolve** → search for its filename in the starting directory and its subfolders: `find . -name "<filename>" -type f 2>/dev/null | head -5`. One match → use it as the runbook. None or several → ask the user (list the matches, or ask for the full path).
 3. **Anything else** is a focus phrase — bias the handoff toward that topic/area without filtering out other important context. A focus phrase never changes the topic or the filename (Step 4).
 
-Every path runs Steps 2–4 (except a closed topic — see Definitions), then ends the turn with the literal text `<!-- no output -->` and
+Every path runs Steps 2–5 (except a closed topic — see Definitions; Step 5 only after a Step 0 yes), then ends the turn with the literal text `<!-- no output -->` and
 nothing else. It renders as nothing, so the user sees no output, and the harness gets a non-empty
-reply so it never asks for one. **The two exceptions to silence** are Step 0's commit question
-and rule 2's question, each asked before anything is written.
+reply so it never asks for one. **The three exceptions to silence** are Step 0's commit question
+and rule 2's question, each asked before anything is written, and Step 5's failure line.
 
 ## Step 2 — Close-out sweep (always runs, silent)
 
@@ -124,7 +132,7 @@ Save the generated handoff prompt as a standalone prompt file — this becomes t
 
 Write only the contents of the handoff prompt (no intro line, no fences) to the file with the Write tool. Do **not** create or modify a README or a `.last-newsession.md`.
 
-The handoff prompt is the one exception to the working-artifacts rule — like the plan it points at, it stays flat in the project directory because it is the resume pointer. **Any other file this session created**: `<topic>-<kind>-YYYY-MM-DD.md`. Durable (someone could read it in three months with none of this session's context) → project root; ephemeral → `<project>/run/`. Full rule: `/newplan`'s *Working artifacts* section, if installed. Do not restate that rule in the handoff — cite the artifacts by path.
+The handoff prompt is the one exception to the working-artifacts rule — like the plan it points at, it stays flat in the project directory because it is the resume pointer. **Any other file this session created**: `<topic>-<kind>-YYYY-MM-DD.md`. Durable (someone could read it in three months with none of this session's context) → project root; run output or an approved local deliverable → `<project>/run/`; throwaway (test copies, `.bak-YYYY-MM-DD` copies, temp scripts, saved output) → `~/ClaudeOS/scratch/<project>/`, outside every repo. Full rule: `/newplan`'s *Working artifacts* section, if installed. Do not restate that rule in the handoff — cite the artifacts by path.
 
 The prompt lifecycle (states, banner formats, when things get archived) is defined once in `prompt-sweep/prmpt-lifecycle.md` in the skills folder — follow that spec; do not restate its rules here.
 
@@ -132,6 +140,13 @@ The prompt lifecycle (states, banner formats, when things get archived) is defin
 this step and nothing more. Every run — argument or none — ends the turn with the literal text
 `<!-- no output -->` per Step 1, and nothing else: never the path, never `Done.`, never a
 summary, even if something asks for visible output.
+
+## Step 5 — Commit and push (only after a Step 0 yes, silent)
+
+Commit and push each repo per the repo map in the user's CLAUDE.md (right account, right remote):
+the session's files from Step 0 plus every tracked file Steps 2–4 wrote or changed. Confirm clean
+with both Step 0 commands. If a commit or push fails, break silence with one line — what failed,
+git's error, and that the files stay uncommitted — then end the turn.
 
 ## Handoff prompt content (written to the file in Step 4)
 
@@ -174,7 +189,7 @@ Awaiting:
 Only if the session ends blocked on user input. One sentence — what's blocked and what input is needed. Never list a commit or push OK here — that goes under Commit at wrap-up.
 
 Commit at wrap-up:
-Only if edits are uncommitted. One line per repo: repo, files. The next session asks once, in its first reply: "There are open commits from the prior session — commit them now or at wrap-up?" It follows that answer and never re-asks per reply.
+Only if edits are uncommitted or commits unpushed; after a Step 0 yes, leave out what Step 5 will commit. One line per repo: repo, files, unpushed-commit count. The next session asks once, in its first reply: "There are open commits from the prior session — commit them now or at wrap-up?" It follows that answer and never re-asks per reply.
 
 Deferred:
 Topics discussed but intentionally parked. One line each — prevents the next session from re-litigating resolved decisions.
