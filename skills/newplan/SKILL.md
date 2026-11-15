@@ -164,7 +164,11 @@ Save the plan to the working directory as:
 
 `<topic>` is a short kebab-case label (e.g. `auth-refactor-plan-2026-06-07.md`). Use today's date. If that filename already exists, append the next unused letter (`…-2026-06-07b.md`, then `c`) — never overwrite a plan.
 
-Other files the plan's work creates start with `<topic>-`; snapshots (reports, run outputs, one-off scripts) end `-YYYY-MM-DD[letter]`, living files (scripts, docs that keep changing) carry no date. Files for another subsystem keep that subsystem's prefix (`acc-`, `cmdb-`). Raw exports used as a reference baseline go in a folder named `<instance>-YYYY-MM-DD/`, never overwritten.
+The plan's first line is `OPEN YYYY-MM-DD — ACTIVE. Next: <first step>.` (today's date); the title follows on line 2. Format: `prompt-sweep/prmpt-lifecycle.md`.
+
+Other files the plan's work creates start with `<topic>-`; snapshots (briefs, build steps, reports, run outputs, one-off scripts) end `-YYYY-MM-DD[letter]`, living files (scripts, docs that keep changing) carry no date. Files for another subsystem, and living files that outlive the plan, keep that subsystem's prefix (`acc-`, `cmdb-`). A prefix counts as a plan's when `<prefix>-plan-*.md` sits in the same folder. Raw exports used as a reference baseline go in a folder named `<instance>-YYYY-MM-DD/`, never overwritten.
+
+Backup copies made before an edit are throwaway: `<file>.bak-YYYY-MM-DD[-<why>]` in the scratch folder (below), never `.pre-…` or `.retired-…`. Keep the words plan, prompt, findings and defect out of every other file name, in any case and even inside another word (`explanation.md`) — a repo that ignores those names in `.gitignore` would ignore the file too.
 
 Picking an approach in Step 3 is the user's approval to write the plan and prompt — save without asking again.
 
@@ -179,6 +183,7 @@ Write a companion file alongside the plan:
 ```
 
 The transition prompt should contain:
+- First line: `OPEN YYYY-MM-DD — ACTIVE. Next: <first concrete step>.` (today's date)
 - One sentence on the goal and chosen approach
 - The first concrete step to take
 - An instruction to read the plan before doing anything: "Full plan is in `<topic>-plan-YYYY-MM-DD.md` — read it with `bash <plan-read.sh path> <path>` before starting." (path per Resume read)
@@ -211,10 +216,10 @@ Executing a plan generates byproducts the plan itself never named: censuses, rep
 
 **Where it goes** — decided by lifespan, not by kind:
 
-| | Durable | Ephemeral |
-|---|---|---|
-| Test | someone reads it in three months with none of this session's context | only meaningful while the plan is running |
-| Lives | project root | `<project>/run/`, ignored wholesale |
+| | Durable | Run output | Throwaway |
+|---|---|---|---|
+| Test | someone reads it in three months with none of this session's context | output of the plan's runs, or a local deliverable the user approved | test copies, `.bak` copies, temp scripts, saved command output, downloads |
+| Lives | project root | `<project>/run/`, ignored wholesale | `~/ClaudeOS/scratch/<project>/`, outside every repo; delete it when the task ends unless the user says keep |
 
 Create `run/` on first need, beside `archive/`. In a version-controlled project it gets **one** ignore rule, once — never a new pattern per kind of file, which is how the ignore list rots.
 

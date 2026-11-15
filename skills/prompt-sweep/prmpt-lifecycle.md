@@ -49,6 +49,15 @@ parsing the body. Date is the day the state changed, in the user's local time.
 - **SUPERSEDED:**  `STATUS YYYY-MM-DD — SUPERSEDED by <newer-prompt-filename>.`
 - **REUSABLE:**  `LIFECYCLE: REUSABLE — keep-loose.`  (this is the `keep-loose` tag; presence of this line = never sweep)
 
+Two `OPEN` lines mark **live** plans and prompts:
+
+- **ACTIVE:**  `OPEN YYYY-MM-DD — ACTIVE. Next: <step>.`
+- **PARKED:**  `OPEN YYYY-MM-DD — PARKED until <condition>.`
+
+An `OPEN` line marks a live plan or prompt: skills treat it like no banner and may write to the
+file. Its date is the last day the status was checked against the Record and live state. Closing
+replaces the `OPEN` line with the `STATUS` banner.
+
 Two more `STATUS` banners mark **record files** — findings logs, defect lists, instructions — not
 prompts. `/prompt-sweep` never classifies them.
 
